@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 import pytest
 import requests
 
-from src import hugging_face_api
+from phase1metrics import hugging_face_api
 
 # Sample API response data
 VALID_MODEL_RESPONSE: Dict[str, Any] = {

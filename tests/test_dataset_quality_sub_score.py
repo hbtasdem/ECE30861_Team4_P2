@@ -1,8 +1,12 @@
 from unittest.mock import Mock, patch
 
 import pytest
+import sys
+import os
 
-import src.dataset_quality_sub_score as dataset_quality
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
+import phase1metrics.dataset_quality_sub_score as dataset_quality
 
 # Test data for various README scenarios
 README_WITH_DOCUMENTATION = """
@@ -264,7 +268,7 @@ class TestHybridEvaluation:
         )
         assert score == deterministic_score
 
-    @patch("src.dataset_quality_sub_score._get_ai_score")
+    @patch("phase1metrics.dataset_quality_sub_score._get_ai_score")
     def test_evaluate_dataset_documentation_hybrid_with_ai(
         self, mock_ai_score: Mock
     ) -> None:
@@ -282,7 +286,7 @@ class TestHybridEvaluation:
         expected_score = (deterministic_score * 0.7) + (0.8 * 0.3)
         assert abs(score - expected_score) < 0.001
 
-    @patch("src.dataset_quality_sub_score._get_ai_score")
+    @patch("phase1metrics.dataset_quality_sub_score._get_ai_score")
     def test_hybrid_ai_fallback(self, mock_ai_score: Mock) -> None:
         """Test that hybrid functions fallback to deterministic."""
         mock_ai_score.return_value = 0.0  # AI failed
@@ -365,7 +369,7 @@ class TestDatasetAvailabilityScoring:
         assert score == 0.0
         assert elapsed >= 0
 
-    @patch("src.dataset_quality_sub_score.fetch_readme")
+    @patch("phase1metrics.dataset_quality_sub_score.fetch_readme")
     def test_dataset_available_via_link(self, mock_fetch_readme: Mock) -> None:
         """Test scoring when dataset is available via external link."""
         mock_fetch_readme.return_value = README_COMPREHENSIVE
@@ -378,8 +382,8 @@ class TestDatasetAvailabilityScoring:
         assert score > 0.0
         assert elapsed >= 0
 
-    @patch("src.dataset_quality_sub_score.fetch_readme")
-    @patch("src.dataset_quality_sub_score.check_readme_for_known_datasets")
+    @patch("phase1metrics.dataset_quality_sub_score.fetch_readme")
+    @patch("phase1metrics.dataset_quality_sub_score.check_readme_for_known_datasets")
     def test_dataset_available_via_encountered(
         self, mock_check: Mock, mock_fetch_readme: Mock
     ) -> None:
@@ -396,7 +400,7 @@ class TestDatasetAvailabilityScoring:
         assert score > 0.0
         assert elapsed >= 0
 
-    @patch("src.dataset_quality_sub_score.fetch_readme")
+    @patch("phase1metrics.dataset_quality_sub_score.fetch_readme")
     def test_dataset_tracking_updates_encountered_set(
         self, mock_fetch_readme: Mock
     ) -> None:
@@ -417,7 +421,7 @@ class TestDatasetAvailabilityScoring:
 class TestDatasetQualitySubScore:
     """Test the main dataset quality scoring function."""
 
-    @patch("src.dataset_quality_sub_score.fetch_readme")
+    @patch("phase1metrics.dataset_quality_sub_score.fetch_readme")
     def test_dataset_quality_sub_score_comprehensive(
         self, mock_fetch_readme: Mock
     ) -> None:
@@ -432,7 +436,7 @@ class TestDatasetQualitySubScore:
         assert elapsed >= 0
         assert score > 0.7  # Comprehensive README should score high
 
-    @patch("src.dataset_quality_sub_score.fetch_readme")
+    @patch("phase1metrics.dataset_quality_sub_score.fetch_readme")
     def test_dataset_quality_sub_score_minimal(
         self, mock_fetch_readme: Mock
     ) -> None:
@@ -447,7 +451,7 @@ class TestDatasetQualitySubScore:
         assert elapsed >= 0
         assert score < 0.3  # Minimal README should score low
 
-    @patch("src.dataset_quality_sub_score.fetch_readme")
+    @patch("phase1metrics.dataset_quality_sub_score.fetch_readme")
     def test_dataset_quality_sub_score_no_readme(
         self, mock_fetch_readme: Mock
     ) -> None:
@@ -461,7 +465,7 @@ class TestDatasetQualitySubScore:
         assert score == 0.0
         assert elapsed >= 0
 
-    @patch("src.dataset_quality_sub_score.fetch_readme")
+    @patch("phase1metrics.dataset_quality_sub_score.fetch_readme")
     def test_dataset_quality_sub_score_empty_readme(
         self, mock_fetch_readme: Mock
     ) -> None:
@@ -476,7 +480,7 @@ class TestDatasetQualitySubScore:
         assert elapsed >= 0
         assert score == 0.0  # Empty README should score 0
 
-    @patch("src.dataset_quality_sub_score.fetch_readme")
+    @patch("phase1metrics.dataset_quality_sub_score.fetch_readme")
     def test_dataset_quality_sub_score_timing(
         self, mock_fetch_readme: Mock
     ) -> None:
@@ -491,7 +495,7 @@ class TestDatasetQualitySubScore:
         # Should be reasonably fast for mocked data with hybrid scoring
         assert elapsed < 2.0
 
-    @patch("src.dataset_quality_sub_score.fetch_readme")
+    @patch("phase1metrics.dataset_quality_sub_score.fetch_readme")
     def test_dataset_quality_sub_score_no_ai(
         self, mock_fetch_readme: Mock
     ) -> None:
@@ -508,8 +512,8 @@ class TestDatasetQualitySubScore:
         assert elapsed >= 0
         # Should be deterministic scoring only
 
-    @patch("src.dataset_quality_sub_score.fetch_readme")
-    @patch("src.dataset_quality_sub_score._get_ai_score")
+    @patch("phase1metrics.dataset_quality_sub_score.fetch_readme")
+    @patch("phase1metrics.dataset_quality_sub_score._get_ai_score")
     def test_dataset_quality_sub_score_with_ai(
         self, mock_ai_score: Mock, mock_fetch_readme: Mock
     ) -> None:
@@ -557,7 +561,7 @@ def test_all_evaluation_functions_return_valid_scores() -> None:
 
 def test_score_consistency() -> None:
     """Test that scores are consistent across multiple calls."""
-    with patch("src.dataset_quality_sub_score.fetch_readme") as mock_fetch:
+    with patch("phase1metrics.dataset_quality_sub_score.fetch_readme") as mock_fetch:
         mock_fetch.return_value = README_COMPREHENSIVE
 
         # Test consistency without AI (deterministic)
@@ -596,7 +600,7 @@ def test_all_five_criteria_included() -> None:
 
 def test_weight_distribution() -> None:
     """Test that weight distribution is correct (0.2 each for 5 criteria)."""
-    with patch("src.dataset_quality_sub_score.fetch_readme") as mock_fetch:
+    with patch("phase1metrics.dataset_quality_sub_score.fetch_readme") as mock_fetch:
         mock_fetch.return_value = README_COMPREHENSIVE
 
         score, _ = dataset_quality.dataset_quality_sub_score(

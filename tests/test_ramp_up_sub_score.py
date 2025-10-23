@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-import src.ramp_up_sub_score as ramp_up_sub_score
+import phase1metrics.ramp_up_sub_score as ramp_up_sub_score
 
 README_WITH_CODE = """
 # Example Model
@@ -33,8 +33,8 @@ No code or example here.
 README_NONE = ""
 
 
-@patch("src.ramp_up_sub_score.get_model_info")
-@patch("src.ramp_up_sub_score.fetch_readme")
+@patch("phase1metrics.ramp_up_sub_score.get_model_info")
+@patch("phase1metrics.ramp_up_sub_score.fetch_readme")
 @pytest.mark.parametrize(
     "downloads,likes,readme,expected_min_score",
     [

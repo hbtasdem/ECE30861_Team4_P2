@@ -2,7 +2,7 @@ import re
 import time
 from typing import Optional, Tuple, Set
 
-from src.license_sub_score import fetch_readme
+from phase1metrics.license_sub_score import fetch_readme
 
 
 def _get_ai_score(readme_text: str, model_id: str, aspect: str) -> float:
@@ -18,7 +18,7 @@ def _get_ai_score(readme_text: str, model_id: str, aspect: str) -> float:
         float: Score between 0.0 and 1.0, or 0.0 if AI unavailable
     """
     try:
-        from src.purdue_api import PurdueGenAI
+        from phase1metrics.purdue_api import PurdueGenAI
 
         # Create prompts for different aspects
         prompts = {

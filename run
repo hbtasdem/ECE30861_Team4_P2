@@ -30,13 +30,13 @@ def process_urls(url_file: str) -> int:
     """Process CSV file with code, dataset, and model links."""
     try:
         # Import our main processing function
-        sys.path.append('src')
+        sys.path.append('phase1metrics')
         import contextlib
         import csv
         import io
         import json
 
-        from src.main import calculate_all_scores
+        from phase1metrics.main import calculate_all_scores
 
         with open(url_file, 'r', encoding='utf-8') as f:
             content = f.read().strip()
@@ -82,25 +82,38 @@ def process_urls(url_file: str) -> int:
         return 1
 
 
+# GEORGIA I replaced previous run_tests with one by chatGPT
 def run_tests() -> int:
-    """Run test suite and report coverage."""
+    """Run the test suite and report coverage safely."""
+    import subprocess
+    import sys
+    import re
+
+    passed = 0
+    failed = 0
+    skipped = 0
+    coverage = 0
+
     try:
-        # Run pytest with coverage
-        result = subprocess.run([
-            sys.executable, "-m", "pytest", "tests/", "--cov=src",
-            "--cov-report=term", "--tb=short"
-        ], capture_output=True, text=True, timeout=60)
+        # Start pytest subprocess
+        proc = subprocess.Popen(
+            [sys.executable, "-m", "pytest", "tests/",
+             "--cov=phase1metrics", "--cov-report=term", "--tb=short"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True
+        )
 
-        # Parse the output regardless of return code (some tests may fail)
-        output = result.stdout + result.stderr
-        import re
+        # Read output incrementally to avoid buffer blocking
+        output_lines = []
+        for line in proc.stdout:
+            output_lines.append(line)
 
-        passed = 0
-        failed = 0
-        skipped = 0
-        coverage = 47  # Default coverage
+        proc.wait(timeout=60)  # 1 minute timeout
 
-        # Extract test counts
+        output = "".join(output_lines)
+
+        # Parse test counts
         passed_match = re.search(r'(\d+)\s+passed', output)
         if passed_match:
             passed = int(passed_match.group(1))
@@ -113,18 +126,18 @@ def run_tests() -> int:
         if skipped_match:
             skipped = int(skipped_match.group(1))
 
-        # Extract coverage
+        total = passed + failed + skipped
+
+        # Parse coverage
         coverage_match = re.search(r'TOTAL.*?(\d+)%', output)
         if coverage_match:
             coverage = int(coverage_match.group(1))
 
-        total = passed + failed + skipped
-
-        # Output the required format
         print(f"{passed}/{total} test cases passed. {coverage}% line coverage achieved.")
-        return 0
+        return 0 if failed == 0 else 1
 
     except subprocess.TimeoutExpired:
+        proc.kill()
         print("Tests timed out", file=sys.stderr)
         return 1
     except Exception as e:

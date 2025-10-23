@@ -3,10 +3,10 @@ from unittest.mock import patch
 
 import pytest
 
-import src.performance_claims_sub_score as performance
+import phase1metrics.performance_claims_sub_score as performance
 
 
-@patch("src.performance_claims_sub_score.get_model_info")
+@patch("phase1metrics.performance_claims_sub_score.get_model_info")
 @pytest.mark.parametrize(
     "downloads,likes,expected_min_score",
     [

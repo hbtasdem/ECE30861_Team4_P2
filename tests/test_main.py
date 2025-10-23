@@ -5,8 +5,8 @@ import unittest
 from typing import Any
 from unittest.mock import patch
 
-# Add the src directory to the path so we can import main
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+# Add the phase1metrics directory to the path so we can import main
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'phase1metrics'))
 
 from main import calculate_all_scores, extract_model_name, main  # noqa: E402
 

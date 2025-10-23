@@ -20,7 +20,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.logging_config import (LoggerManager, LoggingConfig, get_logger,
+from phase1metrics.logging_config import (LoggerManager, LoggingConfig, get_logger,
                                 log_error_with_context, log_function_call,
                                 log_performance, set_log_level)
 
@@ -253,7 +253,7 @@ class TestJsonFormatter:
 
     def test_json_formatting(self) -> None:
         """Test JSON log record formatting."""
-        from src.logging_config import JsonFormatter
+        from phase1metrics.logging_config import JsonFormatter
 
         formatter = JsonFormatter()
         record = logging.LogRecord(

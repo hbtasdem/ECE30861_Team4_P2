@@ -15,7 +15,7 @@ This project includes a comprehensive logging system that provides:
 ### Basic Usage
 
 ```python
-from src.logging_config import get_logger
+from phase1metrics.logging_config import get_logger
 
 # Get a logger for your module
 logger = get_logger(__name__)
@@ -31,7 +31,7 @@ logger.critical("Critical system error")
 ### Performance Logging
 
 ```python
-from src.logging_config import log_performance
+from phase1metrics.logging_config import log_performance
 import time
 
 start_time = time.time()
@@ -42,7 +42,7 @@ log_performance("operation_name", time.time() - start_time, logger)
 ### Error Logging with Context
 
 ```python
-from src.logging_config import log_error_with_context
+from phase1metrics.logging_config import log_error_with_context
 
 try:
     # ... risky operation ...
@@ -66,7 +66,7 @@ except Exception as e:
 ### Programmatic Configuration
 
 ```python
-from src.logging_config import set_log_level
+from phase1metrics.logging_config import set_log_level
 
 # Change log level at runtime
 set_log_level("DEBUG")
@@ -164,7 +164,7 @@ python -m pytest tests/test_logging_config.py -v
 
 ## Examples
 
-See `src/logging_example.py` for comprehensive usage examples.
+See `phase1metrics/logging_example.py` for comprehensive usage examples.
 
 ## Migration Guide
 

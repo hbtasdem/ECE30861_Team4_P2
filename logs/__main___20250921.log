@@ -6,7 +6,7 @@
 2025-09-21 19:30:58 - __main__ - INFO - logging_config.py:239 - Performance: example_function completed in 0.102s
 2025-09-21 19:30:58 - __main__ - ERROR - logging_config.py:256 - Error in example_function: Example error for demonstration
 Traceback (most recent call last):
-  File "/Users/shaansriram/Desktop/461_repo_shaan/src/logging_example.py", line 33, in example_function
+  File "/Users/shaansriram/Desktop/461_repo_shaan/phase1metrics/logging_example.py", line 33, in example_function
     raise ValueError("Example error for demonstration")
 ValueError: Example error for demonstration
 2025-09-21 19:30:58 - __main__ - INFO - logging_example.py:44 - Processing request with correlation ID

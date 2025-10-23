@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from src import license_sub_score as license
+from phase1metrics import license_sub_score as license
 
 README_YAML: str = """---
 name: Example Model

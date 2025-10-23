@@ -11,7 +11,7 @@ Tests cover:
 import unittest
 from unittest.mock import MagicMock, patch
 
-from src.size_score import (MEMORY_BENCHMARKS, calculate_size_scores,
+from phase1metrics.size_score import (MEMORY_BENCHMARKS, calculate_size_scores,
                             extract_memory_sizes, find_smallest_model_size,
                             score_against_benchmark, size_score)
 
@@ -181,7 +181,7 @@ class TestSizeScoreCalculation(unittest.TestCase):
 class TestSizeScoreFunction(unittest.TestCase):
     """Test the main size_score function."""
 
-    @patch('src.size_score.fetch_readme')
+    @patch('phase1metrics.size_score.fetch_readme')
     def test_successful_calculation(
             self, mock_fetch_readme: MagicMock) -> None:
         """Test successful size score calculation."""
@@ -202,7 +202,7 @@ class TestSizeScoreFunction(unittest.TestCase):
         self.assertIsInstance(latency, float)
         self.assertGreater(latency, 0)
 
-    @patch('src.size_score.fetch_readme')
+    @patch('phase1metrics.size_score.fetch_readme')
     def test_no_readme_content(self, mock_fetch_readme: MagicMock) -> None:
         """Test handling when README cannot be fetched."""
         mock_fetch_readme.return_value = None
@@ -212,7 +212,7 @@ class TestSizeScoreFunction(unittest.TestCase):
         self.assertEqual(scores, {})
         self.assertIsInstance(latency, float)
 
-    @patch('src.size_score.fetch_readme')
+    @patch('phase1metrics.size_score.fetch_readme')
     def test_no_memory_info_in_readme(
             self, mock_fetch_readme: MagicMock) -> None:
         """Test handling when README has no memory information."""
@@ -224,7 +224,7 @@ class TestSizeScoreFunction(unittest.TestCase):
         self.assertEqual(scores, {})
         self.assertIsInstance(latency, float)
 
-    @patch('src.size_score.fetch_readme')
+    @patch('phase1metrics.size_score.fetch_readme')
     def test_multiple_model_sizes(self, mock_fetch_readme: MagicMock) -> None:
         """Test handling when multiple model sizes are found."""
         mock_readme = """
