@@ -30,14 +30,14 @@ repos:
 
   # Run isort for import sorting
   - repo: https://github.com/PyCQA/isort
-    rev: 5.13.2
+    rev: 7.0.0
     hooks:
       - id: isort
         args: [--profile=black]
 
   # Run mypy for type checking
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.1
+    rev: v1.18.2
     hooks:
       - id: mypy
         args: [--strict, --ignore-missing-imports]
