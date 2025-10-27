@@ -2,7 +2,7 @@ import re
 import time
 from typing import Optional, Tuple, Set
 
-from src.license_sub_score import fetch_readme
+import license_sub_score
 
 
 def _get_ai_score(readme_text: str, model_id: str, aspect: str) -> float:
@@ -18,7 +18,8 @@ def _get_ai_score(readme_text: str, model_id: str, aspect: str) -> float:
         float: Score between 0.0 and 1.0, or 0.0 if AI unavailable
     """
     try:
-        from src.purdue_api import PurdueGenAI
+        import purdue_api
+        PurdueGenAI = purdue_api.PurdueGenAI
 
         # Create prompts for different aspects
         prompts = {
@@ -527,7 +528,7 @@ def dataset_quality_sub_score(model_id: str, dataset_link: str = "",
     # If no external dataset link, check README for references to known
     # datasets
     if not has_external_dataset:
-        readme = fetch_readme(model_id)
+        readme = license_sub_score.fetch_readme(model_id)
         if readme and encountered_datasets:
             # Check if README references any previously encountered datasets
             dataset_available = check_readme_for_known_datasets(
@@ -545,7 +546,7 @@ def dataset_quality_sub_score(model_id: str, dataset_link: str = "",
             encountered_datasets.add(dataset_id)
 
     # Fetch README
-    readme = fetch_readme(model_id)
+    readme = license_sub_score.fetch_readme(model_id)
     if not readme:
         end_time = time.time()
         return (0.0, end_time - start_time)

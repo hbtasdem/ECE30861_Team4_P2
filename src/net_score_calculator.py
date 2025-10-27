@@ -18,6 +18,7 @@ from dataset_quality_sub_score import dataset_quality_sub_score
 from license_sub_score import license_sub_score
 from performance_claims_sub_score import performance_claims_sub_score
 from ramp_up_sub_score import ramp_up_time_score
+from size_score import size_score
 from schema import ProjectMetadata
 
 
@@ -36,10 +37,10 @@ def calculate_net_score(model_id: str) -> ProjectMetadata:
     # Calculate individual scores
     print(f"Calculating scores for model: {model_id}")
 
-    # Size Score (0.05 weight) - Not implemented, using default
-    size_score = 0.5  # Default value since no size scoring function exists
-    size_latency = 0
-    print(f"Size Score: {size_score:.3f} (default - not implemented)")
+    # Size Score (0.05 weight) - Now using actual implementation
+    size_scores_dict, net_size_score, size_latency = size_score(model_id)
+    print(f"Size Score: {net_size_score:.3f} "
+          f"(latency: {size_latency}ms)")
 
     # License Score (0.2 weight)
     license_score, license_latency = license_sub_score(model_id)
@@ -84,7 +85,7 @@ def calculate_net_score(model_id: str) -> ProjectMetadata:
 
     # Calculate weighted NetScore
     net_score = (
-        0.05 * size_score +
+        0.05 * net_size_score +
         0.2 * license_score +
         0.2 * ramp_up_score +
         0.05 * bus_factor +
@@ -113,7 +114,7 @@ def calculate_net_score(model_id: str) -> ProjectMetadata:
         performance_claims_latency=int(performance_claims_latency * 1000),
         license=license_score,
         license_latency=int(license_latency * 1000),
-        size_score={"raspberry_pi": size_score},
+        size_score=size_scores_dict,
         size_score_latency=size_latency,
         dataset_and_code_score=dataset_code_score,
         dataset_and_code_score_latency=int(dataset_code_latency * 1000),
@@ -133,7 +134,18 @@ def print_score_summary(results: ProjectMetadata) -> None:
     print(f"NetScore: {results['net_score']:.3f}")
     print(f"Total Time: {results['net_score_latency']}ms")
     print("\nIndividual Scores:")
-    print(f"  Size: {results['size_score']['raspberry_pi']:.3f}")
+    
+    # Handle size_score as a dictionary of device scores
+    size_score_dict = results['size_score']
+    if isinstance(size_score_dict, dict) and size_score_dict:
+        # Calculate average or use weighted score
+        avg_size_score = sum(size_score_dict.values()) / len(size_score_dict) if size_score_dict else 0.0
+        print(f"  Size (avg): {avg_size_score:.3f}")
+        for device, score in size_score_dict.items():
+            print(f"    - {device}: {score:.3f}")
+    else:
+        print(f"  Size: {size_score_dict}")
+    
     print(f"  License: {results['license']:.3f}")
     print(f"  Ramp Up Time: {results['ramp_up_time']:.3f}")
     print(f"  Bus Factor: {results['bus_factor']:.3f}")
