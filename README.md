@@ -2,6 +2,7 @@
 461 repo
 
 Phase 2 Team: Navya Datla, Sai Gandavarapu, Georgia Griffin, Hilal Beyza Tasdemir
+
 Phase 1 Team: Anjali Vanamala, Andrew Diab, Pryce Tharpe, Shaan Sriram (Shaantanu Sriram)
 
 

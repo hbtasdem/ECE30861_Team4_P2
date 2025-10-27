@@ -11,9 +11,14 @@ Tests cover:
 import unittest
 from unittest.mock import MagicMock, patch
 
-from phase1metrics.size_score import (MEMORY_BENCHMARKS, calculate_size_scores,
-                            extract_memory_sizes, find_smallest_model_size,
-                            score_against_benchmark, size_score)
+from phase1metrics.size_score import (
+    MEMORY_BENCHMARKS,
+    calculate_size_scores,
+    extract_memory_sizes,
+    find_smallest_model_size,
+    score_against_benchmark,
+    size_score,
+)
 
 # from typing import Any  # Not used in this test file
 

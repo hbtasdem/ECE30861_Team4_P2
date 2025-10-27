@@ -45,9 +45,12 @@ def extract_model_name(model_url: str) -> str:
     return model_url.strip()
 
 
-def calculate_all_scores(code_link: str, dataset_link: str,
-                         model_link: str, encountered_datasets: set[str],
-                         encountered_code: set[str]) -> Dict[str, Any]:
+def calculate_all_scores(
+    code_link: str, dataset_link: str,
+    model_link: str,
+    encountered_datasets: set[str],
+    encountered_code: set[str]
+) -> Dict[str, Any]:
     """Calculate all scores for a given set of links."""
     model_name = extract_model_name(model_link)
     # Extract just the model name (without organization) for JSON display
@@ -103,8 +106,7 @@ def calculate_all_scores(code_link: str, dataset_link: str,
               file=sys.stderr)
     try:
         # Ramp Up Score
-        ramp_score, ramp_latency = ramp_up_sub_score.ramp_up_time_score(
-            model_name)
+        ramp_score, ramp_latency = ramp_up_sub_score.ramp_up_time_score(model_name)
         result["ramp_up_time"] = ramp_score
         result["ramp_up_time_latency"] = int(ramp_latency * 1000)
     except Exception as e:

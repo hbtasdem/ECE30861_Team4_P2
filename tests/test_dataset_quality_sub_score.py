@@ -1,12 +1,12 @@
+import os
+import sys
 from unittest.mock import Mock, patch
 
 import pytest
-import sys
-import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-import phase1metrics.dataset_quality_sub_score as dataset_quality
+import phase1metrics.dataset_quality_sub_score as dataset_quality  # noqa: E402
 
 # Test data for various README scenarios
 README_WITH_DOCUMENTATION = """

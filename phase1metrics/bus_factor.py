@@ -65,7 +65,7 @@ def bus_factor_score(model_id: str) -> tuple[int, float]:
     end_time = time.time()
     execution_time = end_time - start_time
 
-    return round(contributors,2), execution_time
+    return round(contributors, 2), execution_time
 
 
 # Test the function

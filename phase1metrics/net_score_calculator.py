@@ -83,7 +83,7 @@ def calculate_net_score(model_id: str) -> ProjectMetadata:
           f"(latency: {performance_claims_latency:.3f}s)")
 
     # Calculate weighted NetScore
-    net_score = round( (
+    net_score = round((
         0.05 * size_score +
         0.2 * license_score +
         0.2 * ramp_up_score +

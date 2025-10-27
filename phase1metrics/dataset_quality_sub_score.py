@@ -1,6 +1,6 @@
 import re
 import time
-from typing import Optional, Tuple, Set
+from typing import Optional, Set, Tuple
 
 from phase1metrics.license_sub_score import fetch_readme
 
