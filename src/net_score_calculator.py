@@ -94,6 +94,7 @@ def calculate_net_score(model_id: str) -> ProjectMetadata:
         0.1 * code_quality +
         0.1 * performance_claims
     )
+    net_score = round(net_score,2)
 
     total_latency = int((time.time() - start_time) * 1000)
 

@@ -54,6 +54,7 @@ def ramp_up_time_score(model_id: str) -> Tuple[float, float]:
 
     # Normalize (max score is 4)
     normalized = score / 4
+    normalized = round(normalized, 2)
     return normalized, time.time() - start
 
 

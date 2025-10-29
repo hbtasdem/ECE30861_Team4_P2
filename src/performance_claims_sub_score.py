@@ -41,7 +41,7 @@ def performance_claims_sub_score(model_id: str) -> Tuple[float, float]:
                                steepness=0.01)
 
     # Normalize (max score is 2)
-    normalized = score / 2
+    normalized = round(score / 2, 2)
     return normalized, time.time() - start
 
 
