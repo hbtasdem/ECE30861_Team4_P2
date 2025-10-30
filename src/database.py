@@ -1,7 +1,8 @@
 # database.py
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
 import os
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 # Use SQLite for simplicity; configure with environment variable or default
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
@@ -16,6 +17,7 @@ else:
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+
 def get_db():
     """Dependency to get database session"""
     db = SessionLocal()
@@ -24,7 +26,13 @@ def get_db():
     finally:
         db.close()
 
+
 def init_db():
     """Initialize database tables"""
-    from models import Base, User, Model, ModelMetadata  # Import all models to register them
+    from models import (  # noqa: F401 # Import all models to register them
+        Base,
+        Model,
+        ModelMetadata,
+        User,
+    )
     Base.metadata.create_all(bind=engine)

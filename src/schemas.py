@@ -1,9 +1,11 @@
 # schemas.py
-from pydantic import BaseModel, ConfigDict
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict
 
 # Request/Response schemas (Pydantic)
+
 
 class ModelCreate(BaseModel):
     name: str
@@ -11,15 +13,17 @@ class ModelCreate(BaseModel):
     version: str = "1.0.0"
     is_sensitive: bool = False
 
+
 class ModelUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     version: Optional[str] = None
     is_sensitive: Optional[bool] = None
 
+
 class ModelResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    
+
     id: int
     name: str
     description: Optional[str]
@@ -30,6 +34,7 @@ class ModelResponse(BaseModel):
     is_sensitive: bool
     created_at: datetime
     updated_at: datetime
+
 
 class UploadResponse(BaseModel):
     message: str

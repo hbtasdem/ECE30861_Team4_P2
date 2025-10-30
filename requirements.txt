@@ -12,6 +12,11 @@ sqlalchemy>=2.0.0
 
 # Development and build dependencies
 pyinstaller>=5.0.0
+pre-commit
+flake8
+isort
+mypy
+types-requests
 
 # Testing dependencies (optional)
 pytest>=7.0.0

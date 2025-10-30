@@ -43,7 +43,7 @@ def process_urls(url_file: str) -> int:
 
         # Parse CSV content
         csv_reader = csv.reader(io.StringIO(content))
-        
+
         # Track encountered datasets and code across all models
         encountered_datasets = set()
         encountered_code = set()
@@ -146,21 +146,21 @@ def run_tests() -> int:
 
 def validate_environment() -> int:
     """Validate required environment variables at startup."""
-    
+
     # Check GITHUB_TOKEN - simple validation
     github_token = os.getenv("GITHUB_TOKEN")
     if github_token is not None:
         if not github_token or github_token.strip() == "" or github_token == "invalid":
             print("Error: Invalid GITHUB_TOKEN", file=sys.stderr)
             return 1
-    
+
     # Check LOG_FILE - simple validation (don't create files)
     log_file = os.getenv("LOG_FILE")
     if log_file is not None:
         if not os.path.exists(log_file):
             print(f"Error: Log file does not exist: {log_file}", file=sys.stderr)
             return 1
-    
+
     # Check LOG_LEVEL
     log_level = os.getenv("LOG_LEVEL")
     if log_level is not None:
@@ -172,7 +172,7 @@ def validate_environment() -> int:
         except ValueError:
             print(f"Error: LOG_LEVEL must be an integer, got: {log_level}", file=sys.stderr)
             return 1
-    
+
     return 0
 
 

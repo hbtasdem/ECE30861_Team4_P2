@@ -20,9 +20,15 @@ from unittest.mock import patch
 
 import pytest
 
-from src.logging_config import (LoggerManager, LoggingConfig, get_logger,
-                                log_error_with_context, log_function_call,
-                                log_performance, set_log_level)
+from src.logging_config import (
+    LoggerManager,
+    LoggingConfig,
+    get_logger,
+    log_error_with_context,
+    log_function_call,
+    log_performance,
+    set_log_level,
+)
 
 
 class TestLoggingConfig:

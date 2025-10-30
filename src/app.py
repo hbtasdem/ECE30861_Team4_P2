@@ -1,6 +1,8 @@
 # app.py
 import os
+
 from fastapi import FastAPI
+
 from database import init_db
 from upload.routes import router as upload_router
 
@@ -17,6 +19,7 @@ if os.getenv("TESTING") != "true":
 
 # Include routers
 app.include_router(upload_router)
+
 
 @app.get("/health")
 async def health_check():

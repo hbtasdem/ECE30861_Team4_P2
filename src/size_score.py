@@ -32,7 +32,7 @@ SIZE_THRESHOLDS = {
     'raspberry_pi': 2.0,    # Models >2GB struggle with loading times
     'jetson_nano': 4.0,     # Specifically designed for AI with 4GB RAM
     'desktop_pc': 16.0,     # Standard development workstation with 16GB+ RAM
-}  
+}
 
 
 def extract_model_id_from_url(url: str) -> str:
@@ -50,10 +50,10 @@ def extract_model_id_from_url(url: str) -> str:
         match = re.search(pattern, url)
         if match:
             return match.group(1)
-    
+
     if '/' in url and ' ' not in url and '://' not in url:  # If it looks like 'namespace/model_name'
         return url
-    
+
     return url
 
 
@@ -72,7 +72,7 @@ def estimate_model_memory(model_id: str, file_size_gb: Optional[float] = None) -
         Estimated memory in GB for the model
     """
     model_lower = model_id.lower()
-    
+
     # Model type-based estimation
     # Based on typical architecture sizes and their memory requirements
     if 'bert' in model_lower:
@@ -82,7 +82,7 @@ def estimate_model_memory(model_id: str, file_size_gb: Optional[float] = None) -
             return 1.3  # BERT-base
         else:
             return 1.2  # Generic BERT assumption
-    
+
     elif 'whisper' in model_lower:
         if 'tiny' in model_lower:
             return 0.2  # Whisper-tiny ~39M parameters
@@ -96,28 +96,28 @@ def estimate_model_memory(model_id: str, file_size_gb: Optional[float] = None) -
             return 2.9  # Whisper-large ~1.5B parameters
         else:
             return 0.5  # Generic whisper
-    
+
     elif 'gpt2' in model_lower:
         return 0.5  # GPT2 ~124M parameters
-    
+
     elif 'distilbert' in model_lower:
         return 0.3  # DistilBERT ~66M parameters
-    
+
     elif 'roberta' in model_lower:
         if 'large' in model_lower:
             return 2.4
         else:
             return 1.6
-    
+
     elif 'classifier' in model_lower or 'audience' in model_lower:
         return 0.52  # Smaller specialized models
-    
+
     elif 't5' in model_lower:
         if 'large' in model_lower:
             return 2.8  # T5-large ~770M parameters
         else:
             return 1.5  # T5-base ~220M parameters
-    
+
     elif 'llama' in model_lower or 'alpaca' in model_lower:
         if '7b' in model_lower or '7B' in model_lower:
             return 14.0
@@ -125,7 +125,7 @@ def estimate_model_memory(model_id: str, file_size_gb: Optional[float] = None) -
             return 28.0
         else:
             return 7.0
-    
+
     # Fallback: if we have file size, estimate based on that
     if file_size_gb:
         # Different architectures have different memory overhead
@@ -136,7 +136,7 @@ def estimate_model_memory(model_id: str, file_size_gb: Optional[float] = None) -
             return file_size_gb * 12  # LLM overhead
         else:
             return file_size_gb * 10  # Conservative default
-    
+
     # Complete fallback: assume medium model
     return 1.0
 
@@ -144,10 +144,10 @@ def estimate_model_memory(model_id: str, file_size_gb: Optional[float] = None) -
 def calculate_net_size_score(size_scores: Dict[str, float]) -> float:
     """
     Calculate net size score from individual device scores using predefined weights.
-    
+
     Args:
         size_scores: Dictionary of device scores
-        
+
     Returns:
         Weighted net size score
     """
@@ -155,7 +155,7 @@ def calculate_net_size_score(size_scores: Dict[str, float]) -> float:
     for device, score in size_scores.items():
         if device in SIZE_WEIGHTS:
             net_size_score += score * SIZE_WEIGHTS[device]
-    
+
     return round(net_size_score, 2)
 
 
@@ -170,15 +170,15 @@ def calculate_device_scores(size_gb: float) -> Dict[str, float]:
         Dictionary mapping device names to scores (0.0 to 1.0)
     """
     size_scores = {}
-    
+
     # Calculate scores using linear decay: score = max(0.0, 1.0 - (size_gb / threshold))
     for device, threshold in SIZE_THRESHOLDS.items():
         score = max(0.0, 1.0 - (size_gb / threshold))
         size_scores[device] = round(score, 2)
-    
+
     # AWS server always gets 1.0 (unlimited capacity)
     size_scores['aws_server'] = 1.0
-    
+
     return size_scores
 
 
@@ -196,9 +196,9 @@ def calculate_size_scores(model_id: str) -> Tuple[Dict[str, float], float, int]:
         - Latency in milliseconds
     """
     start_time = time.time()
-    
+
     clean_model_id = extract_model_id_from_url(model_id)
-    
+
     # Try to get API file size first
     api_file_size = None
     try:
@@ -208,10 +208,10 @@ def calculate_size_scores(model_id: str) -> Tuple[Dict[str, float], float, int]:
             api_file_size = model_info.safetensors.total / (1024 ** 3)
     except Exception as e:
         print(f"[DEBUG] Could not fetch API data for {clean_model_id}: {e}")
-    
+
     # Estimate model memory
     size_gb = estimate_model_memory(clean_model_id, api_file_size)
-    
+
     if size_gb is None or size_gb == 0:
         # Return default scores
         default_scores = {
@@ -222,16 +222,16 @@ def calculate_size_scores(model_id: str) -> Tuple[Dict[str, float], float, int]:
         }
         latency = int((time.time() - start_time) * 1000)
         return default_scores, 0.2, latency
-    
+
     # Calculate scores for all devices
     size_scores = calculate_device_scores(size_gb)
-    
+
     # Calculate net size score using weights
     net_size_score = calculate_net_size_score(size_scores)
-    
+
     # Calculate latency
     latency = int((time.time() - start_time) * 1000)
-    
+
     return size_scores, net_size_score, latency
 
 
@@ -265,11 +265,11 @@ def size_score(model_input) -> Tuple[Dict[str, float], float, int]:
                 return {}, 0.0, 0
         else:
             model_id = model_input
-        
+
         size_scores, net_size_score, latency = calculate_size_scores(model_id)
-        
+
         return size_scores, net_size_score, latency
-        
+
     except Exception as e:
         print(f"[DEBUG] Error calculating size score for {model_input}: {e}")
         return {}, 0.0, 0
@@ -282,14 +282,13 @@ if __name__ == "__main__":
         "openai/whisper-tiny",
         "microsoft/DialoGPT-medium"
     ]
-    
+
     print("=== SIZE SCORE CALCULATIONS ===")
     for model_input in test_models:
         print(f"--- Testing: {model_input} ---")
-        
+
         size_scores, net_score, latency = size_score(model_input)
-        
+
         print(f"Size scores: {size_scores}")
         print(f"Net size score: {net_score}")
         print(f"Latency: {latency} ms")
-

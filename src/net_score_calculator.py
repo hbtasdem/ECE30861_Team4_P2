@@ -18,8 +18,8 @@ from dataset_quality_sub_score import dataset_quality_sub_score
 from license_sub_score import license_sub_score
 from performance_claims_sub_score import performance_claims_sub_score
 from ramp_up_sub_score import ramp_up_time_score
-from size_score import size_score
 from schema import ProjectMetadata
+from size_score import size_score
 
 
 def calculate_net_score(model_id: str) -> ProjectMetadata:
@@ -94,7 +94,7 @@ def calculate_net_score(model_id: str) -> ProjectMetadata:
         0.1 * code_quality +
         0.1 * performance_claims
     )
-    net_score = round(net_score,2)
+    net_score = round(net_score, 2)
 
     total_latency = int((time.time() - start_time) * 1000)
 
@@ -135,7 +135,7 @@ def print_score_summary(results: ProjectMetadata) -> None:
     print(f"NetScore: {results['net_score']:.3f}")
     print(f"Total Time: {results['net_score_latency']}ms")
     print("\nIndividual Scores:")
-    
+
     # Handle size_score as a dictionary of device scores
     size_score_dict = results['size_score']
     if isinstance(size_score_dict, dict) and size_score_dict:
@@ -146,7 +146,7 @@ def print_score_summary(results: ProjectMetadata) -> None:
             print(f"    - {device}: {score:.3f}")
     else:
         print(f"  Size: {size_score_dict}")
-    
+
     print(f"  License: {results['license']:.3f}")
     print(f"  Ramp Up Time: {results['ramp_up_time']:.3f}")
     print(f"  Bus Factor: {results['bus_factor']:.3f}")

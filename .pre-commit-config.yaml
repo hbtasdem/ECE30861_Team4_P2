@@ -1,0 +1,50 @@
+# This pre-commit will do the same thing as the python-lint.yml
+# python-lint.yaml runs on every pull request 
+# this will run every time you commit 
+
+# HOW TO CONFIGURE:
+# 2) ./run install
+# 3) pre-commit install
+# 4) optional: pre-commit autoupdate
+
+# HOW TO USE:
+# pre-commit run --all-files
+# OR pre-commit run --files specificfile.py
+
+# fought so much to get pre-commit working. 
+# Conclusion: if you downloaded python from microsoft store pre-commit wont work.
+# have to uninstall, clear a bunch of stuff, then reinstall from python.org.
+# But then... the run file only works locally if I replace the top shebang
+# python3 to just python
+
+# from ChatGPT:
+repos:
+  # Run flake8 for linting
+  # NOTE: I addedignore F401 which catches "imported but not used"
+  #      the crud stuff seems to need this off. Sai check. 
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.3.0   # pick a stable version
+    hooks:
+      - id: flake8
+        args: [--count, --show-source, --statistics, --max-line-length, "119"] 
+
+  # Run isort for import sorting
+  # IMPORTANT ISORT NOTE:
+  # if you have a file that requires you run code before importing, or
+  #    if the order you import is important 
+  # put ''' isort: skip_file ''' at the top of the file 
+  - repo: https://github.com/PyCQA/isort
+    rev: 7.0.0
+    hooks:
+      - id: isort
+        args: [--profile=black]
+
+  # Run mypy for type checking
+  # I've commented this out for now, but I think it would be good to add, ask team
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: v1.18.2
+  #   hooks:
+  #     - id: mypy
+  #       args: [--strict, --ignore-missing-imports]
+  #       additional_dependencies:
+  #         - types-requests

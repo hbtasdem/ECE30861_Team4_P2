@@ -1,13 +1,14 @@
 # auth.py
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status  # noqa: F401
+
 from models import User
 
 # Mock for testing; in production, use JWT or session-based auth
 _current_user = None
 
+
 def get_current_user(db=None) -> User:
     """Get current authenticated user (mock for now)"""
-    global _current_user
     if _current_user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -20,6 +21,7 @@ def get_current_user(db=None) -> User:
         return user
     return _current_user
 
+
 def set_test_user(user):
     """Set current user for testing"""
     global _current_user
@@ -28,6 +30,7 @@ def set_test_user(user):
         _current_user = user.id
     else:
         _current_user = user
+
 
 def clear_test_user():
     """Clear current user"""
