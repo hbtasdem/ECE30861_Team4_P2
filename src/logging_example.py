@@ -7,12 +7,7 @@ and utilities in your application code.
 
 import time
 
-from .logging_config import (
-    get_logger,
-    log_error_with_context,
-    log_performance,
-    set_log_level,
-)
+from .logging_config import get_logger, log_error_with_context, log_performance, set_log_level
 
 
 def example_function() -> None:

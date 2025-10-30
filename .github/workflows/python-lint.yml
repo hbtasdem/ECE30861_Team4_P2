@@ -32,7 +32,7 @@ jobs:
 
       - name: Run isort (import sorter)
         run: |
-          isort . --check --diff
+          isort . --check --diff --line-length=120
 
       - name: Run mypy (type checker)
         run: |
