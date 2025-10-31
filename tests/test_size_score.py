@@ -17,6 +17,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from size_score import (
     # MEMORY_BENCHMARKS,
+    SIZE_THRESHOLDS,
     calculate_size_scores,
     extract_memory_sizes,
     find_smallest_model_size,
@@ -287,7 +288,7 @@ class TestIntegration(unittest.TestCase):
             "high_end_gpu": 24.0,
         }
 
-        self.assertEqual(MEMORY_BENCHMARKS, expected_benchmarks)
+        self.assertEqual(SIZE_THRESHOLDS, expected_benchmarks) #might be entirely wrong HILAL CHECK
 
 
 if __name__ == "__main__":
