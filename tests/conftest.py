@@ -7,12 +7,14 @@ from pathlib import Path
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
+
 # IMPORTANT: Import database AFTER setting DATABASE_URL env var
 import database
 from database import get_db, engine, SessionLocal
 from models import Base, User
 from auth import set_test_user, clear_test_user
 from upload.services.file_service import FileStorageService
+
 # Mock the file service
 from upload import routes as upload_routes
 
@@ -23,11 +25,8 @@ os.environ["TESTING"] = "true"
 os.environ["DATABASE_URL"] = "sqlite:///file::memory:?uri=true&cache=shared"
 
 
-
 # Add src to path so imports work
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
-
-
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -99,8 +98,6 @@ def client(test_db_session, mock_file_service, monkeypatch):
             pass  # Don't close - let fixture handle it
 
     fastapi_app.dependency_overrides[get_db] = override_get_db
-
-    
 
     monkeypatch.setattr(upload_routes, "file_service", mock_file_service)
 
