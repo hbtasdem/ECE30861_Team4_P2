@@ -27,7 +27,8 @@ class ModelRepository:
 
         self.db.add(db_model)
         self.db.commit()
-        # Note: refresh() causes issues in testing, so we rely on the commit to populate id/timestamps
+        # Note: refresh() causes issues in testing, 
+        # so we rely on the commit to populate id/timestamps
         # self.db.refresh(db_model)
         return db_model
 
