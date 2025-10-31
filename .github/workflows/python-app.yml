@@ -39,9 +39,8 @@ jobs:
         run: |
           flake8 .
 
-      
-
       # step 6: Testing w Pytest
       - name: Run tests
-        run: |
-          pytest
+        run: PYTHONPATH=tests pytest
+        # run: |
+        #   pytest
