@@ -1,33 +1,29 @@
+''' isort: skip_file '''
 # tests/conftest.py
 import pytest
 import tempfile
 import os
 import sys
 from pathlib import Path
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
-from fastapi.testclient import TestClient
-
-
-from models import Base, User
-from auth import set_test_user, clear_test_user
-from upload.services.file_service import FileStorageService
-
-# Mock the file service
-from upload import routes as upload_routes
-
 
 # Set testing flag and test database URL BEFORE importing app
 os.environ["TESTING"] = "true"
 # Use sqlite:///file: URI so multiple connections share the same in-memory DB
 os.environ["DATABASE_URL"] = "sqlite:///file::memory:?uri=true&cache=shared"
 
-# IMPORTANT: Import database AFTER setting DATABASE_URL env var
-import database
-from database import get_db, engine, SessionLocal
+from sqlalchemy import create_engine, text  # noqa: E402, F401
+from sqlalchemy.orm import sessionmaker  # noqa: E402, F401
+from fastapi.testclient import TestClient  # noqa: E402
 
 # Add src to path so imports work
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+
+# IMPORTANT: Import database AFTER setting DATABASE_URL env var
+import database  # noqa: E402, F401
+from database import get_db, engine, SessionLocal  # noqa: E402
+from models import Base, User  # noqa: E402
+from auth import set_test_user, clear_test_user  # noqa: E402
+from upload.services.file_service import FileStorageService  # noqa: E402
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -63,9 +59,7 @@ def test_db_session(clear_db_between_tests):
     db = SessionLocal()
 
     # Create test user
-    test_user = User(
-        id=1, username="testuser", email="test@example.com", is_admin=False
-    )
+    test_user = User(id=1, username="testuser", email="test@example.com", is_admin=False)
     db.add(test_user)
     db.commit()
 
@@ -100,6 +94,8 @@ def client(test_db_session, mock_file_service, monkeypatch):
 
     fastapi_app.dependency_overrides[get_db] = override_get_db
 
+    # Mock the file service
+    from upload import routes as upload_routes
     monkeypatch.setattr(upload_routes, "file_service", mock_file_service)
 
     # Set current user
