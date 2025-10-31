@@ -1,6 +1,6 @@
 import re
 import time
-from typing import Optional, Tuple, Set
+from typing import Optional, Set, Tuple
 
 import license_sub_score
 
@@ -715,7 +715,7 @@ def dataset_quality_sub_score(
         + curation_score * 0.2
         + repro_score * 0.2
     )
-
+    final_score = round(final_score, 2)
     end_time = time.time()
     return (final_score, end_time - start_time)
 

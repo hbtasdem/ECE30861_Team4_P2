@@ -18,8 +18,8 @@ from dataset_quality_sub_score import dataset_quality_sub_score
 from license_sub_score import license_sub_score
 from performance_claims_sub_score import performance_claims_sub_score
 from ramp_up_sub_score import ramp_up_time_score
-from size_score import size_score
 from schema import ProjectMetadata
+from size_score import size_score
 
 
 def calculate_net_score(model_id: str) -> ProjectMetadata:
@@ -97,6 +97,7 @@ def calculate_net_score(model_id: str) -> ProjectMetadata:
         + 0.1 * code_quality
         + 0.1 * performance_claims
     )
+    net_score = round(net_score, 2)
 
     total_latency = int((time.time() - start_time) * 1000)
 
