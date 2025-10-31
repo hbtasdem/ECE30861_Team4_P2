@@ -41,6 +41,6 @@ jobs:
 
       # step 6: Testing w Pytest
       - name: Run tests
-        run: PYTHONPATH=src pytest
+        run: PYTHONPATH=tests pytest
         # run: |
         #   pytest
