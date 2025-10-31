@@ -26,7 +26,7 @@ repos:
     rev: 7.3.0   # pick a stable version
     hooks:
       - id: flake8
-        args: [--count, --show-source, --statistics, --max-line-length, "119"] 
+        args: [--count, --show-source, --statistics, --max-line-length, "100"] 
 
   # Run isort for import sorting
   # IMPORTANT ISORT NOTE:
