@@ -37,4 +37,3 @@ def clear_test_user():
     """Clear current user"""
     global _current_user
     _current_user = None
-
