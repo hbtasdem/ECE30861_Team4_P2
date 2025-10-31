@@ -29,15 +29,17 @@ jobs:
           pip install -r requirements.txt
           pip install flake8 black pytest
 
+    # step 5: Format check 
+      - name: Run Black (check only)
+        run: |
+          black --check .
+          
       # step 4: Linter - Flake8
       - name: Run Flake8
         run: |
           flake8 .
 
-      # step 5: Format check 
-      - name: Run Black (check only)
-        run: |
-          black --check .
+      
 
       # step 6: Testing w Pytest
       - name: Run tests
