@@ -23,7 +23,6 @@ import pytest
 from src.logging_config import (LoggerManager, LoggingConfig, get_logger, log_error_with_context, log_function_call,
                                 log_performance, set_log_level)
 
-
 class TestLoggingConfig:
     """Test LoggingConfig class functionality."""
 
