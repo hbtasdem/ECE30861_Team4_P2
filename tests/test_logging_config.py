@@ -20,9 +20,15 @@ from unittest.mock import patch
 
 import pytest
 
-from src.logging_config import (LoggerManager, LoggingConfig, get_logger,
-                                log_error_with_context, log_function_call,
-                                log_performance, set_log_level)
+from src.logging_config import (
+    LoggerManager,
+    LoggingConfig,
+    get_logger,
+    log_error_with_context,
+    log_function_call,
+    log_performance,
+    set_log_level,
+)
 
 
 class TestLoggingConfig:
@@ -40,11 +46,11 @@ class TestLoggingConfig:
 
     def test_log_level_from_env(self) -> None:
         """Test log level extraction from environment variables."""
-        with patch.dict(os.environ, {'CONSOLE_LOG_LEVEL': 'DEBUG'}):
+        with patch.dict(os.environ, {"CONSOLE_LOG_LEVEL": "DEBUG"}):
             config = LoggingConfig()
             assert config.console_level == logging.DEBUG
 
-        with patch.dict(os.environ, {'CONSOLE_LOG_LEVEL': 'ERROR'}):
+        with patch.dict(os.environ, {"CONSOLE_LOG_LEVEL": "ERROR"}):
             config = LoggingConfig()
             assert config.console_level == logging.ERROR
 
@@ -63,7 +69,7 @@ class TestLoggingConfig:
     def test_get_formatter_json(self) -> None:
         """Test JSON formatter creation."""
         formatter = self.config.get_formatter("json")
-        assert hasattr(formatter, 'format')
+        assert hasattr(formatter, "format")
 
     def test_setup_logger(self) -> None:
         """Test logger setup with handlers."""
@@ -74,14 +80,16 @@ class TestLoggingConfig:
 
         # Check console handler
         console_handler = next(
-            h for h in logger.handlers
-            if isinstance(h, logging.StreamHandler))
+            h for h in logger.handlers if isinstance(h, logging.StreamHandler)
+        )
         assert console_handler.level == self.config.console_level
 
         # Check file handler
         file_handler = next(
-            h for h in logger.handlers
-            if isinstance(h, logging.handlers.RotatingFileHandler))
+            h
+            for h in logger.handlers
+            if isinstance(h, logging.handlers.RotatingFileHandler)
+        )
         assert file_handler.level == self.config.file_level
 
 
@@ -156,8 +164,8 @@ class TestLoggingUtilities:
 
         # Check that console handler level was updated
         console_handler = next(
-            h for h in logger.handlers
-            if isinstance(h, logging.StreamHandler))
+            h for h in logger.handlers if isinstance(h, logging.StreamHandler)
+        )
         assert console_handler.level == logging.ERROR
 
     def test_log_performance(self, caplog: Any) -> None:
@@ -209,8 +217,10 @@ class TestLogRotation:
         logger = self.config.setup_logger("rotation_test")
 
         file_handler = next(
-            h for h in logger.handlers
-            if isinstance(h, logging.handlers.RotatingFileHandler))
+            h
+            for h in logger.handlers
+            if isinstance(h, logging.handlers.RotatingFileHandler)
+        )
 
         assert file_handler.maxBytes == self.config.max_file_size
         assert file_handler.backupCount == self.config.backup_count
@@ -230,11 +240,11 @@ class TestEnvironmentConfiguration:
     def test_environment_variables(self) -> None:
         """Test configuration from environment variables."""
         env_vars = {
-            'CONSOLE_LOG_LEVEL': 'WARNING',
-            'FILE_LOG_LEVEL': 'DEBUG',
-            'LOG_FORMAT': 'simple',
-            'MAX_LOG_FILE_SIZE': '5242880',  # 5MB
-            'LOG_BACKUP_COUNT': '3'
+            "CONSOLE_LOG_LEVEL": "WARNING",
+            "FILE_LOG_LEVEL": "DEBUG",
+            "LOG_FORMAT": "simple",
+            "MAX_LOG_FILE_SIZE": "5242880",  # 5MB
+            "LOG_BACKUP_COUNT": "3",
         }
 
         with patch.dict(os.environ, env_vars):
@@ -263,7 +273,7 @@ class TestJsonFormatter:
             lineno=10,
             msg="Test message",
             args=(),
-            exc_info=None
+            exc_info=None,
         )
 
         formatted = formatter.format(record)

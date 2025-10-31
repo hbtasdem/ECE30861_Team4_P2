@@ -4,11 +4,10 @@ import unittest
 from unittest.mock import Mock, patch
 
 # Add the src directory to the path so we can import the module
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 # Import after path modification
-from available_dataset_code_score import \
-    available_dataset_code_score  # noqa: E402
+from available_dataset_code_score import available_dataset_code_score  # noqa: E402
 from available_dataset_code_score import detect_code_examples  # noqa: E402
 from available_dataset_code_score import detect_dataset_links  # noqa: E402
 
@@ -339,7 +338,7 @@ class TestAvailableDatasetCodeScore(unittest.TestCase):
 
     def test_score_empty_readme(self) -> None:
         """Test scoring with empty README."""
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = README_EMPTY
             score, elapsed = available_dataset_code_score("test-model")
             self.assertEqual(score, 0.0)
@@ -347,7 +346,7 @@ class TestAvailableDatasetCodeScore(unittest.TestCase):
 
     def test_score_basic_readme(self) -> None:
         """Test scoring with basic README."""
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = README_BASIC
             score, elapsed = available_dataset_code_score("test-model")
             self.assertEqual(score, 0.0)
@@ -355,7 +354,7 @@ class TestAvailableDatasetCodeScore(unittest.TestCase):
 
     def test_score_dataset_only_csv(self) -> None:
         """Test scoring with dataset-only README."""
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = README_DATASET_ONLY_CSV
             score, elapsed = available_dataset_code_score("test-model")
             self.assertEqual(score, 0.5)
@@ -363,7 +362,7 @@ class TestAvailableDatasetCodeScore(unittest.TestCase):
 
     def test_score_dataset_only_kaggle(self) -> None:
         """Test scoring with Kaggle-only README."""
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = README_DATASET_ONLY_KAGGLE
             score, elapsed = available_dataset_code_score("test-model")
             self.assertEqual(score, 0.5)
@@ -371,7 +370,7 @@ class TestAvailableDatasetCodeScore(unittest.TestCase):
 
     def test_score_code_only_python(self) -> None:
         """Test scoring with Python code-only README."""
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = README_CODE_ONLY_PYTHON
             score, elapsed = available_dataset_code_score("test-model")
             self.assertEqual(score, 0.5)
@@ -379,7 +378,7 @@ class TestAvailableDatasetCodeScore(unittest.TestCase):
 
     def test_score_code_only_install(self) -> None:
         """Test scoring with install-only README."""
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = README_CODE_ONLY_INSTALL
             score, elapsed = available_dataset_code_score("test-model")
             self.assertEqual(score, 0.5)
@@ -387,7 +386,7 @@ class TestAvailableDatasetCodeScore(unittest.TestCase):
 
     def test_score_both_complete(self) -> None:
         """Test scoring with both dataset and code."""
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = README_BOTH_COMPLETE
             score, elapsed = available_dataset_code_score("test-model")
             self.assertEqual(score, 1.0)
@@ -395,7 +394,7 @@ class TestAvailableDatasetCodeScore(unittest.TestCase):
 
     def test_score_both_minimal(self) -> None:
         """Test scoring with minimal both."""
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = README_BOTH_MINIMAL
             score, elapsed = available_dataset_code_score("test-model")
             self.assertEqual(score, 1.0)
@@ -403,7 +402,7 @@ class TestAvailableDatasetCodeScore(unittest.TestCase):
 
     def test_score_complex_dataset(self) -> None:
         """Test scoring with complex dataset info."""
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = README_COMPLEX_DATASET
             score, elapsed = available_dataset_code_score("test-model")
             self.assertEqual(score, 0.5)
@@ -411,7 +410,7 @@ class TestAvailableDatasetCodeScore(unittest.TestCase):
 
     def test_score_complex_code(self) -> None:
         """Test scoring with complex code info."""
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = README_COMPLEX_CODE
             score, elapsed = available_dataset_code_score("test-model")
             self.assertEqual(score, 0.5)
@@ -419,7 +418,7 @@ class TestAvailableDatasetCodeScore(unittest.TestCase):
 
     def test_score_mixed_formats(self) -> None:
         """Test scoring with mixed formats."""
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = README_MIXED_FORMATS
             score, elapsed = available_dataset_code_score("test-model")
             self.assertEqual(score, 1.0)
@@ -427,7 +426,7 @@ class TestAvailableDatasetCodeScore(unittest.TestCase):
 
     def test_score_none_readme(self) -> None:
         """Test scoring when README fetch returns None."""
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = None
             score, elapsed = available_dataset_code_score("test-model")
             self.assertEqual(score, 0.0)
@@ -453,7 +452,7 @@ class TestAvailableDatasetCodeScore(unittest.TestCase):
 
     def test_score_timing(self) -> None:
         """Test that timing is measured correctly."""
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = README_BOTH_COMPLETE
             score, elapsed = available_dataset_code_score("test-model")
             self.assertEqual(score, 1.0)
@@ -461,12 +460,12 @@ class TestAvailableDatasetCodeScore(unittest.TestCase):
             # Should be very fast with mocked function
             self.assertLess(elapsed, 1.0)
 
-    @patch('os.getenv')
+    @patch("os.getenv")
     def test_score_logging(self, mock_getenv: Mock) -> None:
         """Test that logging works when LOG_LEVEL is set."""
         mock_getenv.return_value = "1"
 
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = None
             # This should not raise an exception even with logging enabled
             score, elapsed = available_dataset_code_score("test-model")
@@ -479,10 +478,12 @@ class TestEdgeCases(unittest.TestCase):
 
     def test_very_long_readme(self) -> None:
         """Test with a very long README."""
-        long_readme = ("A" * 10000 + "\n## Dataset\nhttps://example.com/"
-                       "data.csv\n" + "B" * 10000)
+        long_readme = (
+            "A" * 10000 + "\n## Dataset\nhttps://example.com/"
+            "data.csv\n" + "B" * 10000
+        )
 
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = long_readme
             score, elapsed = available_dataset_code_score("test-model")
             self.assertEqual(score, 0.5)  # Should detect dataset
@@ -502,7 +503,7 @@ class TestEdgeCases(unittest.TestCase):
         ```
         """
 
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = unicode_readme
             score, elapsed = available_dataset_code_score("test-model")
             self.assertEqual(score, 1.0)  # Should detect both dataset and code
@@ -522,7 +523,7 @@ class TestEdgeCases(unittest.TestCase):
         </code></pre>
         """
 
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = html_readme
             score, elapsed = available_dataset_code_score("test-model")
             self.assertEqual(score, 1.0)  # Should detect both dataset and code
@@ -542,7 +543,7 @@ class TestEdgeCases(unittest.TestCase):
         ```
         """
 
-        with patch('available_dataset_code_score.fetch_readme') as mock_fetch:
+        with patch("available_dataset_code_score.fetch_readme") as mock_fetch:
             mock_fetch.return_value = case_readme
             score, elapsed = available_dataset_code_score("test-model")
             # Should detect both despite case differences

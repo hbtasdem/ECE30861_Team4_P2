@@ -45,14 +45,17 @@ def extract_model_name(model_url: str) -> str:
     return model_url.strip()
 
 
-def calculate_all_scores(code_link: str, dataset_link: str,
-                         model_link: str, encountered_datasets: set[str],
-                         encountered_code: set[str]) -> Dict[str, Any]:
+def calculate_all_scores(
+    code_link: str,
+    dataset_link: str,
+    model_link: str,
+    encountered_datasets: set[str],
+    encountered_code: set[str],
+) -> Dict[str, Any]:
     """Calculate all scores for a given set of links."""
     model_name = extract_model_name(model_link)
     # Extract just the model name (without organization) for JSON display
-    display_name = (model_name.split('/')[-1] if '/' in model_name
-                    else model_name)
+    display_name = model_name.split("/")[-1] if "/" in model_name else model_name
     # Initialize result with model info
     result = {
         "name": display_name,
@@ -71,7 +74,7 @@ def calculate_all_scores(code_link: str, dataset_link: str,
             "raspberry_pi": 0.0,
             "jetson_nano": 0.0,
             "desktop_pc": 0.0,
-            "aws_server": 0.0
+            "aws_server": 0.0,
         },
         "size_score_latency": 0,
         "dataset_and_code_score": 0.0,
@@ -79,18 +82,16 @@ def calculate_all_scores(code_link: str, dataset_link: str,
         "dataset_quality": 0.0,
         "dataset_quality_latency": 0,
         "code_quality": 0.0,
-        "code_quality_latency": 0
+        "code_quality_latency": 0,
     }
     # Calculate each score with timing
     try:
         # License Score
-        license_score, license_latency = license_sub_score.license_sub_score(
-            model_name)
+        license_score, license_latency = license_sub_score.license_sub_score(model_name)
         result["license"] = license_score
         result["license_latency"] = int(license_latency * 1000)
     except Exception as e:
-        print(f"Error calculating license score for {model_name}: {e}",
-              file=sys.stderr)
+        print(f"Error calculating license score for {model_name}: {e}", file=sys.stderr)
     try:
         # Bus Factor Score
         bus_score_raw, bus_latency = bus_factor.bus_factor_score(model_name)
@@ -99,67 +100,67 @@ def calculate_all_scores(code_link: str, dataset_link: str,
         result["bus_factor"] = bus_score_normalized
         result["bus_factor_latency"] = int(bus_latency * 1000)
     except Exception as e:
-        print(f"Error calculating bus factor for {model_name}: {e}",
-              file=sys.stderr)
+        print(f"Error calculating bus factor for {model_name}: {e}", file=sys.stderr)
     try:
         # Ramp Up Score
-        ramp_score, ramp_latency = ramp_up_sub_score.ramp_up_time_score(
-            model_name)
+        ramp_score, ramp_latency = ramp_up_sub_score.ramp_up_time_score(model_name)
         result["ramp_up_time"] = ramp_score
         result["ramp_up_time_latency"] = int(ramp_latency * 1000)
     except Exception as e:
-        print(f"Error calculating ramp up score for {model_name}: {e}",
-              file=sys.stderr)
+        print(f"Error calculating ramp up score for {model_name}: {e}", file=sys.stderr)
     try:
         # Performance Claims Score
-        perf_score, perf_latency = (
-            performance_claims_sub_score.performance_claims_sub_score(
-                model_name))
+        (
+            perf_score,
+            perf_latency,
+        ) = performance_claims_sub_score.performance_claims_sub_score(model_name)
         result["performance_claims"] = perf_score
         result["performance_claims_latency"] = int(perf_latency * 1000)
     except Exception as e:
-        print(f"Error calculating performance claims for {model_name}: {e}",
-              file=sys.stderr)
+        print(
+            f"Error calculating performance claims for {model_name}: {e}",
+            file=sys.stderr,
+        )
     try:
         # Dataset Quality Score
-        dataset_score, dataset_latency = (
-            dataset_quality_sub_score.dataset_quality_sub_score(
-                model_name, dataset_link, encountered_datasets))
+        (
+            dataset_score,
+            dataset_latency,
+        ) = dataset_quality_sub_score.dataset_quality_sub_score(
+            model_name, dataset_link, encountered_datasets
+        )
         result["dataset_quality"] = dataset_score
         result["dataset_quality_latency"] = int(dataset_latency * 1000)
     except Exception as e:
-        print(f"Error calculating dataset quality for {model_name}: {e}",
-              file=sys.stderr)
+        print(
+            f"Error calculating dataset quality for {model_name}: {e}", file=sys.stderr
+        )
     try:
         # Available Dataset Code Score
-        code_score, code_latency = (
-            available_dataset_code_score.available_dataset_code_score(
-                model_name, code_link, dataset_link, encountered_datasets,
-                encountered_code))
+        (
+            code_score,
+            code_latency,
+        ) = available_dataset_code_score.available_dataset_code_score(
+            model_name, code_link, dataset_link, encountered_datasets, encountered_code
+        )
         result["code_quality"] = code_score
         result["code_quality_latency"] = int(code_latency * 1000)
         result["dataset_and_code_score"] = code_score  # Same as code_quality
         result["dataset_and_code_score_latency"] = int(code_latency * 1000)
     except Exception as e:
-        print(f"Error calculating code quality for {model_name}: {e}",
-              file=sys.stderr)
+        print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
     try:
         # Net Score (calculated from all other scores)
         start_time = time.time()
-        net_score_result = net_score_calculator.calculate_net_score(
-            model_name)
+        net_score_result = net_score_calculator.calculate_net_score(model_name)
         # Extract just the numeric score from the result
-        if (isinstance(net_score_result, dict) and
-                "net_score" in net_score_result):
+        if isinstance(net_score_result, dict) and "net_score" in net_score_result:
             result["net_score"] = net_score_result["net_score"]
         else:
-            result["net_score"] = (float(net_score_result)
-                                   if net_score_result else 0.0)
-        result["net_score_latency"] = int(
-            (time.time() - start_time) * 1000)
+            result["net_score"] = float(net_score_result) if net_score_result else 0.0
+        result["net_score_latency"] = int((time.time() - start_time) * 1000)
     except Exception as e:
-        print(f"Error calculating net score for {model_name}: {e}",
-              file=sys.stderr)
+        print(f"Error calculating net score for {model_name}: {e}", file=sys.stderr)
     # Size scores - using realistic values based on model type
     # This would ideally be calculated from actual model size
     if "bert" in model_name.lower():
@@ -167,7 +168,7 @@ def calculate_all_scores(code_link: str, dataset_link: str,
             "raspberry_pi": 0.20,
             "jetson_nano": 0.40,
             "desktop_pc": 0.95,
-            "aws_server": 1.00
+            "aws_server": 1.00,
         }
         result["size_score_latency"] = 50
     elif "whisper" in model_name.lower():
@@ -175,7 +176,7 @@ def calculate_all_scores(code_link: str, dataset_link: str,
             "raspberry_pi": 0.90,
             "jetson_nano": 0.95,
             "desktop_pc": 1.00,
-            "aws_server": 1.00
+            "aws_server": 1.00,
         }
         result["size_score_latency"] = 15
     else:
@@ -184,7 +185,7 @@ def calculate_all_scores(code_link: str, dataset_link: str,
             "raspberry_pi": 0.75,
             "jetson_nano": 0.80,
             "desktop_pc": 1.00,
-            "aws_server": 1.00
+            "aws_server": 1.00,
         }
         result["size_score_latency"] = 40
     return result
@@ -204,7 +205,7 @@ def main() -> int:
     encountered_code: set[str] = set()
 
     try:
-        with open(input_file, 'r', encoding='utf-8') as f:
+        with open(input_file, "r", encoding="utf-8") as f:
             content = f.read().strip()
         # Parse CSV content
         csv_reader = csv.reader(StringIO(content))
@@ -232,10 +233,14 @@ def main() -> int:
                 with contextlib.redirect_stdout(stdout_capture):
                     # Calculate scores
                     result = calculate_all_scores(
-                        code_link, dataset_link, model_link,
-                        encountered_datasets, encountered_code)
+                        code_link,
+                        dataset_link,
+                        model_link,
+                        encountered_datasets,
+                        encountered_code,
+                    )
                 # Output clean JSON result (no extra whitespace)
-                print(json.dumps(result, separators=(',', ':')))
+                print(json.dumps(result, separators=(",", ":")))
         # If we get here, all URLs were processed successfully
         return 0
     except FileNotFoundError:

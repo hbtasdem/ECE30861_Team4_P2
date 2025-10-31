@@ -33,12 +33,12 @@ def performance_claims_sub_score(model_id: str) -> Tuple[float, float]:
         return 0.0, time.time() - start
 
     # 1. Downloads
-    score += normalize_sigmoid(value=info.get("downloads", 0),
-                               mid=10000, steepness=0.0001)
+    score += normalize_sigmoid(
+        value=info.get("downloads", 0), mid=10000, steepness=0.0001
+    )
 
     # 2. Likes
-    score += normalize_sigmoid(value=info.get("likes", 0), mid=50,
-                               steepness=0.01)
+    score += normalize_sigmoid(value=info.get("likes", 0), mid=50, steepness=0.01)
 
     # Normalize (max score is 2)
     normalized = score / 2

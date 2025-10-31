@@ -14,6 +14,7 @@ router = APIRouter(prefix="/api/models", tags=["models"])
 
 file_service = FileStorageService()
 
+
 @router.post("/upload", response_model=UploadResponse)
 async def upload_model(
     file: UploadFile = File(..., description="Model zip file"),
@@ -22,40 +23,37 @@ async def upload_model(
     version: str = Form("1.0.0"),
     is_sensitive: bool = Form(False),
     metadata: Optional[str] = Form(None),  # JSON string of additional metadata
-    current_user = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user=Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
     """
     Upload a model zip file to the registry
     """
     # Validate file type
-    if not file.filename or not file.filename.lower().endswith('.zip'):
+    if not file.filename or not file.filename.lower().endswith(".zip"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Only .zip files are allowed"
+            detail="Only .zip files are allowed",
         )
-    
+
     # Validate file size (e.g., 500MB limit)
     MAX_FILE_SIZE = 500 * 1024 * 1024  # 500MB
-    
+
     # Create model data
     model_data = ModelCreate(
-        name=name,
-        description=description,
-        version=version,
-        is_sensitive=is_sensitive
+        name=name, description=description, version=version, is_sensitive=is_sensitive
     )
-    
+
     # Save file to storage
     file_path, file_size = await file_service.save_upload_file(file)
-    
+
     if file_size > MAX_FILE_SIZE:
         file_service.delete_file(file_path)
         raise HTTPException(
             status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-            detail=f"File too large. Maximum size is {MAX_FILE_SIZE // (1024*1024)}MB"
+            detail=f"File too large. Maximum size is {MAX_FILE_SIZE // (1024*1024)}MB",
         )
-    
+
     # Create database record
     model_repo = ModelRepository(db)
     try:
@@ -63,9 +61,9 @@ async def upload_model(
             model_data=model_data,
             file_path=file_path,
             file_size=file_size,
-            uploader_id=current_user.id
+            uploader_id=current_user.id,
         )
-        
+
         # Add metadata if provided
         if metadata:
             try:
@@ -74,20 +72,21 @@ async def upload_model(
             except json.JSONDecodeError:
                 # Continue without metadata if JSON is invalid
                 pass
-        
+
         return UploadResponse(
             message="Model uploaded successfully",
             model_id=db_model.id,
             file_path=db_model.file_path,
-            file_size=db_model.file_size
+            file_size=db_model.file_size,
         )
-        
+
     except Exception as e:
         # Clean up file if database operation fails
         file_service.delete_file(file_path)
         import traceback
+
         traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to save model record: {str(e)}"
+            detail=f"Failed to save model record: {str(e)}",
         )
