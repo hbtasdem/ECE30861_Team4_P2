@@ -1,8 +1,10 @@
 from unittest.mock import Mock, patch
 
 import pytest
+ # Add the src directory to the path so we can import the module
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-import src.dataset_quality_sub_score as dataset_quality
+from dataset_quality_sub_score import dataset_quality_sub_score
 
 # Test data for various README scenarios
 README_WITH_DOCUMENTATION = """

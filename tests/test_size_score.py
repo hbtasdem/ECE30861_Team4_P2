@@ -11,7 +11,9 @@ Tests cover:
 import unittest
 from unittest.mock import MagicMock, patch
 
-from src.size_score import (
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+
+from size_score import (
     MEMORY_BENCHMARKS,
     calculate_size_scores,
     extract_memory_sizes,
