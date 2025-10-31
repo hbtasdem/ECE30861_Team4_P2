@@ -13,9 +13,6 @@ import json
 import time
 from huggingface_hub import HfApi, hf_hub_download
 
-# --------- Helper functions ---------
-
-
 def get_repo_files(model_name):
     """Return a list of all files in the HF repo."""
     api = HfApi()
@@ -73,9 +70,6 @@ def license_score(model_name):
         if "license" in f.lower():
             return 0.2
     return 0.0
-
-
-# --------- Main metric calculator ---------
 
 
 def code_quality_score(model_name):
