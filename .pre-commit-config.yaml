@@ -41,10 +41,10 @@ repos:
 
   # Run mypy for type checking
   # I've commented this out for now, but I think it would be good to add, ask team
-  # - repo: https://github.com/pre-commit/mirrors-mypy
-  #   rev: v1.18.2
-  #   hooks:
-  #     - id: mypy
-  #       args: [--strict, --ignore-missing-imports]
-  #       additional_dependencies:
-  #         - types-requests
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.18.2
+    hooks:
+      - id: mypy
+        args: [--strict, --ignore-missing-imports]
+        additional_dependencies:
+          - types-requests

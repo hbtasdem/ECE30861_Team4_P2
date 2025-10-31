@@ -235,7 +235,7 @@ def calculate_size_scores(model_id: str) -> Tuple[Dict[str, float], float, int]:
     return size_scores, net_size_score, latency
 
 
-def size_score(model_input) -> Tuple[Dict[str, float], float, int]:
+def size_score(model_input: str) -> Tuple[Dict[str, float], float, int]:
     """
     Calculate size sub-score for a model.
 

@@ -45,8 +45,8 @@ def process_urls(url_file: str) -> int:
         csv_reader = csv.reader(io.StringIO(content))
 
         # Track encountered datasets and code across all models
-        encountered_datasets = set()
-        encountered_code = set()
+        encountered_datasets: set[str] = set()
+        encountered_code: set[str] = set()
 
         for row in csv_reader:
             if not row:
@@ -136,7 +136,6 @@ def run_tests() -> int:
         return 0 if failed == 0 else 1
 
     except subprocess.TimeoutExpired:
-        proc.kill()
         print("Tests timed out", file=sys.stderr)
         return 1
     except Exception as e:
