@@ -1,7 +1,7 @@
 # test_upload.py
 import pytest
 from fastapi.testclient import TestClient
-import os
+
 import io
 
 

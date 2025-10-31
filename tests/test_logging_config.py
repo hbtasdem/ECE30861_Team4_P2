@@ -11,7 +11,6 @@ Tests cover:
 """
 
 import logging
-import os
 import shutil
 import tempfile
 from pathlib import Path
