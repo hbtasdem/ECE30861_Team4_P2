@@ -30,7 +30,7 @@ class ModelRepository:
         # Note: refresh() causes issues in testing,
         # so we rely on the commit to populate id/timestamps
         # self.db.refresh(db_model)
-        
+
         return db_model
 
     def add_model_metadata(self, model_id: int, metadata: Dict[str, str]) -> bool:

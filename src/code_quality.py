@@ -129,12 +129,12 @@
 #     rd_score = readme_score(model_name) * 0.2         # README weight
 #     lic_score = license_score(model_name) * 0.2       # LICENSE weight
 #     nb_score = notebook_score(model_name) * 0.2       # Notebook weight
-    
+
 #     print(py_score)
 #     print(rd_score) #
 #     print(lic_score) #
 #     print(nb_score)
-    
+
 
 #     overall_score = py_score + rd_score + lic_score + nb_score
 #     latency = time.time() - start_time
@@ -167,6 +167,7 @@ from huggingface_hub import HfApi, hf_hub_download
 
 # --------- Helper functions ---------
 
+
 def get_repo_files(model_name):
     """Return a list of all files in the HF repo."""
     api = HfApi()
@@ -175,6 +176,7 @@ def get_repo_files(model_name):
     except Exception:
         return []
 
+
 def download_file(model_name, filename):
     """Download a single file and return local path."""
     try:
@@ -182,7 +184,9 @@ def download_file(model_name, filename):
     except Exception:
         return None
 
+
 # --------- Submetric calculators ---------
+
 
 def json_score(model_name):
     """Score based on presence and validity of JSON/config files."""
@@ -206,12 +210,14 @@ def json_score(model_name):
     score = valid_count / len(json_files)
     return score * 0.4  # weight of 0.4
 
+
 def readme_score(model_name):
     files = get_repo_files(model_name)
     for f in files:
         if f.lower().startswith("readme"):
             return 0.2
     return 0.0
+
 
 def license_score(model_name):
     files = get_repo_files(model_name)
@@ -220,7 +226,9 @@ def license_score(model_name):
             return 0.2
     return 0.0
 
+
 # --------- Main metric calculator ---------
+
 
 def code_quality_score(model_name):
     """
@@ -232,18 +240,20 @@ def code_quality_score(model_name):
     j_score = json_score(model_name)
     rd_score = readme_score(model_name)
     lic_score = license_score(model_name)
-    
-    print(j_score)
-    print(rd_score) #
-    print(lic_score) #
 
-    overall_score = j_score + rd_score + lic_score 
+    print(j_score)
+    print(rd_score)  #
+    print(lic_score)  #
+
+    overall_score = j_score + rd_score + lic_score
     latency = time.time() - start_time
     return overall_score, latency
+
 
 # --------- Test / CLI ---------
 if __name__ == "__main__":
     import sys
+
     if len(sys.argv) < 2:
         print("Usage: python code_quality.py <model_name>")
         sys.exit(1)
