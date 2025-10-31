@@ -16,6 +16,7 @@ import license_sub_score
 import net_score_calculator
 import performance_claims_sub_score
 import ramp_up_sub_score
+import code_quality
 
 
 def extract_model_name(model_url: str) -> str:
@@ -136,6 +137,15 @@ def calculate_all_scores(
             f"Error calculating dataset quality for {model_name}: {e}", file=sys.stderr
         )
     try:
+        (
+            code_quality_score,
+            code_quality_latency,
+        ) = code_quality.code_quality_score(
+            model_name
+        )
+    except Exception as e:
+        print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
+    try:
         # Available Dataset Code Score
         (
             code_score,
@@ -148,7 +158,7 @@ def calculate_all_scores(
         result["dataset_and_code_score"] = code_score  # Same as code_quality
         result["dataset_and_code_score_latency"] = int(code_latency * 1000)
     except Exception as e:
-        print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
+        print(f"Error calculating available dataset & code quality for {model_name}: {e}", file=sys.stderr)
     try:
         # Net Score (calculated from all other scores)
         start_time = time.time()
