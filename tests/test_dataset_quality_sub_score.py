@@ -1,4 +1,6 @@
 from unittest.mock import Mock, patch
+import os
+import sys
 
 import pytest
  # Add the src directory to the path so we can import the module
