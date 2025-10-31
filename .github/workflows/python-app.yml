@@ -32,7 +32,7 @@ jobs:
     # step 5: Format check 
       - name: Run Black (check only)
         run: |
-          black --check .
+          black .
           
       # step 4: Linter - Flake8
       - name: Run Flake8

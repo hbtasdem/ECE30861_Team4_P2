@@ -1,4 +1,7 @@
 # #!/usr/bin/env python3
+
+# PHASE2 COMMENTED OUT BECAUSE IT BROKE ./run test
+
 # """
 # Simple test script to demonstrate the error handling framework.
 
@@ -10,21 +13,12 @@
 # import sys
 
 # # Add src directory to path
-# sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+# sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 # from error_handling import (  # noqa: E402  # type: ignore[import-not-found]
-#     ErrorCode,
-#     ErrorHandler,
-#     ErrorSeverity,
-#     HuggingFaceError,
-#     ValidationError,
-#     create_error_summary,
-#     graceful_fallback,
-#     retry_on_error,
-#     safe_execute,
-#     setup_error_logging,
-#     validate_model_id,
-# )
+#     ErrorCode, ErrorHandler, ErrorSeverity, HuggingFaceError, ValidationError,
+#     create_error_summary, graceful_fallback, retry_on_error, safe_execute,
+#     setup_error_logging, validate_model_id)
 
 
 # def test_validation() -> None:
@@ -59,7 +53,7 @@
 #             raise HuggingFaceError(
 #                 ErrorCode.HF_MODEL_NOT_FOUND,
 #                 "Simulated model not found",
-#                 model_id=value,
+#                 model_id=value
 #             )
 #         return len(value)
 
@@ -90,7 +84,8 @@
 
 #         if counter.count < 2:
 #             raise HuggingFaceError(
-#                 ErrorCode.HF_REPOSITORY_ACCESS_ERROR, f"Attempt {counter.count} failed"
+#                 ErrorCode.HF_REPOSITORY_ACCESS_ERROR,
+#                 f"Attempt {counter.count} failed"
 #             )
 
 #         return f"Success on attempt {counter.count}"
@@ -109,7 +104,9 @@
 #     print("=== Testing Error Context Manager ===")
 
 #     with ErrorHandler(
-#         error_type=ValidationError, fallback_value="default", log_errors=True
+#         error_type=ValidationError,
+#         fallback_value="default",
+#         log_errors=True
 #     ) as handler:
 #         # This will succeed
 #         validate_model_id("author/model")
@@ -118,7 +115,9 @@
 #     print(f"   Error occurred: {handler.error_occurred}")
 
 #     with ErrorHandler(
-#         error_type=ValidationError, fallback_value="default", log_errors=True
+#         error_type=ValidationError,
+#         fallback_value="default",
+#         log_errors=True
 #     ) as handler:
 #         # This will fail
 #         validate_model_id("invalid")
@@ -157,13 +156,17 @@
 #         ValidationError(
 #             ErrorCode.INVALID_MODEL_ID,
 #             "Invalid model ID",
-#             severity=ErrorSeverity.MEDIUM,
+#             severity=ErrorSeverity.MEDIUM
 #         ),
 #         HuggingFaceError(
-#             ErrorCode.HF_MODEL_NOT_FOUND, "Model not found", severity=ErrorSeverity.HIGH
+#             ErrorCode.HF_MODEL_NOT_FOUND,
+#             "Model not found",
+#             severity=ErrorSeverity.HIGH
 #         ),
 #         ValidationError(
-#             ErrorCode.INVALID_INPUT_DATA, "Invalid input", severity=ErrorSeverity.LOW
+#             ErrorCode.INVALID_INPUT_DATA,
+#             "Invalid input",
+#             severity=ErrorSeverity.LOW
 #         ),
 #     ]
 

@@ -1,7 +1,7 @@
 import os
 import re
 import time
-from typing import Tuple, Optional, Set
+from typing import Optional, Set, Tuple
 
 from license_sub_score import fetch_readme
 
