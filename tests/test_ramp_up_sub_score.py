@@ -2,10 +2,9 @@ from typing import Any
 from unittest.mock import patch
 
 import pytest
-import sys
-
+import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-import ramp_up_sub_score as ramp_up_sub_score
+import ramp_up_sub_score
 
 README_WITH_CODE = """
 # Example Model
