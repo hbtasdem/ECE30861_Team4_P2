@@ -8,7 +8,7 @@ from unittest.mock import Mock, patch
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 # Import after path modification
-import src.purdue_api as purdue_api  # noqa: E402
+import purdue_api  # noqa: E402
 
 
 class TestPurdueGenAI(unittest.TestCase):

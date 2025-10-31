@@ -16,7 +16,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from size_score import (
-    MEMORY_BENCHMARKS,
+    # MEMORY_BENCHMARKS,
     calculate_size_scores,
     extract_memory_sizes,
     find_smallest_model_size,

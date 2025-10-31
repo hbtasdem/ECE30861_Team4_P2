@@ -4,8 +4,11 @@ from unittest.mock import Mock, patch
 
 import pytest
 import requests
+import sys
 
-from src import hugging_face_api
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+import hugging_face_api
+
 
 # Sample API response data
 VALID_MODEL_RESPONSE: Dict[str, Any] = {
