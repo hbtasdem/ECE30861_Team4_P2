@@ -20,7 +20,8 @@ def get_repo_files(model_name: str) -> List[str]:
     """Return a list of all files in the HF repo."""
     api = HfApi()
     try:
-        return api.list_repo_files(repo_id=model_name)
+        result = api.list_repo_files(repo_id=model_name)
+        return list(result) if result else []
     except Exception:
         return []
 
@@ -28,7 +29,8 @@ def get_repo_files(model_name: str) -> List[str]:
 def download_file(model_name: str, filename: str) -> Optional[str]:
     """Download a single file and return local path."""
     try:
-        return hf_hub_download(repo_id=model_name, filename=filename)
+        result = hf_hub_download(repo_id=model_name, filename=filename)
+        return str(result) if result else None
     except Exception:
         return None
 

@@ -21,12 +21,12 @@ class CRUDModelRepository:
 
     def get_models_by_uploader(self, uploader_id: int) -> List[Any]:
         """Get all models uploaded by a specific user"""
-        result = self.db.query(Model).filter(Model.uploader_id == uploader_id).all()
+        result: List[Any] = self.db.query(Model).filter(Model.uploader_id == uploader_id).all()
         return result
 
     def get_all_models(self, skip: int = 0, limit: int = 100) -> List[Any]:
         """Get all models with pagination"""
-        result = self.db.query(Model).offset(skip).limit(limit).all()
+        result: List[Any] = self.db.query(Model).offset(skip).limit(limit).all()
         return result
 
     def update_model(self, model_id: int, model_data: Dict[str, Any]) -> Optional[Model]:

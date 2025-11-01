@@ -37,7 +37,7 @@ EMPTY_MODEL_RESPONSE: Dict[str, Any] = {}
         ("   ", False),
         ("facebook/bart-large", True),
     ],
-)  # type: ignore[misc]
+)
 def test_get_model_info_inputs(
     monkeypatch: pytest.MonkeyPatch, model_id: str, expected_success: bool
 ) -> None:
