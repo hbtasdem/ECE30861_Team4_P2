@@ -1,9 +1,11 @@
 # repositories/model_repository.py
 
-from sqlalchemy.orm import Session
-from models import Model, ModelMetadata
-from api_schemas import ModelCreate
 from typing import Dict
+
+from sqlalchemy.orm import Session
+
+from api_schemas import ModelCreate
+from models import Model, ModelMetadata
 
 
 class ModelRepository:

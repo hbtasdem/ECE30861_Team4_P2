@@ -14,10 +14,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 # Skip this test module if error_handling module doesn't exist
 try:
-    from error_handling import (  # noqa: E402  # type: ignore[import-not-found]
-        ErrorCode, ErrorHandler, ErrorSeverity, HuggingFaceError, ValidationError,
-        create_error_summary, graceful_fallback, retry_on_error, safe_execute,
-        setup_error_logging, validate_model_id)
+    from error_handling import (ErrorCode, ErrorHandler, ErrorSeverity,  # noqa: E402  # type: ignore[import-not-found]
+                                HuggingFaceError, ValidationError, create_error_summary, graceful_fallback,
+                                retry_on_error, safe_execute, setup_error_logging, validate_model_id)
 except (ModuleNotFoundError, ImportError):
     # Skip tests if error_handling module not available
     import pytest

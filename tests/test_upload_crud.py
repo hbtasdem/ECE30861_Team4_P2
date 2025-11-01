@@ -3,20 +3,21 @@ Test suite for model upload and CRUD functionality.
 Verifies that models can be uploaded as ZIP files and managed via CRUD operations.
 """
 
-import os
-import pytest
 import json
+import os
 import tempfile
 from io import BytesIO
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 from fastapi.testclient import TestClient
 
-# Import models and schemas
-from src.models import User, Model, ModelMetadata
-from src.api_schemas import ModelCreate, ModelUpdate, ModelResponse, UploadResponse
-from src.upload.services.file_service import FileStorageService
-from src.upload.repositories.model_repository import ModelRepository
+from src.api_schemas import ModelCreate, ModelResponse, ModelUpdate, UploadResponse
 from src.crud.repositories.model_repository import CRUDModelRepository
+# Import models and schemas
+from src.models import Model, ModelMetadata, User
+from src.upload.repositories.model_repository import ModelRepository
+from src.upload.services.file_service import FileStorageService
 
 
 class TestFileStorageService:

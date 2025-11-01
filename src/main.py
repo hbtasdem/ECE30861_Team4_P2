@@ -11,12 +11,12 @@ from typing import Any, Dict
 # Import scoring modules
 import available_dataset_code_score
 import bus_factor
+import code_quality
 import dataset_quality_sub_score
 import license_sub_score
 import net_score_calculator
 import performance_claims_sub_score
 import ramp_up_sub_score
-import code_quality
 
 
 def extract_model_name(model_url: str) -> str:

@@ -1,9 +1,11 @@
 # crud/repositories/model_repository.py
 
+from typing import Dict, List, Optional
+
 from sqlalchemy.orm import Session
-from models import Model, ModelMetadata
+
 from api_schemas import ModelUpdate
-from typing import List, Optional, Dict
+from models import Model, ModelMetadata
 
 
 class CRUDModelRepository:

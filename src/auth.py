@@ -1,8 +1,8 @@
 # auth.py
 
 from fastapi import Depends, HTTPException, status
-from models import User
 
+from models import User
 
 # Mock for testing; in production, use JWT or session-based auth
 _current_user = None

@@ -1,16 +1,16 @@
 # routes.py
 
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
-from sqlalchemy.orm import Session
-from typing import Optional
 import json
+from typing import Optional
 
-from database import get_db
-from upload.services.file_service import FileStorageService
-from upload.repositories.model_repository import ModelRepository
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from sqlalchemy.orm import Session
+
 from api_schemas import ModelCreate, UploadResponse
 from auth import get_current_user
-
+from database import get_db
+from upload.repositories.model_repository import ModelRepository
+from upload.services.file_service import FileStorageService
 
 router = APIRouter(prefix="/api/models", tags=["models"])
 

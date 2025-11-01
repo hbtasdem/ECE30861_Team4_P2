@@ -1,18 +1,9 @@
 # models.py
 
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Text,
-    BigInteger,
-    Boolean,
-    DateTime,
-    ForeignKey,
-)
-from sqlalchemy.orm import declarative_base, relationship
 from datetime import datetime
 
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
 
