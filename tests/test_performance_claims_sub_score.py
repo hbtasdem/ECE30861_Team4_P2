@@ -16,7 +16,7 @@ import src.performance_claims_sub_score as performance
         (10000, 0, 0.25),
         (0, 100, 0.2),
     ],
-)  # type: ignore[misc]
+)
 def test_performance_claims_score(
     mock_get_model_info: Any, downloads: int, likes: int, expected_min_score: float
 ) -> None:
