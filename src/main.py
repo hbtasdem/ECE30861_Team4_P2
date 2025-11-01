@@ -124,7 +124,7 @@ def calculate_all_scores(code_link: str, dataset_link: str, model_link: str,
         result["size_score"] = {"raspberry_pi": 0.75, "jetson_nano": 0.80, "desktop_pc": 1.00, "aws_server": 1.00}
         result["size_score_latency"] = 40
     # Available Dataset Code Score
-    
+
     try:
         code_score, code_latency = (available_dataset_code_score.available_dataset_code_score(
             model_name, code_link, dataset_link, encountered_datasets, encountered_code))
@@ -143,15 +143,15 @@ def calculate_all_scores(code_link: str, dataset_link: str, model_link: str,
     # Code Quality
 
     try:
-            code_quality_score, code_quality_latency = code_quality.code_quality_score(model_name)
-            result["code_quality"] = code_quality_score
-            result["code_quality_latency"] = int(code_quality_latency * 1000)
-        
+        code_quality_score, code_quality_latency = code_quality.code_quality_score(model_name)
+        result["code_quality"] = code_quality_score
+        result["code_quality_latency"] = int(code_quality_latency * 1000)
+
     except Exception as e:
         print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
-        
+
     # Net Score (calculated from all other scores)
-        
+
     try:
         start_time = time.time()
         net_score_result = net_score_calculator.calculate_net_score(model_name)
