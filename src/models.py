@@ -1,14 +1,20 @@
 # models.py
 
 from datetime import datetime
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import declarative_base, relationship
 
+if TYPE_CHECKING:
+    from sqlalchemy.orm import DeclarativeBase
+else:
+    DeclarativeBase = object
+
 Base = declarative_base()
 
 
-class User(Base):
+class User(Base):  # type: ignore[misc,valid-type]
     """User model for authentication"""
 
     __tablename__ = "users"
@@ -21,7 +27,7 @@ class User(Base):
     models = relationship("Model", back_populates="uploader")
 
 
-class Model(Base):
+class Model(Base):  # type: ignore[misc,valid-type]
     """Model registry entry"""
 
     __tablename__ = "models"
@@ -43,7 +49,7 @@ class Model(Base):
     )
 
 
-class ModelMetadata(Base):
+class ModelMetadata(Base):  # type: ignore[misc,valid-type]
     """Additional metadata for models"""
 
     __tablename__ = "model_metadata"

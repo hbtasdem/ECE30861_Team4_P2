@@ -7,6 +7,7 @@ import json
 import os
 import tempfile
 from io import BytesIO
+from typing import Any
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
@@ -24,18 +25,18 @@ class TestFileStorageService:
     """Test file storage operations."""
 
     @pytest.fixture
-    def temp_upload_dir(self):
+    def temp_upload_dir(self) -> Any:
         """Create a temporary upload directory."""
         with tempfile.TemporaryDirectory() as tmpdir:
             yield tmpdir
 
     @pytest.fixture
-    def file_service(self, temp_upload_dir):
+    def file_service(self, temp_upload_dir: Any) -> FileStorageService:
         """Create a FileStorageService instance with temp directory."""
         return FileStorageService(upload_dir=temp_upload_dir)
 
     @pytest.mark.asyncio
-    async def test_save_upload_file(self, file_service):
+    async def test_save_upload_file(self, file_service: FileStorageService) -> None:
         """Test saving an uploaded file."""
         # Create a mock UploadFile
         mock_file = MagicMock()
@@ -46,7 +47,7 @@ class TestFileStorageService:
         # This is a placeholder for integration testing
         assert file_service.upload_dir is not None
 
-    def test_delete_file(self, file_service, temp_upload_dir):
+    def test_delete_file(self, file_service: FileStorageService, temp_upload_dir: Any) -> None:
         """Test file deletion."""
         # Create a test file
         test_file = os.path.join(temp_upload_dir, "test.zip")
@@ -61,12 +62,12 @@ class TestFileStorageService:
         assert result is True
         assert not os.path.exists(test_file)
 
-    def test_delete_nonexistent_file(self, file_service):
+    def test_delete_nonexistent_file(self, file_service: FileStorageService) -> None:
         """Test deleting a non-existent file."""
         result = file_service.delete_file("/nonexistent/path/file.zip")
         assert result is False
 
-    def test_get_file_size(self, file_service, temp_upload_dir):
+    def test_get_file_size(self, file_service: FileStorageService, temp_upload_dir: Any) -> None:
         """Test getting file size."""
         test_file = os.path.join(temp_upload_dir, "test.zip")
         content = b"test content here"

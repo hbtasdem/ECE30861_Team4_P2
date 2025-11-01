@@ -1,15 +1,17 @@
 # auth.py
 
+from typing import Any, Optional
+
 from fastapi import Depends, HTTPException, status
 
 from models import User
 
 # Mock for testing; in production, use JWT or session-based auth
-_current_user = None
+_current_user: Optional[Any] = None
 
 
 # db is a placeholder for a database session dependency
-def get_current_user(db=None) -> User:
+def get_current_user(db: Any = None) -> User:
     """Get current authenticated user (mock for now)"""
     if _current_user is None:
         raise HTTPException(
@@ -23,7 +25,7 @@ def get_current_user(db=None) -> User:
     return _current_user
 
 
-def set_test_user(user):
+def set_test_user(user: Any) -> None:
     """Set current user for testing"""
     global _current_user
     if isinstance(user, User):
@@ -33,7 +35,7 @@ def set_test_user(user):
         _current_user = user
 
 
-def clear_test_user():
+def clear_test_user() -> None:
     """Clear current user"""
     global _current_user
     _current_user = None

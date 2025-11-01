@@ -11,11 +11,12 @@ Only fetches repo metadata/files, not full model weights.
 
 import json
 import time
+from typing import Any, List, Optional, Tuple
 
 from huggingface_hub import HfApi, hf_hub_download
 
 
-def get_repo_files(model_name):
+def get_repo_files(model_name: str) -> List[str]:
     """Return a list of all files in the HF repo."""
     api = HfApi()
     try:
@@ -24,7 +25,7 @@ def get_repo_files(model_name):
         return []
 
 
-def download_file(model_name, filename):
+def download_file(model_name: str, filename: str) -> Optional[str]:
     """Download a single file and return local path."""
     try:
         return hf_hub_download(repo_id=model_name, filename=filename)
@@ -35,7 +36,7 @@ def download_file(model_name, filename):
 # --------- Submetric calculators ---------
 
 
-def json_score(model_name):
+def json_score(model_name: str) -> float:
     """Score based on presence and validity of JSON/config files."""
     files = get_repo_files(model_name)
     json_files = [f for f in files if f.endswith(".json")]
@@ -58,7 +59,8 @@ def json_score(model_name):
     return score * 0.4  # weight of 0.4
 
 
-def readme_score(model_name):
+def readme_score(model_name: str) -> float:
+    """Score based on README presence."""
     files = get_repo_files(model_name)
     for f in files:
         if f.lower().startswith("readme"):
@@ -66,7 +68,8 @@ def readme_score(model_name):
     return 0.0
 
 
-def license_score(model_name):
+def license_score(model_name: str) -> float:
+    """Score based on LICENSE presence."""
     files = get_repo_files(model_name)
     for f in files:
         if "license" in f.lower():
@@ -74,7 +77,7 @@ def license_score(model_name):
     return 0.0
 
 
-def code_quality_score(model_name):
+def code_quality_score(model_name: str) -> Tuple[float, float]:
     """
     Calculate overall code quality for a Hugging Face model repo.
     Returns: (score 0-1 float, latency in seconds)

@@ -1,6 +1,6 @@
 # crud/repositories/model_repository.py
 
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from sqlalchemy.orm import Session
 
@@ -11,22 +11,25 @@ from models import Model, ModelMetadata
 class CRUDModelRepository:
     """Repository for CRUD operations on models (Read, Update, Delete only)"""
 
-    def __init__(self, db: Session):
+    def __init__(self, db: Session) -> None:
         self.db = db
 
     def get_model_by_id(self, model_id: int) -> Optional[Model]:
         """Get model by ID"""
-        return self.db.query(Model).filter(Model.id == model_id).first()
+        result = self.db.query(Model).filter(Model.id == model_id).first()
+        return result
 
-    def get_models_by_uploader(self, uploader_id: int) -> List[Model]:
+    def get_models_by_uploader(self, uploader_id: int) -> List[Any]:
         """Get all models uploaded by a specific user"""
-        return self.db.query(Model).filter(Model.uploader_id == uploader_id).all()
+        result = self.db.query(Model).filter(Model.uploader_id == uploader_id).all()
+        return result
 
-    def get_all_models(self, skip: int = 0, limit: int = 100) -> List[Model]:
+    def get_all_models(self, skip: int = 0, limit: int = 100) -> List[Any]:
         """Get all models with pagination"""
-        return self.db.query(Model).offset(skip).limit(limit).all()
+        result = self.db.query(Model).offset(skip).limit(limit).all()
+        return result
 
-    def update_model(self, model_id: int, model_data: Dict) -> Optional[Model]:
+    def update_model(self, model_id: int, model_data: Dict[str, Any]) -> Optional[Model]:
         """Update model information"""
         db_model = self.get_model_by_id(model_id)
         if not db_model:

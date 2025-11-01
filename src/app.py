@@ -1,6 +1,7 @@
 # app.py
 
 import os
+from typing import Any
 
 from fastapi import FastAPI
 
@@ -25,7 +26,7 @@ app.include_router(upload_router)
 
 
 @app.get("/health")
-async def health_check():
+async def health_check() -> dict[str, str]:
     """Health check endpoint"""
     return {"status": "ok"}
 

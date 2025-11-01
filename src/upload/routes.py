@@ -1,7 +1,7 @@
 # routes.py
 
 import json
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
@@ -25,9 +25,9 @@ async def upload_model(
     version: str = Form("1.0.0"),
     is_sensitive: bool = Form(False),
     metadata: Optional[str] = Form(None),  # JSON string of additional metadata
-    current_user=Depends(get_current_user),
+    current_user: Any = Depends(get_current_user),
     db: Session = Depends(get_db),
-):
+) -> UploadResponse:
     """
     Upload a model zip file to the registry
     """
