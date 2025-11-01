@@ -7,8 +7,7 @@ and utilities in your application code.
 
 import time
 
-from .logging_config import (get_logger, log_error_with_context,
-                             log_performance, set_log_level)
+from .logging_config import get_logger, log_error_with_context, log_performance, set_log_level
 
 
 def example_function() -> None:
@@ -76,6 +75,7 @@ if __name__ == "__main__":
 
     print("\n=== Log Files Created ===")
     from pathlib import Path
+
     log_dir = Path("logs")
     if log_dir.exists():
         for log_file in log_dir.glob("*.log"):

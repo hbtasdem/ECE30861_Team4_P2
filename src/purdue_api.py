@@ -13,13 +13,13 @@ from typing import Optional
 # Load environment variables from .env file
 def load_env_file() -> None:
     """Load environment variables from .env file"""
-    env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
+    env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
     if os.path.exists(env_path):
-        with open(env_path, 'r') as f:
+        with open(env_path, "r") as f:
             for line in f:
                 line = line.strip()
-                if line and not line.startswith('#') and '=' in line:
-                    key, value = line.split('=', 1)
+                if line and not line.startswith("#") and "=" in line:
+                    key, value = line.split("=", 1)
                     os.environ[key.strip()] = value.strip()
 
 
@@ -37,7 +37,7 @@ class PurdueGenAI:
             api_key: API key for Purdue GenAI Studio. If None, will try to
                      load from GEN_AI_STUDIO_API_KEY environment variable
         """
-        self.api_key = api_key or os.getenv('GEN_AI_STUDIO_API_KEY')
+        self.api_key = api_key or os.getenv("GEN_AI_STUDIO_API_KEY")
         if not self.api_key:
             raise ValueError(
                 "API key is required. Provide it directly or set "
@@ -63,26 +63,24 @@ class PurdueGenAI:
             # Prepare request
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             }
 
             body = {
                 "model": model,
                 "messages": [{"role": "user", "content": message}],
-                "stream": False
+                "stream": False,
             }
 
             # Make request
-            data = json.dumps(body).encode('utf-8')
+            data = json.dumps(body).encode("utf-8")
             req = urllib.request.Request(
-                self.base_url, data=data, headers=headers, method='POST'
+                self.base_url, data=data, headers=headers, method="POST"
             )
 
             with urllib.request.urlopen(req) as response:
                 if response.status == 200:
-                    response_data = json.loads(
-                        response.read().decode('utf-8')
-                    )
+                    response_data = json.loads(response.read().decode("utf-8"))
                     # Type-safe access to nested dictionary
                     if not isinstance(response_data, dict):
                         raise Exception("Invalid response format from API")
@@ -104,15 +102,11 @@ class PurdueGenAI:
                     content = message["content"]
                     return str(content)
                 else:
-                    error_text = response.read().decode('utf-8')
-                    raise Exception(
-                        f"API Error {response.status}: {error_text}"
-                    )
+                    error_text = response.read().decode("utf-8")
+                    raise Exception(f"API Error {response.status}: {error_text}")
 
         except urllib.error.HTTPError as e:
-            error_text = (
-                e.read().decode('utf-8') if hasattr(e, 'read') else str(e)
-            )
+            error_text = e.read().decode("utf-8") if hasattr(e, "read") else str(e)
             raise Exception(f"HTTP Error {e.code}: {error_text}")
         except Exception as e:
             raise Exception(f"Error calling Purdue GenAI: {str(e)}")
@@ -121,14 +115,13 @@ class PurdueGenAI:
 # Example usage
 if __name__ == "__main__":
     # Debug: Check if environment variable is loaded
-    api_key = os.getenv('GEN_AI_STUDIO_API_KEY')
+    api_key = os.getenv("GEN_AI_STUDIO_API_KEY")
     if api_key:
         print("✅ Found API key")
     else:
         print("❌ No API key found in environment variables")
         print(
-            "Make sure your .env file contains: "
-            "GEN_AI_STUDIO_API_KEY=your-key-here"
+            "Make sure your .env file contains: " "GEN_AI_STUDIO_API_KEY=your-key-here"
         )
         exit(1)
 

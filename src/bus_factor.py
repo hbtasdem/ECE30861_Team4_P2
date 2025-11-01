@@ -24,9 +24,9 @@ def get_huggingface_contributors(model_id: str) -> int:
 
             # Look for contributor count patterns in the Files page
             contributor_patterns = [
-                r'(\d+)\s+contributors?',
-                r'contributors?\s+(\d+)',
-                r'\"contributors?\":\s*(\d+)',
+                r"(\d+)\s+contributors?",
+                r"contributors?\s+(\d+)",
+                r"\"contributors?\":\s*(\d+)",
             ]
 
             for pattern in contributor_patterns:
@@ -70,7 +70,6 @@ def bus_factor_score(model_id: str) -> tuple[int, float]:
 
 # Test the function
 if __name__ == "__main__":
-
     print("Testing bus factor calculation...")
 
     # Time the function call from outside

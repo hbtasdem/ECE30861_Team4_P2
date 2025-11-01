@@ -26,13 +26,13 @@ jobs:
       - name: Run flake8 (Python linter)
         run: |
           # Example: To exclude error E501 (line too long), add --ignore=E501
-          flake8 . --count --show-source --statistics
+          flake8 . --count --show-source --statistics --max-line-length 120
         # To exclude a specific error in future, use:
         # flake8 . --count --show-source --statistics --ignore=E501
 
       - name: Run isort (import sorter)
         run: |
-          isort . --check --diff
+          isort . --check --diff --line-length=120
 
       - name: Run mypy (type checker)
         run: |

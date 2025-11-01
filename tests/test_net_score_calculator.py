@@ -4,7 +4,7 @@ import unittest
 from unittest.mock import patch
 
 # Add the src directory to the path so we can import the module
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from net_score_calculator import calculate_net_score  # noqa: E402
 from net_score_calculator import print_score_summary  # noqa: E402
@@ -25,26 +25,24 @@ class TestNetScoreCalculator(unittest.TestCase):
             "EleutherAI/gpt-neo-125M",
             "microsoft/DialoGPT-small",
             "cardiffnlp/twitter-roberta-base-sentiment-latest",
-            "nlptown/bert-base-multilingual-uncased-sentiment"
+            "nlptown/bert-base-multilingual-uncased-sentiment",
         ]
 
     def test_calculate_net_score_structure(self) -> None:
         """Test that calculate_net_score returns the correct structure."""
         model_id = "gpt2"
 
-        with patch('net_score_calculator.license_sub_score') as \
-             mock_license, \
-             patch('net_score_calculator.ramp_up_time_score') as \
-             mock_ramp_up, \
-             patch('net_score_calculator.bus_factor_score') as \
-             mock_bus_factor, \
-             patch('net_score_calculator.available_dataset_code_score') as \
-             mock_dataset_code, \
-             patch('net_score_calculator.dataset_quality_sub_score') as \
-             mock_dataset_quality, \
-             patch('net_score_calculator.performance_claims_sub_score') \
-             as mock_performance:
-
+        with patch("net_score_calculator.license_sub_score") as mock_license, patch(
+            "net_score_calculator.ramp_up_time_score"
+        ) as mock_ramp_up, patch(
+            "net_score_calculator.bus_factor_score"
+        ) as mock_bus_factor, patch(
+            "net_score_calculator.available_dataset_code_score"
+        ) as mock_dataset_code, patch(
+            "net_score_calculator.dataset_quality_sub_score"
+        ) as mock_dataset_quality, patch(
+            "net_score_calculator.performance_claims_sub_score"
+        ) as mock_performance:
             # Mock return values
             mock_license.return_value = (1.0, 0.1)
             mock_ramp_up.return_value = (0.8, 0.2)
@@ -76,8 +74,7 @@ class TestNetScoreCalculator(unittest.TestCase):
             self.assertIsInstance(results["license"], (int, float))
             self.assertIsInstance(results["ramp_up_time"], (int, float))
             self.assertIsInstance(results["bus_factor"], (int, float))
-            self.assertIsInstance(results["dataset_and_code_score"],
-                                  (int, float))
+            self.assertIsInstance(results["dataset_and_code_score"], (int, float))
             self.assertIsInstance(results["dataset_quality"], (int, float))
             self.assertIsInstance(results["code_quality"], (int, float))
             self.assertIsInstance(results["performance_claims"], (int, float))
@@ -86,23 +83,21 @@ class TestNetScoreCalculator(unittest.TestCase):
         """Test that NetScore calculation follows the correct formula."""
         model_id = "test-model"
 
-        with patch('net_score_calculator.license_sub_score') as \
-             mock_license, \
-             patch('net_score_calculator.ramp_up_time_score') as \
-             mock_ramp_up, \
-             patch('net_score_calculator.bus_factor_score') as \
-             mock_bus_factor, \
-             patch('net_score_calculator.available_dataset_code_score') as \
-             mock_dataset_code, \
-             patch('net_score_calculator.dataset_quality_sub_score') as \
-             mock_dataset_quality, \
-             patch('net_score_calculator.performance_claims_sub_score') as \
-             mock_performance:
-
+        with patch("net_score_calculator.license_sub_score") as mock_license, patch(
+            "net_score_calculator.ramp_up_time_score"
+        ) as mock_ramp_up, patch(
+            "net_score_calculator.bus_factor_score"
+        ) as mock_bus_factor, patch(
+            "net_score_calculator.available_dataset_code_score"
+        ) as mock_dataset_code, patch(
+            "net_score_calculator.dataset_quality_sub_score"
+        ) as mock_dataset_quality, patch(
+            "net_score_calculator.performance_claims_sub_score"
+        ) as mock_performance:
             # Set known values for calculation verification
             mock_license.return_value = (1.0, 0.1)  # 0.2 weight
             mock_ramp_up.return_value = (0.5, 0.2)  # 0.2 weight
-            mock_bus_factor.return_value = 4         # 0.05 weight
+            mock_bus_factor.return_value = 4  # 0.05 weight
             mock_dataset_code.return_value = (0.8, 0.15)  # 0.15 weight
             mock_dataset_quality.return_value = (0.6, 0.12)  # 0.15 weight
             mock_performance.return_value = (0.7, 0.08)  # 0.1 weight
@@ -114,30 +109,34 @@ class TestNetScoreCalculator(unittest.TestCase):
             # + 0.05 * 0.2 (bus_factor normalized: 4/20) + 0.15 * 0.8
             # + 0.15 * 0.6 (dataset_quality) + 0.1 * 0.5 (code_quality)
             # + 0.1 * 0.7 (performance)
-            expected_score = (0.05 * 0.5 + 0.2 * 1.0 + 0.2 * 0.5 +
-                              0.05 * 0.2 + 0.15 * 0.8 + 0.15 * 0.6 +
-                              0.1 * 0.5 + 0.1 * 0.7)
+            expected_score = (
+                0.05 * 0.5
+                + 0.2 * 1.0
+                + 0.2 * 0.5
+                + 0.05 * 0.2
+                + 0.15 * 0.8
+                + 0.15 * 0.6
+                + 0.1 * 0.5
+                + 0.1 * 0.7
+            )
 
-            self.assertAlmostEqual(results["net_score"], expected_score,
-                                   places=3)
+            self.assertAlmostEqual(results["net_score"], expected_score, places=3)
 
     def test_weight_breakdown_calculation(self) -> None:
         """Test that weight breakdown calculations are correct."""
         model_id = "test-model"
 
-        with patch('net_score_calculator.license_sub_score') as \
-             mock_license, \
-             patch('net_score_calculator.ramp_up_time_score') as \
-             mock_ramp_up, \
-             patch('net_score_calculator.bus_factor_score') as \
-             mock_bus_factor, \
-             patch('net_score_calculator.available_dataset_code_score') as \
-             mock_dataset_code, \
-             patch('net_score_calculator.dataset_quality_sub_score') as \
-             mock_dataset_quality, \
-             patch('net_score_calculator.performance_claims_sub_score') as \
-             mock_performance:
-
+        with patch("net_score_calculator.license_sub_score") as mock_license, patch(
+            "net_score_calculator.ramp_up_time_score"
+        ) as mock_ramp_up, patch(
+            "net_score_calculator.bus_factor_score"
+        ) as mock_bus_factor, patch(
+            "net_score_calculator.available_dataset_code_score"
+        ) as mock_dataset_code, patch(
+            "net_score_calculator.dataset_quality_sub_score"
+        ) as mock_dataset_quality, patch(
+            "net_score_calculator.performance_claims_sub_score"
+        ) as mock_performance:
             mock_license.return_value = (0.8, 0.1)
             mock_ramp_up.return_value = (0.6, 0.2)
             mock_bus_factor.return_value = 3
@@ -159,19 +158,17 @@ class TestNetScoreCalculator(unittest.TestCase):
         """Test that default values are used for missing functions."""
         model_id = "test-model"
 
-        with patch('net_score_calculator.license_sub_score') as \
-             mock_license, \
-             patch('net_score_calculator.ramp_up_time_score') as \
-             mock_ramp_up, \
-             patch('net_score_calculator.bus_factor_score') as \
-             mock_bus_factor, \
-             patch('net_score_calculator.available_dataset_code_score') as \
-             mock_dataset_code, \
-             patch('net_score_calculator.dataset_quality_sub_score') as \
-             mock_dataset_quality, \
-             patch('net_score_calculator.performance_claims_sub_score') as \
-             mock_performance:
-
+        with patch("net_score_calculator.license_sub_score") as mock_license, patch(
+            "net_score_calculator.ramp_up_time_score"
+        ) as mock_ramp_up, patch(
+            "net_score_calculator.bus_factor_score"
+        ) as mock_bus_factor, patch(
+            "net_score_calculator.available_dataset_code_score"
+        ) as mock_dataset_code, patch(
+            "net_score_calculator.dataset_quality_sub_score"
+        ) as mock_dataset_quality, patch(
+            "net_score_calculator.performance_claims_sub_score"
+        ) as mock_performance:
             mock_license.return_value = (1.0, 0.1)
             mock_ramp_up.return_value = (0.5, 0.2)
             mock_bus_factor.return_value = 2
@@ -191,19 +188,17 @@ class TestNetScoreCalculator(unittest.TestCase):
         """Test that latency values are properly converted to milliseconds."""
         model_id = "test-model"
 
-        with patch('net_score_calculator.license_sub_score') as \
-             mock_license, \
-             patch('net_score_calculator.ramp_up_time_score') as \
-             mock_ramp_up, \
-             patch('net_score_calculator.bus_factor_score') as \
-             mock_bus_factor, \
-             patch('net_score_calculator.available_dataset_code_score') as \
-             mock_dataset_code, \
-             patch('net_score_calculator.dataset_quality_sub_score') as \
-             mock_dataset_quality, \
-             patch('net_score_calculator.performance_claims_sub_score') as \
-             mock_performance:
-
+        with patch("net_score_calculator.license_sub_score") as mock_license, patch(
+            "net_score_calculator.ramp_up_time_score"
+        ) as mock_ramp_up, patch(
+            "net_score_calculator.bus_factor_score"
+        ) as mock_bus_factor, patch(
+            "net_score_calculator.available_dataset_code_score"
+        ) as mock_dataset_code, patch(
+            "net_score_calculator.dataset_quality_sub_score"
+        ) as mock_dataset_quality, patch(
+            "net_score_calculator.performance_claims_sub_score"
+        ) as mock_performance:
             # Return latencies in seconds
             mock_license.return_value = (1.0, 0.123)  # 123ms
             mock_ramp_up.return_value = (0.5, 0.456)  # 456ms
@@ -223,23 +218,20 @@ class TestNetScoreCalculator(unittest.TestCase):
 
     def test_model_id_preservation(self) -> None:
         """Test that model_id is correctly preserved in results."""
-        test_models = ["gpt2", "bert-base-uncased",
-                       "microsoft/DialoGPT-medium"]
+        test_models = ["gpt2", "bert-base-uncased", "microsoft/DialoGPT-medium"]
 
         for model_id in test_models:
-            with patch('net_score_calculator.license_sub_score') as \
-                 mock_license, \
-                 patch('net_score_calculator.ramp_up_time_score') as \
-                 mock_ramp_up, \
-                 patch('net_score_calculator.bus_factor_score') as \
-                 mock_bus_factor, \
-                 patch('net_score_calculator.available_dataset_code_score') \
-                 as mock_dataset_code, \
-                 patch('net_score_calculator.dataset_quality_sub_score') as \
-                 mock_dataset_quality, \
-                 patch('net_score_calculator.performance_claims_sub_score') \
-                 as mock_performance:
-
+            with patch("net_score_calculator.license_sub_score") as mock_license, patch(
+                "net_score_calculator.ramp_up_time_score"
+            ) as mock_ramp_up, patch(
+                "net_score_calculator.bus_factor_score"
+            ) as mock_bus_factor, patch(
+                "net_score_calculator.available_dataset_code_score"
+            ) as mock_dataset_code, patch(
+                "net_score_calculator.dataset_quality_sub_score"
+            ) as mock_dataset_quality, patch(
+                "net_score_calculator.performance_claims_sub_score"
+            ) as mock_performance:
                 mock_license.return_value = (1.0, 0.1)
                 mock_ramp_up.return_value = (0.5, 0.2)
                 mock_bus_factor.return_value = 2
@@ -254,19 +246,17 @@ class TestNetScoreCalculator(unittest.TestCase):
         """Test that NetScore is within reasonable range."""
         model_id = "test-model"
 
-        with patch('net_score_calculator.license_sub_score') as \
-             mock_license, \
-             patch('net_score_calculator.ramp_up_time_score') as \
-             mock_ramp_up, \
-             patch('net_score_calculator.bus_factor_score') as \
-             mock_bus_factor, \
-             patch('net_score_calculator.available_dataset_code_score') as \
-             mock_dataset_code, \
-             patch('net_score_calculator.dataset_quality_sub_score') as \
-             mock_dataset_quality, \
-             patch('net_score_calculator.performance_claims_sub_score') as \
-             mock_performance:
-
+        with patch("net_score_calculator.license_sub_score") as mock_license, patch(
+            "net_score_calculator.ramp_up_time_score"
+        ) as mock_ramp_up, patch(
+            "net_score_calculator.bus_factor_score"
+        ) as mock_bus_factor, patch(
+            "net_score_calculator.available_dataset_code_score"
+        ) as mock_dataset_code, patch(
+            "net_score_calculator.dataset_quality_sub_score"
+        ) as mock_dataset_quality, patch(
+            "net_score_calculator.performance_claims_sub_score"
+        ) as mock_performance:
             # Test with all minimum values
             mock_license.return_value = (0.0, 0.1)
             mock_ramp_up.return_value = (0.0, 0.2)
@@ -297,19 +287,17 @@ class TestNetScoreCalculator(unittest.TestCase):
         """Test that print_score_summary doesn't raise errors."""
         model_id = "test-model"
 
-        with patch('net_score_calculator.license_sub_score') as \
-             mock_license, \
-             patch('net_score_calculator.ramp_up_time_score') as \
-             mock_ramp_up, \
-             patch('net_score_calculator.bus_factor_score') as \
-             mock_bus_factor, \
-             patch('net_score_calculator.available_dataset_code_score') as \
-             mock_dataset_code, \
-             patch('net_score_calculator.dataset_quality_sub_score') as \
-             mock_dataset_quality, \
-             patch('net_score_calculator.performance_claims_sub_score') as \
-             mock_performance:
-
+        with patch("net_score_calculator.license_sub_score") as mock_license, patch(
+            "net_score_calculator.ramp_up_time_score"
+        ) as mock_ramp_up, patch(
+            "net_score_calculator.bus_factor_score"
+        ) as mock_bus_factor, patch(
+            "net_score_calculator.available_dataset_code_score"
+        ) as mock_dataset_code, patch(
+            "net_score_calculator.dataset_quality_sub_score"
+        ) as mock_dataset_quality, patch(
+            "net_score_calculator.performance_claims_sub_score"
+        ) as mock_performance:
             mock_license.return_value = (1.0, 0.1)
             mock_ramp_up.return_value = (0.5, 0.2)
             mock_bus_factor.return_value = 2
@@ -329,19 +317,17 @@ class TestNetScoreCalculator(unittest.TestCase):
         """Test that errors in scoring functions are handled gracefully."""
         model_id = "test-model"
 
-        with patch('net_score_calculator.license_sub_score') as \
-             mock_license, \
-             patch('net_score_calculator.ramp_up_time_score') as \
-             mock_ramp_up, \
-             patch('net_score_calculator.bus_factor_score') as \
-             mock_bus_factor, \
-             patch('net_score_calculator.available_dataset_code_score') as \
-             mock_dataset_code, \
-             patch('net_score_calculator.dataset_quality_sub_score') as \
-             mock_dataset_quality, \
-             patch('net_score_calculator.performance_claims_sub_score') as \
-             mock_performance:
-
+        with patch("net_score_calculator.license_sub_score") as mock_license, patch(
+            "net_score_calculator.ramp_up_time_score"
+        ) as mock_ramp_up, patch(
+            "net_score_calculator.bus_factor_score"
+        ) as mock_bus_factor, patch(
+            "net_score_calculator.available_dataset_code_score"
+        ) as mock_dataset_code, patch(
+            "net_score_calculator.dataset_quality_sub_score"
+        ) as mock_dataset_quality, patch(
+            "net_score_calculator.performance_claims_sub_score"
+        ) as mock_performance:
             # Make one function raise an exception
             mock_license.side_effect = Exception("Network error")
             mock_ramp_up.return_value = (0.5, 0.2)

@@ -1,7 +1,7 @@
 import os
 import re
 import time
-from typing import Tuple, Optional, Set
+from typing import Optional, Set, Tuple
 
 from license_sub_score import fetch_readme
 
@@ -16,19 +16,17 @@ def detect_dataset_links(readme_text: str) -> bool:
 
     # Common dataset hosting platforms and patterns
     dataset_patterns = [
-        r'https?://[^\s]*\.(csv|json|jsonl|parquet|tsv|txt|zip|tar\.gz|'
-        r'tar\.bz2)',
-        r'https?://[^\s]*(dataset|data)[^\s]*',
-        r'https?://[^\s]*(kaggle|huggingface\.co/datasets|zenodo|figshare|'
-        r'drive\.google\.com)',
-        r'\[.*\]\([^)]*\.(csv|json|jsonl|parquet|tsv|txt|zip|tar\.gz|'
-        r'tar\.bz2)',
-        r'##?\s*Dataset',
-        r'##?\s*Data',
-        r'dataset[:\s]',
-        r'training\s+data',
-        r'test\s+data',
-        r'validation\s+data',
+        r"https?://[^\s]*\.(csv|json|jsonl|parquet|tsv|txt|zip|tar\.gz|" r"tar\.bz2)",
+        r"https?://[^\s]*(dataset|data)[^\s]*",
+        r"https?://[^\s]*(kaggle|huggingface\.co/datasets|zenodo|figshare|"
+        r"drive\.google\.com)",
+        r"\[.*\]\([^)]*\.(csv|json|jsonl|parquet|tsv|txt|zip|tar\.gz|" r"tar\.bz2)",
+        r"##?\s*Dataset",
+        r"##?\s*Data",
+        r"dataset[:\s]",
+        r"training\s+data",
+        r"test\s+data",
+        r"validation\s+data",
     ]
 
     readme_lower = readme_text.lower()
@@ -50,29 +48,29 @@ def detect_code_examples(readme_text: str) -> bool:
 
     # Patterns for code examples and scripts
     code_patterns = [
-        r'```[a-zA-Z]*\n.*\n```',  # Code blocks
-        r'```[a-zA-Z]*\n.*',       # Incomplete code blocks
-        r'\.py\b',                  # Python files
-        r'\.js\b',                  # JavaScript files
-        r'\.java\b',                # Java files
-        r'\.cpp\b',                 # C++ files
-        r'\.c\b',                   # C files
-        r'\.sh\b',                  # Shell scripts
-        r'\.ipynb\b',               # Jupyter notebooks
-        r'##?\s*Usage',
-        r'##?\s*Example',
-        r'##?\s*Code',
-        r'##?\s*Installation',
-        r'##?\s*Quick\s+start',
-        r'pip\s+install',
-        r'python\s+',
-        r'import\s+',
-        r'from\s+',
-        r'def\s+',
-        r'class\s+',
-        r'function\s*\(',
-        r'<code>',
-        r'<pre>',
+        r"```[a-zA-Z]*\n.*\n```",  # Code blocks
+        r"```[a-zA-Z]*\n.*",  # Incomplete code blocks
+        r"\.py\b",  # Python files
+        r"\.js\b",  # JavaScript files
+        r"\.java\b",  # Java files
+        r"\.cpp\b",  # C++ files
+        r"\.c\b",  # C files
+        r"\.sh\b",  # Shell scripts
+        r"\.ipynb\b",  # Jupyter notebooks
+        r"##?\s*Usage",
+        r"##?\s*Example",
+        r"##?\s*Code",
+        r"##?\s*Installation",
+        r"##?\s*Quick\s+start",
+        r"pip\s+install",
+        r"python\s+",
+        r"import\s+",
+        r"from\s+",
+        r"def\s+",
+        r"class\s+",
+        r"function\s*\(",
+        r"<code>",
+        r"<pre>",
     ]
 
     readme_lower = readme_text.lower()
@@ -100,6 +98,7 @@ def extract_code_identifier(code_link: str) -> str:
     # Handle other code links - use domain + path
     try:
         from urllib.parse import urlparse
+
         parsed = urlparse(code_link)
         return f"{parsed.netloc}{parsed.path}".strip("/")
     except Exception:
@@ -122,16 +121,16 @@ def extract_dataset_identifier_code(dataset_link: str) -> str:
     # Handle other dataset links - use domain + path
     try:
         from urllib.parse import urlparse
+
         parsed = urlparse(dataset_link)
         return f"{parsed.netloc}{parsed.path}".strip("/")
     except Exception:
         return dataset_link.lower().strip()
 
 
-def check_readme_for_known_resources(readme: str,
-                                     encountered_datasets: set[str],
-                                     encountered_code: set[str]
-                                     ) -> tuple[bool, bool]:
+def check_readme_for_known_resources(
+    readme: str, encountered_datasets: set[str], encountered_code: set[str]
+) -> tuple[bool, bool]:
     """Check if README mentions previously encountered datasets or code."""
     if not readme:
         return False, False
@@ -147,11 +146,18 @@ def check_readme_for_known_resources(readme: str,
                 has_known_dataset = True
                 break
             # Check for parts of the dataset name
-            dataset_parts = dataset_lower.replace("/", " ").replace(
-                "-", " ").replace("_", " ").split()
+            dataset_parts = (
+                dataset_lower.replace("/", " ")
+                .replace("-", " ")
+                .replace("_", " ")
+                .split()
+            )
             if len(dataset_parts) >= 2:
-                parts_found = sum(1 for part in dataset_parts
-                                  if len(part) > 3 and part in readme_lower)
+                parts_found = sum(
+                    1
+                    for part in dataset_parts
+                    if len(part) > 3 and part in readme_lower
+                )
                 if parts_found >= 2:
                     has_known_dataset = True
                     break
@@ -165,11 +171,13 @@ def check_readme_for_known_resources(readme: str,
                 has_known_code = True
                 break
             # Check for parts of the code repo name
-            code_parts = code_lower.replace("/", " ").replace(
-                "-", " ").replace("_", " ").split()
+            code_parts = (
+                code_lower.replace("/", " ").replace("-", " ").replace("_", " ").split()
+            )
             if len(code_parts) >= 2:
-                parts_found = sum(1 for part in code_parts
-                                  if len(part) > 3 and part in readme_lower)
+                parts_found = sum(
+                    1 for part in code_parts if len(part) > 3 and part in readme_lower
+                )
                 if parts_found >= 2:
                     has_known_code = True
                     break
@@ -177,11 +185,13 @@ def check_readme_for_known_resources(readme: str,
     return has_known_dataset, has_known_code
 
 
-def available_dataset_code_score(model_id: str, code_link: str = "",
-                                 dataset_link: str = "",
-                                 encountered_datasets: Optional[Set[str]] = None,
-                                 encountered_code: Optional[Set[str]] = None
-                                 ) -> Tuple[float, float]:
+def available_dataset_code_score(
+    model_id: str,
+    code_link: str = "",
+    dataset_link: str = "",
+    encountered_datasets: Optional[Set[str]] = None,
+    encountered_code: Optional[Set[str]] = None,
+) -> Tuple[float, float]:
     """
     Calculate Available Dataset and Code Score.
 
@@ -230,9 +240,9 @@ def available_dataset_code_score(model_id: str, code_link: str = "",
             if not has_external_code:
                 code_available = detect_code_examples(readme_text)
             # Also check for references to known resources
-            has_known_dataset, has_known_code = (
-                check_readme_for_known_resources(
-                    readme_text, encountered_datasets, encountered_code))
+            has_known_dataset, has_known_code = check_readme_for_known_resources(
+                readme_text, encountered_datasets, encountered_code
+            )
 
             # Update availability based on references (if not already found)
             if not has_external_dataset and not dataset_available:
@@ -262,10 +272,14 @@ def available_dataset_code_score(model_id: str, code_link: str = "",
     execution_time = end_time - start_time
 
     if int(os.getenv("LOG_LEVEL", "0")) > 0:
-        print(f"[INFO] External links: code={has_external_code}, "
-              f"dataset={has_external_dataset}")
-        print(f"[INFO] Known references: dataset={has_known_dataset}, "
-              f"code={has_known_code}, Score: {score}")
+        print(
+            f"[INFO] External links: code={has_external_code}, "
+            f"dataset={has_external_dataset}"
+        )
+        print(
+            f"[INFO] Known references: dataset={has_known_dataset}, "
+            f"code={has_known_code}, Score: {score}"
+        )
 
     return (score, execution_time)
 
