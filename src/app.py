@@ -1,59 +1,47 @@
-# app.py# app.py
+# app.py
+import os
+import sys
+from pathlib import Path
 
-import osimport os
+# Add src to path for imports
+sys.path.insert(0, str(Path(__file__).parent))
 
-from fastapi import FastAPIfrom fastapi import FastAPI
+from fastapi import FastAPI
+from database import init_db
+from upload.routes import router as upload_router
 
-from database import init_dbfrom database import init_db
+# Initialize FastAPI app
+app = FastAPI(
+    title="Model Registry API",
+    description="Upload and manage ML models in ZIP format",
+    version="1.0.0"
+)
 
-from upload.routes import router as upload_routerfrom upload.routes import router as upload_router
+# Initialize database only if not in test mode
+if os.getenv("TESTING") != "true":
+    init_db()
 
+# Include routers
+app.include_router(upload_router)
 
-
-# Initialize FastAPI app# Initialize FastAPI app
-
-app = FastAPI(app = FastAPI(
-
-    title="Model Registry API",    title="Model Registry API",
-
-    description="Upload and manage ML models in ZIP format",    description="Upload and manage ML models in ZIP format",
-
-    version="1.0.0"    version="1.0.0",
-
-))
-
-
-
-# Initialize database only if not in test mode# Initialize database only if not in test mode
-
-if os.getenv("TESTING") != "true":if os.getenv("TESTING") != "true":
-
-    init_db()    init_db()
-
-
-
-# Include routers# Include routers
-
-app.include_router(upload_router)app.include_router(upload_router)
-
-
+@app.get("/")
+async def root():
+    """API root - returns available endpoints"""
+    return {
+        "message": "Model Registry API",
+        "endpoints": {
+            "health": "/health",
+            "upload": "/api/models/upload",
+            "docs": "/docs",
+            "redoc": "/redoc"
+        }
+    }
 
 @app.get("/health")
-
-async def health_check():@app.get("/health")
-
-    """Health check endpoint"""async def health_check():
-
-    return {"status": "ok"}    """Health check endpoint"""
-
+async def health_check():
+    """Health check endpoint"""
     return {"status": "ok"}
 
 if __name__ == "__main__":
-
     import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8000)if __name__ == "__main__":
-
-    import uvicorn
-
     uvicorn.run(app, host="0.0.0.0", port=8000)
