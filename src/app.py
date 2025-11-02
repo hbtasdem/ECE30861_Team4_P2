@@ -1,12 +1,15 @@
 # app.py
 
 import os
+import sys
 from typing import Any
 
 from fastapi import FastAPI
 
-from database import init_db
-from upload.routes import router as upload_router
+sys.path.insert(0, os.path.dirname(__file__))
+
+from database import init_db  # noqa: E402
+from upload.routes import router as upload_router  # noqa: E402
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -29,6 +32,8 @@ app.include_router(upload_router)
 async def health_check() -> dict[str, str]:
     """Health check endpoint"""
     return {"status": "ok"}
+# uvicorn src.app:app --host 127.0.0.1 --port 8000 --reload
+# then in browser add /health to the end and you see... something!
 
 
 if __name__ == "__main__":
