@@ -4,8 +4,8 @@ from typing import Dict
 
 from sqlalchemy.orm import Session
 
-from api_schemas import ModelCreate
-from models import Model, ModelMetadata
+from src.api_schemas import ModelCreate
+from src.models import Model, ModelMetadata
 
 
 class ModelRepository:
