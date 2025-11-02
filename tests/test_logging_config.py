@@ -39,13 +39,17 @@ class TestLoggingConfig:
 
     def test_log_level_from_env(self) -> None:
         """Test log level extraction from environment variables."""
-        with patch.dict(os.environ, {"CONSOLE_LOG_LEVEL": "DEBUG"}):
+        with patch.dict(os.environ, {"LOG_LEVEL": "2"}):
             config = LoggingConfig()
             assert config.console_level == logging.DEBUG
 
-        with patch.dict(os.environ, {"CONSOLE_LOG_LEVEL": "ERROR"}):
+        with patch.dict(os.environ, {"LOG_LEVEL": "1"}):
             config = LoggingConfig()
-            assert config.console_level == logging.ERROR
+            assert config.console_level == logging.INFO
+
+        with patch.dict(os.environ, {"LOG_LEVEL": "0"}):
+            config = LoggingConfig()
+            assert config.console_level == logging.CRITICAL
 
     def test_get_formatter_simple(self) -> None:
         """Test simple formatter creation."""
@@ -233,8 +237,7 @@ class TestEnvironmentConfiguration:
     def test_environment_variables(self) -> None:
         """Test configuration from environment variables."""
         env_vars = {
-            "CONSOLE_LOG_LEVEL": "WARNING",
-            "FILE_LOG_LEVEL": "DEBUG",
+            "LOG_LEVEL": "1",
             "LOG_FORMAT": "simple",
             "MAX_LOG_FILE_SIZE": "5242880",  # 5MB
             "LOG_BACKUP_COUNT": "3",
@@ -244,7 +247,7 @@ class TestEnvironmentConfiguration:
             config = LoggingConfig()
             config.log_dir = Path(self.temp_dir)
 
-            assert config.console_level == logging.WARNING
+            assert config.console_level == logging.INFO
             assert config.file_level == logging.DEBUG
             assert config.log_format == "simple"
             assert config.max_file_size == 5242880
