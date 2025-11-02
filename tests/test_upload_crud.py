@@ -185,7 +185,7 @@ class TestCRUDModelRepository:
         mock_query.offset.return_value = mock_offset
 
         mock_models = [Mock(spec=Model)]
-        mock_offset.limit.return_value = mock_models
+        mock_offset.limit.return_value.all.return_value = mock_models
 
         # Call method
         result = crud_repo.get_all_models(skip=0, limit=100)

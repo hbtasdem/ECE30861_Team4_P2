@@ -42,6 +42,7 @@ class TestMain(unittest.TestCase):
                 result = extract_model_name(url)
                 self.assertEqual(result, expected)
 
+    @patch("main.code_quality.code_quality_score")
     @patch("main.license_sub_score.license_sub_score")
     @patch("main.bus_factor.bus_factor_score")
     @patch("main.ramp_up_sub_score.ramp_up_time_score")
@@ -58,18 +59,21 @@ class TestMain(unittest.TestCase):
         mock_ramp_score: Any,
         mock_bus_score: Any,
         mock_license_score: Any,
+        mock_code_quality: Any,
     ) -> None:
         """Test calculate_all_scores function with mocked dependencies."""
         # Set up mock return values
-        mock_license_score.return_value = 1.0
-        mock_bus_score.return_value = 0.8
+        mock_license_score.return_value = (1.0, 0.1)
+        mock_bus_score.return_value = (16, 0.1)  # Will be normalized: 16/20 = 0.8
         mock_ramp_score.return_value = (0.9, 0.1)
-        mock_perf_score.return_value = 0.7
-        mock_dataset_score.return_value = 0.6
+        mock_perf_score.return_value = (0.7, 0.1)
+        mock_dataset_score.return_value = (0.6, 0.1)
         mock_code_score.return_value = (0.5, 0.2)
+        mock_code_quality.return_value = (0.5, 0.1)
         mock_net_score.return_value = {"net_score": 0.75}
         # Test with a sample model URL
-        result = calculate_all_scores("", "", "https://huggingface.co/test/model")
+        result = calculate_all_scores("", "", "https://huggingface.co/test/model",
+                                     set(), set())
         # Verify the result structure
         self.assertIsInstance(result, dict)
         self.assertIn("name", result)
@@ -122,7 +126,8 @@ class TestMain(unittest.TestCase):
             mock_net.return_value = {"net_score": 0.75}
             # Test with BERT model
             result = calculate_all_scores(
-                "", "", "https://huggingface.co/google-bert/bert-base-uncased"
+                "", "", "https://huggingface.co/google-bert/bert-base-uncased",
+                set(), set()
             )
             # Verify BERT-specific size scores
             self.assertEqual(result["size_score"]["raspberry_pi"], 0.2)
@@ -161,7 +166,8 @@ class TestMain(unittest.TestCase):
             mock_net.return_value = {"net_score": 0.75}
             # Test with Whisper model
             result = calculate_all_scores(
-                "", "", "https://huggingface.co/openai/whisper-tiny/tree/main"
+                "", "", "https://huggingface.co/openai/whisper-tiny/tree/main",
+                set(), set()
             )
             # Verify Whisper-specific size scores
             self.assertEqual(result["size_score"]["raspberry_pi"], 0.9)
