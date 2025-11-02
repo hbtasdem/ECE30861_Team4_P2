@@ -40,7 +40,6 @@ class TestMain(unittest.TestCase):
         for url, expected in test_cases:
             with self.subTest(url=url):
                 result = extract_model_name(url)
-                result = result.split("/")[-1] if "/" in result else result
                 self.assertEqual(result, expected)
 
     @patch("main.code_quality.code_quality_score")
@@ -50,12 +49,10 @@ class TestMain(unittest.TestCase):
     @patch("main.performance_claims_sub_score.performance_claims_sub_score")
     @patch("main.dataset_quality_sub_score.dataset_quality_sub_score")
     @patch("main.available_dataset_code_score.available_dataset_code_score")
-    @patch("main.code_quality.code_quality_score")
     @patch("main.net_score_calculator.calculate_net_score")
     def test_calculate_all_scores(
         self,
         mock_net_score: Any,
-        mock_code_quality_score: Any,
         mock_code_score: Any,
         mock_dataset_score: Any,
         mock_perf_score: Any,
@@ -95,7 +92,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(result["ramp_up_time"], 0.9)
         self.assertEqual(result["performance_claims"], 0.7)
         self.assertEqual(result["dataset_quality"], 0.6)
-        self.assertEqual(result["code_quality"], 0.1)
+        self.assertEqual(result["code_quality"], 0.5)
         self.assertEqual(result["net_score"], 0.75)
 
     def test_calculate_all_scores_with_bert_model(self) -> None:
@@ -128,7 +125,9 @@ class TestMain(unittest.TestCase):
             mock_net.return_value = {"net_score": 0.75}
             # Test with BERT model
             result = calculate_all_scores(
-                "", "", "https://huggingface.co/google-bert/bert-base-uncased", set(), set())
+                "", "", "https://huggingface.co/google-bert/bert-base-uncased",
+                set(), set()
+            )
             # Verify BERT-specific size scores
             self.assertEqual(result["size_score"]["raspberry_pi"], 0.2)
             self.assertEqual(result["size_score"]["jetson_nano"], 0.4)
@@ -166,7 +165,9 @@ class TestMain(unittest.TestCase):
             mock_net.return_value = {"net_score": 0.75}
             # Test with Whisper model
             result = calculate_all_scores(
-                "", "", "https://huggingface.co/openai/whisper-tiny/tree/main", set(), set())
+                "", "", "https://huggingface.co/openai/whisper-tiny/tree/main",
+                set(), set()
+            )
             # Verify Whisper-specific size scores
             self.assertEqual(result["size_score"]["raspberry_pi"], 0.9)
             self.assertEqual(result["size_score"]["jetson_nano"], 0.95)
