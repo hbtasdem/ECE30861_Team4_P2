@@ -35,13 +35,14 @@ def extract_model_name(model_url: str) -> str:
                 model_path = model_path.split("/tree/")[0]
             elif "/blob/" in model_path:
                 model_path = model_path.split("/blob/")[0]
-            return model_path
+            # Extract just the model name (last part after /)
+            return model_path.split("/")[-1] if "/" in model_path else model_path
     elif "/" in model_url:
         # For direct model IDs like microsoft/DialoGPT-medium
         parts = model_url.split("/")
         if len(parts) >= 2:
-            # Return organization/model format
-            return "/".join(parts[-2:])
+            # Return just the model name (last part)
+            return parts[-1]
 
     return model_url.strip()
 

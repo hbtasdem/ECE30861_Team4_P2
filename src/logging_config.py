@@ -36,11 +36,14 @@ class LoggingConfig:
         self.log_dir = Path("logs")
         self.log_dir.mkdir(exist_ok=True)
 
-        # Verbosity configuration: 0=silent, 1=informational, 2=debug
-        self.verbosity = self._get_verbosity_from_env("LOG_LEVEL", "0")
-
-        # self.verbosity = self._get_verbosity_from_env("VERBOSITY", "0")
-        self.console_level = self._verbosity_to_log_level(self.verbosity)
+        # Check for CONSOLE_LOG_LEVEL first (for direct level setting)
+        console_log_level_str = os.getenv("CONSOLE_LOG_LEVEL")
+        if console_log_level_str:
+            self.console_level = getattr(logging, console_log_level_str, logging.INFO)
+        else:
+            # Fall back to verbosity configuration
+            self.verbosity = self._get_verbosity_from_env("VERBOSITY", "0")
+            self.console_level = self._verbosity_to_log_level(self.verbosity)
 
         self.file_level = logging.DEBUG  # Always log everything to file
         self.log_format = os.getenv("LOG_FORMAT", "detailed")

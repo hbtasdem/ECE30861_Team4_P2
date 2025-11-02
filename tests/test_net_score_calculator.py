@@ -46,7 +46,7 @@ class TestNetScoreCalculator(unittest.TestCase):
             # Mock return values
             mock_license.return_value = (1.0, 0.1)
             mock_ramp_up.return_value = (0.8, 0.2)
-            mock_bus_factor.return_value = (5, 0.05)
+            mock_bus_factor.return_value = (5, 0.1)
             mock_dataset_code.return_value = (0.5, 0.15)
             mock_dataset_quality.return_value = (0.7, 0.12)
             mock_performance.return_value = (0.9, 0.08)
@@ -91,9 +91,10 @@ class TestNetScoreCalculator(unittest.TestCase):
              patch("net_score_calculator.performance_claims_sub_score") as mock_performance, \
              patch("net_score_calculator.size_score") as mock_size:
             # Set known values for calculation verification
+            mock_size.return_value = ({}, 0.5, 50)
             mock_license.return_value = (1.0, 0.1)  # 0.2 weight
             mock_ramp_up.return_value = (0.5, 0.2)  # 0.2 weight
-            mock_bus_factor.return_value = (4, 0.05)  # 0.05 weight
+            mock_bus_factor.return_value = (4, 0.1)  # 0.05 weight
             mock_dataset_code.return_value = (0.8, 0.15)  # 0.15 weight
             mock_dataset_quality.return_value = (0.6, 0.12)  # 0.15 weight
             mock_performance.return_value = (0.7, 0.08)  # 0.1 weight
@@ -106,7 +107,7 @@ class TestNetScoreCalculator(unittest.TestCase):
             # + 0.05 * 0.2 (bus_factor normalized: 4/20) + 0.15 * 0.8
             # + 0.15 * 0.6 (dataset_quality) + 0.1 * 0.5 (code_quality)
             # + 0.1 * 0.7 (performance)
-            expected_score = (
+            expected_score = round(
                 0.05 * 0.5
                 + 0.2 * 1.0
                 + 0.2 * 0.5
@@ -114,17 +115,20 @@ class TestNetScoreCalculator(unittest.TestCase):
                 + 0.15 * 0.8
                 + 0.15 * 0.6
                 + 0.1 * 0.5
-                + 0.1 * 0.7
+                + 0.1 * 0.7,
+                2,
             )
             expected_score = round(expected_score, 2)
 
-            self.assertAlmostEqual(results["net_score"], expected_score, places=3)
+            self.assertEqual(results["net_score"], expected_score)
 
     def test_weight_breakdown_calculation(self) -> None:
         """Test that weight breakdown calculations are correct."""
         model_id = "test-model"
 
-        with patch("net_score_calculator.license_sub_score") as mock_license, patch(
+        with patch("net_score_calculator.size_score") as mock_size, patch(
+            "net_score_calculator.license_sub_score"
+        ) as mock_license, patch(
             "net_score_calculator.ramp_up_time_score"
         ) as mock_ramp_up, patch(
             "net_score_calculator.bus_factor_score"
@@ -135,9 +139,10 @@ class TestNetScoreCalculator(unittest.TestCase):
         ) as mock_dataset_quality, patch(
             "net_score_calculator.performance_claims_sub_score"
         ) as mock_performance:
+            mock_size.return_value = ({}, 0.75, 50)
             mock_license.return_value = (0.8, 0.1)
             mock_ramp_up.return_value = (0.6, 0.2)
-            mock_bus_factor.return_value = (3, 0.05)
+            mock_bus_factor.return_value = (3, 0.1)
             mock_dataset_code.return_value = (0.4, 0.15)
             mock_dataset_quality.return_value = (0.9, 0.12)
             mock_performance.return_value = (0.5, 0.08)
@@ -156,7 +161,9 @@ class TestNetScoreCalculator(unittest.TestCase):
         """Test that default values are used for missing functions."""
         model_id = "test-model"
 
-        with patch("net_score_calculator.license_sub_score") as mock_license, patch(
+        with patch("net_score_calculator.size_score") as mock_size, patch(
+            "net_score_calculator.license_sub_score"
+        ) as mock_license, patch(
             "net_score_calculator.ramp_up_time_score"
         ) as mock_ramp_up, patch(
             "net_score_calculator.bus_factor_score"
@@ -167,9 +174,19 @@ class TestNetScoreCalculator(unittest.TestCase):
         ) as mock_dataset_quality, patch(
             "net_score_calculator.performance_claims_sub_score"
         ) as mock_performance:
+            mock_size.return_value = (
+                {
+                    "raspberry_pi": 0.5,
+                    "jetson_nano": 0.5,
+                    "desktop_pc": 0.5,
+                    "aws_server": 0.5,
+                },
+                0.75,
+                0,
+            )
             mock_license.return_value = (1.0, 0.1)
             mock_ramp_up.return_value = (0.5, 0.2)
-            mock_bus_factor.return_value = (2, 0.05)
+            mock_bus_factor.return_value = (2, 0.1)
             mock_dataset_code.return_value = (0.3, 0.15)
             mock_dataset_quality.return_value = (0.7, 0.12)
             mock_performance.return_value = (0.6, 0.08)
@@ -199,7 +216,7 @@ class TestNetScoreCalculator(unittest.TestCase):
             # Return latencies in seconds
             mock_license.return_value = (1.0, 0.123)  # 123ms
             mock_ramp_up.return_value = (0.5, 0.456)  # 456ms
-            mock_bus_factor.return_value = (2, 0.05)
+            mock_bus_factor.return_value = (2, 0.1)
             mock_dataset_code.return_value = (0.3, 0.789)  # 789ms
             mock_dataset_quality.return_value = (0.7, 0.321)  # 321ms
             mock_performance.return_value = (0.6, 0.654)  # 654ms
@@ -231,7 +248,7 @@ class TestNetScoreCalculator(unittest.TestCase):
             ) as mock_performance:
                 mock_license.return_value = (1.0, 0.1)
                 mock_ramp_up.return_value = (0.5, 0.2)
-                mock_bus_factor.return_value = (2, 0.05)
+                mock_bus_factor.return_value = (2, 0.1)
                 mock_dataset_code.return_value = (0.3, 0.15)
                 mock_dataset_quality.return_value = (0.7, 0.12)
                 mock_performance.return_value = (0.6, 0.08)
@@ -257,7 +274,7 @@ class TestNetScoreCalculator(unittest.TestCase):
             # Test with all minimum values
             mock_license.return_value = (0.0, 0.1)
             mock_ramp_up.return_value = (0.0, 0.2)
-            mock_bus_factor.return_value = (0, 0.05)
+            mock_bus_factor.return_value = (0, 0.1)
             mock_dataset_code.return_value = (0.0, 0.15)
             mock_dataset_quality.return_value = (0.0, 0.12)
             mock_performance.return_value = (0.0, 0.08)
@@ -268,7 +285,7 @@ class TestNetScoreCalculator(unittest.TestCase):
             # Test with all maximum values
             mock_license.return_value = (1.0, 0.1)
             mock_ramp_up.return_value = (1.0, 0.2)
-            mock_bus_factor.return_value = (10, 0.05)  # Max bus factor
+            mock_bus_factor.return_value = (10, 0.1)  # Max bus factor
             mock_dataset_code.return_value = (1.0, 0.15)
             mock_dataset_quality.return_value = (1.0, 0.12)
             mock_performance.return_value = (1.0, 0.08)
@@ -297,7 +314,7 @@ class TestNetScoreCalculator(unittest.TestCase):
         ) as mock_performance:
             mock_license.return_value = (1.0, 0.1)
             mock_ramp_up.return_value = (0.5, 0.2)
-            mock_bus_factor.return_value = (2, 0.05)
+            mock_bus_factor.return_value = (2, 0.1)
             mock_dataset_code.return_value = (0.3, 0.15)
             mock_dataset_quality.return_value = (0.7, 0.12)
             mock_performance.return_value = (0.6, 0.08)
@@ -328,7 +345,7 @@ class TestNetScoreCalculator(unittest.TestCase):
             # Make one function raise an exception
             mock_license.side_effect = Exception("Network error")
             mock_ramp_up.return_value = (0.5, 0.2)
-            mock_bus_factor.return_value = (2, 0.05)
+            mock_bus_factor.return_value = (2, 0.1)
             mock_dataset_code.return_value = (0.3, 0.15)
             mock_dataset_quality.return_value = (0.7, 0.12)
             mock_performance.return_value = (0.6, 0.08)

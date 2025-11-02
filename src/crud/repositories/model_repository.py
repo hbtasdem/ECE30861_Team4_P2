@@ -4,8 +4,8 @@ from typing import Any, Dict, List, Optional
 
 from sqlalchemy.orm import Session
 
-from api_schemas import ModelUpdate
-from models import Model, ModelMetadata
+from src.api_schemas import ModelUpdate
+from src.models import Model, ModelMetadata
 
 
 class CRUDModelRepository:
