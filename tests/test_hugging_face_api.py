@@ -16,14 +16,12 @@ VALID_MODEL_RESPONSE: Dict[str, Any] = {
     "likes": 500,
     "library_name": "transformers",
     "tags": ["text-generation", "pytorch"],
-    "cardData": {
-        "license": "mit"
-    }
+    "cardData": {"license": "mit"},
 }
 
 MINIMAL_MODEL_RESPONSE: Dict[str, Any] = {
     "id": "test/minimal-model",
-    "modelId": "test/minimal-model"
+    "modelId": "test/minimal-model",
 }
 
 EMPTY_MODEL_RESPONSE: Dict[str, Any] = {}
@@ -39,11 +37,12 @@ EMPTY_MODEL_RESPONSE: Dict[str, Any] = {}
         ("   ", False),
         ("facebook/bart-large", True),
     ],
-)  # type: ignore[misc]
+)
 def test_get_model_info_inputs(
     monkeypatch: pytest.MonkeyPatch, model_id: str, expected_success: bool
 ) -> None:
     """Test various input formats for model_id parameter."""
+
     def mock_requests_get(url: str, timeout: int) -> Mock:
         mock_resp = Mock()
         mock_resp.raise_for_status = Mock()
@@ -161,8 +160,7 @@ def test_get_model_info_timeout(mock_get: Mock) -> None:
 @patch("requests.get")
 def test_get_model_info_connection_error(mock_get: Mock) -> None:
     """Test handling of network connection errors."""
-    mock_get.side_effect = requests.exceptions.ConnectionError(
-        "Connection failed")
+    mock_get.side_effect = requests.exceptions.ConnectionError("Connection failed")
 
     model_info, elapsed = hugging_face_api.get_model_info("test/model")
 
@@ -232,8 +230,7 @@ def test_timing_measurement() -> None:
 
 @patch("os.getenv")
 @patch("requests.get")
-def test_log_level_environment_variable(mock_get: Mock,
-                                        mock_getenv: Mock) -> None:
+def test_log_level_environment_variable(mock_get: Mock, mock_getenv: Mock) -> None:
     """Test that LOG_LEVEL environment variable controls error printing."""
     mock_get.side_effect = Exception("Test error")
 

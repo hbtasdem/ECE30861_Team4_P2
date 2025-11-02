@@ -5,7 +5,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 # Add the src directory to the path so we can import bus_factor
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from bus_factor import bus_factor_score  # noqa: E402
 from bus_factor import get_huggingface_contributors  # noqa: E402
@@ -20,7 +20,7 @@ class TestBusFactorScore(unittest.TestCase):
             "moonshotai/Kimi-K2-Instruct-0905",
             "microsoft/CodeBERT-base",
             "bert-base-uncased",
-            "microsoft/DialoGPT-medium"
+            "microsoft/DialoGPT-medium",
         ]
 
         # Known expected contributor counts (manually verified)
@@ -28,14 +28,14 @@ class TestBusFactorScore(unittest.TestCase):
             "moonshotai/Kimi-K2-Instruct-0905": 5,
             "microsoft/CodeBERT-base": 3,
             "bert-base-uncased": 14,
-            "microsoft/DialoGPT-medium": 6
+            "microsoft/DialoGPT-medium": 6,
         }
 
     def test_bus_factor_score_timing(self) -> None:
         """Test bus_factor_score function and measure execution time."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("BUS FACTOR SCORE TIMING TESTS")
-        print("="*60)
+        print("=" * 60)
 
         for model_id in self.test_models:
             print(f"\nTesting model: {model_id}")
@@ -57,14 +57,15 @@ class TestBusFactorScore(unittest.TestCase):
             self.assertGreaterEqual(contributors, 0)
             self.assertGreaterEqual(latency, 0)
 
-            self.assertLess(execution_time, 10.0,
-                            f"Function took too long: {execution_time:.3f}s")
+            self.assertLess(
+                execution_time, 10.0, f"Function took too long: {execution_time:.3f}s"
+            )
 
     def test_bus_factor_score_correctness(self) -> None:
         """Test that bus_factor_score returns correct contributor counts."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("BUS FACTOR SCORE CORRECTNESS TESTS")
-        print("="*60)
+        print("=" * 60)
 
         for model_id in self.test_models:
             print(f"\nTesting model: {model_id}")
@@ -73,8 +74,7 @@ class TestBusFactorScore(unittest.TestCase):
             actual_result = bus_factor_score(model_id)
             end_time = time.time()
 
-            expected_result = self.expected_contributors.get(model_id,
-                                                             "Unknown")
+            expected_result = self.expected_contributors.get(model_id, "Unknown")
             execution_time = end_time - start_time
 
             print(f"  Expected: {expected_result} contributors")
@@ -82,10 +82,13 @@ class TestBusFactorScore(unittest.TestCase):
             print(f"  Execution time: {execution_time:.3f} seconds")
 
             contributors, latency = actual_result
-            self.assertEqual(contributors, expected_result,
-                             f"Contributor count mismatch for {model_id}. "
-                             f"Expected: {expected_result}, "
-                             f"Got: {contributors}")
+            self.assertEqual(
+                contributors,
+                expected_result,
+                f"Contributor count mismatch for {model_id}. "
+                f"Expected: {expected_result}, "
+                f"Got: {contributors}",
+            )
 
             self.assertIsInstance(contributors, int)
             self.assertGreaterEqual(contributors, 0)
@@ -94,9 +97,9 @@ class TestBusFactorScore(unittest.TestCase):
 
     def test_get_huggingface_contributors_timing(self) -> None:
         """Test get_huggingface_contributors function and measure execution."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("HUGGING FACE CONTRIBUTORS TIMING TESTS")
-        print("="*60)
+        print("=" * 60)
 
         for model_id in self.test_models:
             print(f"\nTesting model: {model_id}")
@@ -115,15 +118,15 @@ class TestBusFactorScore(unittest.TestCase):
 
     def test_invalid_model(self) -> None:
         """Test that invalid model IDs return 0."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("INVALID MODEL TESTS")
-        print("="*60)
+        print("=" * 60)
 
         invalid_models = [
             "invalid/model-that-does-not-exist",
             "nonexistent/author",
             "fake/model/with/slashes",
-            ""
+            "",
         ]
 
         for model_id in invalid_models:
@@ -142,9 +145,9 @@ class TestBusFactorScore(unittest.TestCase):
 
     def test_performance_benchmark(self) -> None:
         """Run a performance benchmark with multiple iterations."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("PERFORMANCE BENCHMARK")
-        print("="*60)
+        print("=" * 60)
 
         model_id = "moonshotai/Kimi-K2-Instruct-0905"
         iterations = 3
@@ -243,20 +246,23 @@ class TestBusFactorScore(unittest.TestCase):
 def run_timing_tests() -> bool:
     """Run all tests with detailed timing information."""
     print("Starting Bus Factor Score Unit Tests with Timing...")
-    print("="*80)
+    print("=" * 80)
 
     suite = unittest.TestLoader().loadTestsFromTestCase(TestBusFactorScore)
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("TEST SUMMARY")
-    print("="*80)
+    print("=" * 80)
     print(f"Tests run: {result.testsRun}")
     print(f"Failures: {len(result.failures)}")
     print(f"Errors: {len(result.errors)}")
-    success_rate = ((result.testsRun - len(result.failures) -
-                     len(result.errors)) / result.testsRun * 100)
+    success_rate = (
+        (result.testsRun - len(result.failures) - len(result.errors))
+        / result.testsRun
+        * 100
+    )
     print(f"Success rate: {success_rate:.1f}%")
 
     return result.wasSuccessful()

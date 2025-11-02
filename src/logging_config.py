@@ -21,6 +21,7 @@ from typing import Any, Dict, Optional
 
 class LogLevel(Enum):
     """Log level enumeration for better type safety."""
+
     DEBUG = "DEBUG"
     INFO = "INFO"
     WARNING = "WARNING"
@@ -35,9 +36,15 @@ class LoggingConfig:
         self.log_dir = Path("logs")
         self.log_dir.mkdir(exist_ok=True)
 
-        # Verbosity configuration: 0=silent, 1=informational, 2=debug
-        self.verbosity = self._get_verbosity_from_env("VERBOSITY", "0")
-        self.console_level = self._verbosity_to_log_level(self.verbosity)
+        # Check for CONSOLE_LOG_LEVEL first (for direct level setting)
+        console_log_level_str = os.getenv("CONSOLE_LOG_LEVEL")
+        if console_log_level_str:
+            self.console_level = getattr(logging, console_log_level_str, logging.INFO)
+        else:
+            # Fall back to verbosity configuration
+            self.verbosity = self._get_verbosity_from_env("VERBOSITY", "0")
+            self.console_level = self._verbosity_to_log_level(self.verbosity)
+
         self.file_level = logging.DEBUG  # Always log everything to file
         self.log_format = os.getenv("LOG_FORMAT", "detailed")
         self.max_file_size = int(os.getenv("MAX_LOG_FILE_SIZE", "10485760"))
@@ -49,8 +56,7 @@ class LoggingConfig:
         try:
             verbosity = int(verbosity_str)
             if verbosity not in [0, 1, 2]:
-                raise ValueError(
-                    f"Verbosity must be 0, 1, or 2, got {verbosity}")
+                raise ValueError(f"Verbosity must be 0, 1, or 2, got {verbosity}")
             return verbosity
         except ValueError:
             return 0  # Default to silent
@@ -66,28 +72,27 @@ class LoggingConfig:
         else:
             return logging.CRITICAL + 1  # Default to silent
 
-    def get_formatter(
-        self, format_type: str = "detailed"
-    ) -> logging.Formatter:
+    def get_formatter(self, format_type: str = "detailed") -> logging.Formatter:
         """Get appropriate formatter based on type."""
         if format_type == "simple":
             return logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                datefmt='%H:%M:%S'
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                datefmt="%H:%M:%S",
             )
         elif format_type == "detailed":
             return logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - '
-                '%(filename)s:%(lineno)d - %(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S'
+                "%(asctime)s - %(name)s - %(levelname)s - "
+                "%(filename)s:%(lineno)d - %(message)s",
+                datefmt="%Y-%m-%d %H:%M:%S",
             )
         elif format_type == "json":
             return JsonFormatter()
         else:
-            return logging.Formatter('%(message)s')
+            return logging.Formatter("%(message)s")
 
-    def setup_logger(self, name: str,
-                     correlation_id: Optional[str] = None) -> logging.Logger:
+    def setup_logger(
+        self, name: str, correlation_id: Optional[str] = None
+    ) -> logging.Logger:
         """Set up a logger with console and file handlers."""
         logger = logging.getLogger(name)
         # Set to lowest level, handlers will filter
@@ -103,13 +108,12 @@ class LoggingConfig:
         logger.addHandler(console_handler)
 
         # File handler with rotation
-        log_file = (self.log_dir /
-                    f"{name}_{datetime.now().strftime('%Y%m%d')}.log")
+        log_file = self.log_dir / f"{name}_{datetime.now().strftime('%Y%m%d')}.log"
         file_handler = logging.handlers.RotatingFileHandler(
             log_file,
             maxBytes=self.max_file_size,
             backupCount=self.backup_count,
-            encoding='utf-8'
+            encoding="utf-8",
         )
         file_handler.setLevel(self.file_level)
         file_handler.setFormatter(self.get_formatter("detailed"))
@@ -122,6 +126,7 @@ class LoggingConfig:
                 record = old_factory(*args, **kwargs)
                 record.correlation_id = correlation_id
                 return record
+
             old_factory = logging.getLogRecordFactory()
             logging.setLogRecordFactory(record_factory)
 
@@ -144,7 +149,7 @@ class JsonFormatter(logging.Formatter):
         }
 
         # Add correlation ID if present
-        if hasattr(record, 'correlation_id'):
+        if hasattr(record, "correlation_id"):
             log_entry["correlation_id"] = record.correlation_id
 
         # Add exception info if present
@@ -167,8 +172,9 @@ class LoggerManager:
             cls._instance._config = LoggingConfig()
         return cls._instance
 
-    def get_logger(self, name: str,
-                   correlation_id: Optional[str] = None) -> logging.Logger:
+    def get_logger(
+        self, name: str, correlation_id: Optional[str] = None
+    ) -> logging.Logger:
         """Get or create a logger with the given name."""
         # Always recreate config to pick up environment changes
         self._config = LoggingConfig()
@@ -187,6 +193,7 @@ class LoggerManager:
             record = old_factory(*args, **kwargs)
             record.correlation_id = correlation_id
             return record
+
         old_factory = logging.getLogRecordFactory()
         logging.setLogRecordFactory(record_factory)
 
@@ -195,8 +202,7 @@ class LoggerManager:
 logger_manager = LoggerManager()
 
 
-def get_logger(name: str,
-               correlation_id: Optional[str] = None) -> logging.Logger:
+def get_logger(name: str, correlation_id: Optional[str] = None) -> logging.Logger:
     """
     Get a logger instance.
 
@@ -227,8 +233,11 @@ def set_log_level(level: str) -> None:
                 handler.setLevel(level_int)
 
 
-def log_function_call(func_name: str, args: Optional[Dict[str, Any]] = None,
-                      logger: Optional[logging.Logger] = None) -> None:
+def log_function_call(
+    func_name: str,
+    args: Optional[Dict[str, Any]] = None,
+    logger: Optional[logging.Logger] = None,
+) -> None:
     """
     Log function call with arguments for debugging.
 
@@ -246,8 +255,9 @@ def log_function_call(func_name: str, args: Optional[Dict[str, Any]] = None,
         logger.debug(f"Calling {func_name}")
 
 
-def log_performance(operation: str, duration: float,
-                    logger: Optional[logging.Logger] = None) -> None:
+def log_performance(
+    operation: str, duration: float, logger: Optional[logging.Logger] = None
+) -> None:
     """
     Log performance metrics.
 
@@ -262,8 +272,9 @@ def log_performance(operation: str, duration: float,
     logger.info(f"Performance: {operation} completed in {duration:.3f}s")
 
 
-def log_error_with_context(error: Exception, context: str = "",
-                           logger: Optional[logging.Logger] = None) -> None:
+def log_error_with_context(
+    error: Exception, context: str = "", logger: Optional[logging.Logger] = None
+) -> None:
     """
     Log error with additional context information.
 

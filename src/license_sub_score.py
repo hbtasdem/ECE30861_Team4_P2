@@ -10,9 +10,21 @@ import requests
 # https://huggingface.co/docs/hub/en/repositories-licenses for the codes
 # https://www.gnu.org/licenses/license-list.html for compatibility
 COMPATIBLE_LICENSES = {
-    'gpl-2.0', 'gpl-3.0', 'lgpl-2.1', 'artistic-2.0', 'mit', 'bsl-1.0',
-    'bsd-3-clause', 'cc0-1.0', 'cc-by-4.0', 'wtfpl', 'isc', 'ncsa',
-    'unlicense', 'zlib', 'apache-2.0',
+    "gpl-2.0",
+    "gpl-3.0",
+    "lgpl-2.1",
+    "artistic-2.0",
+    "mit",
+    "bsl-1.0",
+    "bsd-3-clause",
+    "cc0-1.0",
+    "cc-by-4.0",
+    "wtfpl",
+    "isc",
+    "ncsa",
+    "unlicense",
+    "zlib",
+    "apache-2.0",
 }
 
 
@@ -43,8 +55,9 @@ Handles both YAML front matter and '## License' sections.
 
 def extract_license(readme_text: str) -> Optional[str]:
     # Case 1: YAML front matter
-    yaml_match = re.search(r"^---[\s\S]*?license:\s*([^\n]+)",
-                           readme_text, re.IGNORECASE | re.MULTILINE)
+    yaml_match = re.search(
+        r"^---[\s\S]*?license:\s*([^\n]+)", readme_text, re.IGNORECASE | re.MULTILINE
+    )
     if yaml_match:
         return yaml_match.group(1).strip().lower()
 
@@ -80,8 +93,9 @@ def license_sub_score(model_id: str) -> tuple[int, float]:
         return (0, end_time - start_time)
 
     # Normalize
-    normalized = license_str.lower().replace(
-        " ", "").replace("-", "").replace("license", "")
+    normalized = (
+        license_str.lower().replace(" ", "").replace("-", "").replace("license", "")
+    )
 
     for comp in COMPATIBLE_LICENSES:
         if comp.replace("-", "").replace(" ", "") in normalized:

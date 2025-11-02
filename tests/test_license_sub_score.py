@@ -45,7 +45,7 @@ README_EMPTY: str = ""
         ("---\nlicense: Apache-1.0\n---", 0),
         ("---\nlicense: MIT License\n---", 1),
     ],
-)  # type: ignore[misc]
+)
 def test_license_sub_score(
     monkeypatch: pytest.MonkeyPatch, readme_text: str, expected_score: int
 ) -> None:
@@ -53,8 +53,7 @@ def test_license_sub_score(
         return readme_text
 
     monkeypatch.setattr(license, "fetch_readme", mock_fetch_readme)
-    score, elapsed = license.license_sub_score(
-        "https://huggingface.co/mock-model")
+    score, elapsed = license.license_sub_score("https://huggingface.co/mock-model")
     assert score == expected_score
     assert elapsed >= 0
 
@@ -64,8 +63,7 @@ def test_license_sub_score_empty(monkeypatch: pytest.MonkeyPatch) -> None:
         return README_EMPTY
 
     monkeypatch.setattr(license, "fetch_readme", mock_fetch_readme)
-    score, _ = license.license_sub_score(
-        "https://huggingface.co/mock-model")
+    score, _ = license.license_sub_score("https://huggingface.co/mock-model")
     assert score == 0
 
 
@@ -97,8 +95,7 @@ def test_fetch_readme_success(mock_get: Mock) -> None:
     mock_resp.text = README_YAML
     mock_get.return_value = mock_resp
 
-    result: Optional[str] = license.fetch_readme(
-        "https://huggingface.co/mock-model")
+    result: Optional[str] = license.fetch_readme("https://huggingface.co/mock-model")
     assert result is not None
     assert "MIT" in result
 
@@ -111,7 +108,8 @@ def test_fetch_readme_tree_main(mock_get: Mock) -> None:
     mock_get.return_value = mock_resp
 
     result: Optional[str] = license.fetch_readme(
-        "https://huggingface.co/model/tree/main")
+        "https://huggingface.co/model/tree/main"
+    )
     assert result is not None
     assert result == "Tree main README"
 
@@ -119,6 +117,5 @@ def test_fetch_readme_tree_main(mock_get: Mock) -> None:
 @patch("requests.get")
 def test_fetch_readme_failure(mock_get: Mock) -> None:
     mock_get.side_effect = Exception("Network error")
-    result: Optional[str] = license.fetch_readme(
-        "https://huggingface.co/mock-model")
+    result: Optional[str] = license.fetch_readme("https://huggingface.co/mock-model")
     assert result is None
