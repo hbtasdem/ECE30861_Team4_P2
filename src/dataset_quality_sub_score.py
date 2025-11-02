@@ -2,8 +2,8 @@ import re
 import time
 from typing import Optional, Set, Tuple
 
-from src.license_sub_score import fetch_readme
 import src.license_sub_score as license_sub_score
+from src.license_sub_score import fetch_readme
 
 
 def _get_ai_score(readme_text: str, model_id: str, aspect: str) -> float:
