@@ -2,7 +2,8 @@ import re
 import time
 from typing import Optional, Set, Tuple
 
-import license_sub_score
+from src.license_sub_score import fetch_readme
+import src.license_sub_score as license_sub_score
 
 
 def _get_ai_score(readme_text: str, model_id: str, aspect: str) -> float:
@@ -673,7 +674,7 @@ def dataset_quality_sub_score(
     # If no external dataset link, check README for references to known
     # datasets
     if not has_external_dataset:
-        readme = license_sub_score.fetch_readme(model_id)
+        readme = fetch_readme(model_id)
         if readme and encountered_datasets:
             # Check if README references any previously encountered datasets
             dataset_available = check_readme_for_known_datasets(
@@ -692,7 +693,7 @@ def dataset_quality_sub_score(
             encountered_datasets.add(dataset_id)
 
     # Fetch README
-    readme = license_sub_score.fetch_readme(model_id)
+    readme = fetch_readme(model_id)
     if not readme:
         end_time = time.time()
         return (0.0, end_time - start_time)
