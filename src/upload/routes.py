@@ -1,6 +1,6 @@
 # routes.py
 import json
-from typing import Optional
+from typing import Callable, Optional, cast
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session

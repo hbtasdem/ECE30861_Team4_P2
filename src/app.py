@@ -2,7 +2,7 @@
 import os
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Callable, Dict, cast
 
 from fastapi import FastAPI  # noqa: E402
 
@@ -28,7 +28,7 @@ app.include_router(upload_router)
 
 
 @app.get("/")
-async def root() -> Dict[str, Any]:
+def root() -> Dict[str, Any]:
     """API root - returns available endpoints"""
     return {
         "message": "Model Registry API",
@@ -42,7 +42,7 @@ async def root() -> Dict[str, Any]:
 
 
 @app.get("/health")
-async def health_check() -> Dict[str, str]:
+def health_check() -> Dict[str, str]:
     """Health check endpoint"""
     return {"status": "ok"}
 # uvicorn src.app:app --host 127.0.0.1 --port 8000 --reload
