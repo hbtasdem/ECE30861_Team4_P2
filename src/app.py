@@ -45,6 +45,8 @@ def root() -> Dict[str, Any]:
 def health_check() -> Dict[str, str]:
     """Health check endpoint"""
     return {"status": "ok"}
+
+
 # uvicorn src.app:app --host 127.0.0.1 --port 8000 --reload
 # then in browser add /health to the end and you see... something!
 
