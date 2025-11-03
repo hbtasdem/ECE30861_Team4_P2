@@ -19,7 +19,6 @@ from pathlib import Path
 
 import requests
 
-
 # Configuration
 BASE_URL = "http://127.0.0.1:8000"
 API_ENDPOINT = f"{BASE_URL}/api/models/upload"
