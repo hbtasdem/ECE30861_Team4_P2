@@ -2,7 +2,7 @@
 import os
 import sys
 from pathlib import Path
-from typing import Any, Callable, Dict, cast
+from typing import Any, Callable, Dict
 
 from fastapi import FastAPI  # noqa: E402
 
