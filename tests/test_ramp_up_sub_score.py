@@ -45,7 +45,7 @@ README_NONE = ""
         (10000, 0, README_PLAIN, 0.25),
         (0, 100, README_WITH_CODE, 0.5),
     ],
-)  # type: ignore[misc]
+)
 def test_ramp_up_time_score(
     mock_fetch_readme: Any,
     mock_get_model_info: Any,

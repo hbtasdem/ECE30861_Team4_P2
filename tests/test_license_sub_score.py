@@ -47,7 +47,7 @@ README_EMPTY: str = ""
         ("---\nlicense: Apache-1.0\n---", 0),
         ("---\nlicense: MIT License\n---", 1),
     ],
-)  # type: ignore[misc]
+)
 def test_license_sub_score(
     monkeypatch: pytest.MonkeyPatch, readme_text: str, expected_score: int
 ) -> None:

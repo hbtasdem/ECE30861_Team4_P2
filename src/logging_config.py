@@ -5,7 +5,7 @@ This module provides a comprehensive logging system with:
 - Verbosity levels: 0=silent, 1=informational, 2=debug (default=0)
 - File and console output with different formats
 - Log rotation and management
-- Environment variable configuration (VERBOSITY)
+- Environment variable configuration (LOG_LEVEL)
 - Structured logging with correlation IDs
 """
 
@@ -36,9 +36,15 @@ class LoggingConfig:
         self.log_dir = Path("logs")
         self.log_dir.mkdir(exist_ok=True)
 
-        # Verbosity configuration: 0=silent, 1=informational, 2=debug
-        self.verbosity = self._get_verbosity_from_env("VERBOSITY", "0")
-        self.console_level = self._verbosity_to_log_level(self.verbosity)
+        # Check for CONSOLE_LOG_LEVEL first (for direct level setting)
+        console_log_level_str = os.getenv("CONSOLE_LOG_LEVEL")
+        if console_log_level_str:
+            self.console_level = getattr(logging, console_log_level_str, logging.INFO)
+        else:
+            # Fall back to verbosity configuration
+            self.verbosity = self._get_verbosity_from_env("VERBOSITY", "0")
+            self.console_level = self._verbosity_to_log_level(self.verbosity)
+
         self.file_level = logging.DEBUG  # Always log everything to file
         self.log_format = os.getenv("LOG_FORMAT", "detailed")
         self.max_file_size = int(os.getenv("MAX_LOG_FILE_SIZE", "10485760"))
@@ -58,13 +64,13 @@ class LoggingConfig:
     def _verbosity_to_log_level(self, verbosity: int) -> int:
         """Convert verbosity level to logging level."""
         if verbosity == 0:
-            return logging.CRITICAL + 1  # Silent - no output
+            return logging.CRITICAL  # Silent - no output
         elif verbosity == 1:
             return logging.INFO  # Informational messages
         elif verbosity == 2:
             return logging.DEBUG  # Debug messages
         else:
-            return logging.CRITICAL + 1  # Default to silent
+            return logging.CRITICAL  # Default to silent
 
     def get_formatter(self, format_type: str = "detailed") -> logging.Formatter:
         """Get appropriate formatter based on type."""

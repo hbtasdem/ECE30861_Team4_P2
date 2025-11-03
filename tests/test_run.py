@@ -207,7 +207,7 @@ https://github.com/test2,,https://huggingface.co/model2
                 env=env,
             )
             self.assertEqual(result.returncode, 1)
-            self.assertIn("Error: Log file directory does not exist", result.stderr)
+            self.assertIn("Error: Log file does not exist", result.stderr)
         finally:
             os.unlink(temp_file)
 

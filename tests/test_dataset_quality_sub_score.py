@@ -1,11 +1,8 @@
 from unittest.mock import Mock, patch
-import sys
 
 import pytest
- # Add the src directory to the path so we can import the module
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from dataset_quality_sub_score import dataset_quality_sub_score
+import src.dataset_quality_sub_score as dataset_quality
 
 # Test data for various README scenarios
 README_WITH_DOCUMENTATION = """
@@ -125,7 +122,7 @@ class TestDocumentationEvaluation:
 
     def test_evaluate_dataset_documentation_comprehensive(self) -> None:
         """Test comprehensive documentation scoring."""
-        score = dataset_quality_sub_score.evaluate_dataset_documentation(
+        score = dataset_quality.evaluate_dataset_documentation(
             README_WITH_DOCUMENTATION
         )
         assert 0.0 <= score <= 1.0
@@ -133,13 +130,13 @@ class TestDocumentationEvaluation:
 
     def test_evaluate_dataset_documentation_minimal(self) -> None:
         """Test minimal documentation scoring."""
-        score = dataset_quality_sub_score.evaluate_dataset_documentation(README_MINIMAL)
+        score = dataset_quality.evaluate_dataset_documentation(README_MINIMAL)
         assert 0.0 <= score <= 1.0
         assert score < 0.5  # Should have low documentation score
 
     def test_evaluate_dataset_documentation_empty(self) -> None:
         """Test empty README scoring."""
-        score = dataset_quality_sub_score.evaluate_dataset_documentation(README_EMPTY)
+        score = dataset_quality.evaluate_dataset_documentation(README_EMPTY)
         assert score == 0.0
 
 
@@ -148,19 +145,19 @@ class TestLicenseEvaluation:
 
     def test_evaluate_license_clarity_with_license(self) -> None:
         """Test license scoring with explicit license."""
-        score = dataset_quality_sub_score.evaluate_license_clarity(README_WITH_LICENSE)
+        score = dataset_quality.evaluate_license_clarity(README_WITH_LICENSE)
         assert 0.0 <= score <= 1.0
         assert score > 0.5  # Should have good license clarity
 
     def test_evaluate_license_clarity_without_license(self) -> None:
         """Test license scoring without license information."""
-        score = dataset_quality_sub_score.evaluate_license_clarity(README_MINIMAL)
+        score = dataset_quality.evaluate_license_clarity(README_MINIMAL)
         assert 0.0 <= score <= 1.0
         assert score < 0.5  # Should have low license score
 
     def test_evaluate_license_clarity_empty(self) -> None:
         """Test empty README license scoring."""
-        score = dataset_quality_sub_score.evaluate_license_clarity(README_EMPTY)
+        score = dataset_quality.evaluate_license_clarity(README_EMPTY)
         assert score == 0.0
 
 
@@ -169,19 +166,19 @@ class TestSafetyPrivacyEvaluation:
 
     def test_evaluate_safety_privacy_with_considerations(self) -> None:
         """Test safety scoring with considerations."""
-        score = dataset_quality_sub_score.evaluate_safety_privacy(README_WITH_SAFETY)
+        score = dataset_quality.evaluate_safety_privacy(README_WITH_SAFETY)
         assert 0.0 <= score <= 1.0
         assert score > 0.5  # Should have good safety considerations
 
     def test_evaluate_safety_privacy_without_considerations(self) -> None:
         """Test safety scoring without considerations."""
-        score = dataset_quality_sub_score.evaluate_safety_privacy(README_MINIMAL)
+        score = dataset_quality.evaluate_safety_privacy(README_MINIMAL)
         assert 0.0 <= score <= 1.0
         assert score < 0.5  # Should have low safety score
 
     def test_evaluate_safety_privacy_empty(self) -> None:
         """Test empty README safety scoring."""
-        score = dataset_quality_sub_score.evaluate_safety_privacy(README_EMPTY)
+        score = dataset_quality.evaluate_safety_privacy(README_EMPTY)
         assert score == 0.0
 
 
@@ -190,19 +187,19 @@ class TestCurationEvaluation:
 
     def test_evaluate_curation_quality_with_curation(self) -> None:
         """Test curation scoring with quality measures."""
-        score = dataset_quality_sub_score.evaluate_curation_quality(README_WITH_CURATION)
+        score = dataset_quality.evaluate_curation_quality(README_WITH_CURATION)
         assert 0.0 <= score <= 1.0
         assert score > 0.5  # Should have good curation info
 
     def test_evaluate_curation_quality_without_curation(self) -> None:
         """Test curation scoring without quality measures."""
-        score = dataset_quality_sub_score.evaluate_curation_quality(README_MINIMAL)
+        score = dataset_quality.evaluate_curation_quality(README_MINIMAL)
         assert 0.0 <= score <= 1.0
         assert score < 0.5  # Should have low curation score
 
     def test_evaluate_curation_quality_empty(self) -> None:
         """Test empty README curation scoring."""
-        score = dataset_quality_sub_score.evaluate_curation_quality(README_EMPTY)
+        score = dataset_quality.evaluate_curation_quality(README_EMPTY)
         assert score == 0.0
 
 
@@ -211,19 +208,19 @@ class TestReproducibilityEvaluation:
 
     def test_evaluate_reproducibility_with_instructions(self) -> None:
         """Test reproducibility scoring with instructions."""
-        score = dataset_quality_sub_score.evaluate_reproducibility(README_WITH_REPRODUCIBILITY)
+        score = dataset_quality.evaluate_reproducibility(README_WITH_REPRODUCIBILITY)
         assert 0.0 <= score <= 1.0
         assert score > 0.5  # Should have good reproducibility info
 
     def test_evaluate_reproducibility_without_instructions(self) -> None:
         """Test reproducibility scoring without instructions."""
-        score = dataset_quality_sub_score.evaluate_reproducibility(README_MINIMAL)
+        score = dataset_quality.evaluate_reproducibility(README_MINIMAL)
         assert 0.0 <= score <= 1.0
         assert score < 0.5  # Should have low reproducibility score
 
     def test_evaluate_reproducibility_empty(self) -> None:
         """Test empty README reproducibility scoring."""
-        score = dataset_quality_sub_score.evaluate_reproducibility(README_EMPTY)
+        score = dataset_quality.evaluate_reproducibility(README_EMPTY)
         assert score == 0.0
 
 
@@ -232,33 +229,33 @@ class TestHybridEvaluation:
 
     def test_evaluate_dataset_documentation_hybrid_no_ai(self) -> None:
         """Test hybrid documentation scoring without AI."""
-        score = dataset_quality_sub_score.evaluate_dataset_documentation_hybrid(
+        score = dataset_quality.evaluate_dataset_documentation_hybrid(
             README_WITH_DOCUMENTATION, "test-model", use_ai=False
         )
         # Should be same as deterministic score
-        deterministic_score = dataset_quality_sub_score.evaluate_dataset_documentation(
+        deterministic_score = dataset_quality.evaluate_dataset_documentation(
             README_WITH_DOCUMENTATION
         )
         assert score == deterministic_score
 
     def test_evaluate_safety_privacy_hybrid_no_ai(self) -> None:
         """Test hybrid safety scoring without AI."""
-        score = dataset_quality_sub_score.evaluate_safety_privacy_hybrid(
+        score = dataset_quality.evaluate_safety_privacy_hybrid(
             README_WITH_SAFETY, "test-model", use_ai=False
         )
         # Should be same as deterministic score
-        deterministic_score = dataset_quality_sub_score.evaluate_safety_privacy(
+        deterministic_score = dataset_quality.evaluate_safety_privacy(
             README_WITH_SAFETY
         )
         assert score == deterministic_score
 
     def test_evaluate_curation_quality_hybrid_no_ai(self) -> None:
         """Test hybrid curation scoring without AI."""
-        score = dataset_quality_sub_score.evaluate_curation_quality_hybrid(
+        score = dataset_quality.evaluate_curation_quality_hybrid(
             README_WITH_CURATION, "test-model", use_ai=False
         )
         # Should be same as deterministic score
-        deterministic_score = dataset_quality_sub_score.evaluate_curation_quality(
+        deterministic_score = dataset_quality.evaluate_curation_quality(
             README_WITH_CURATION
         )
         assert score == deterministic_score
@@ -270,12 +267,12 @@ class TestHybridEvaluation:
         """Test hybrid documentation scoring with AI."""
         mock_ai_score.return_value = 0.8
 
-        score = dataset_quality_sub_score.evaluate_dataset_documentation_hybrid(
+        score = dataset_quality.evaluate_dataset_documentation_hybrid(
             README_WITH_DOCUMENTATION, "test-model", use_ai=True
         )
 
         # Should be weighted combination of deterministic and AI scores
-        deterministic_score = dataset_quality_sub_score.evaluate_dataset_documentation(
+        deterministic_score = dataset_quality.evaluate_dataset_documentation(
             README_WITH_DOCUMENTATION
         )
         expected_score = (deterministic_score * 0.7) + (0.8 * 0.3)
@@ -285,12 +282,12 @@ class TestHybridEvaluation:
     def test_hybrid_ai_fallback(self, mock_ai_score: Mock) -> None:
         """Test that hybrid functions fallback to deterministic."""
         mock_ai_score.return_value = 0.0  # AI failed
-        score = dataset_quality_sub_score.evaluate_dataset_documentation_hybrid(
+        score = dataset_quality.evaluate_dataset_documentation_hybrid(
             README_WITH_DOCUMENTATION, "test-model", use_ai=True
         )
 
         # Should fallback to deterministic score
-        deterministic_score = dataset_quality_sub_score.evaluate_dataset_documentation(
+        deterministic_score = dataset_quality.evaluate_dataset_documentation(
             README_WITH_DOCUMENTATION
         )
         assert score == deterministic_score
@@ -302,18 +299,18 @@ class TestDatasetIdentifierExtraction:
     def test_extract_dataset_identifier_huggingface(self) -> None:
         """Test extracting identifier from Hugging Face dataset URL."""
         url = "https://huggingface.co/datasets/bookcorpus/bookcorpus"
-        identifier = dataset_quality_sub_score.extract_dataset_identifier(url)
+        identifier = dataset_quality.extract_dataset_identifier(url)
         assert identifier == "bookcorpus/bookcorpus"
 
     def test_extract_dataset_identifier_generic(self) -> None:
         """Test extracting identifier from generic URL."""
         url = "https://example.com/path/to/dataset"
-        identifier = dataset_quality_sub_score.extract_dataset_identifier(url)
+        identifier = dataset_quality.extract_dataset_identifier(url)
         assert identifier == "example.com/path/to/dataset"
 
     def test_extract_dataset_identifier_empty(self) -> None:
         """Test extracting identifier from empty URL."""
-        identifier = dataset_quality_sub_score.extract_dataset_identifier("")
+        identifier = dataset_quality.extract_dataset_identifier("")
         assert identifier == ""
 
 
@@ -324,26 +321,26 @@ class TestKnownDatasetChecking:
         """Test direct dataset name match in README."""
         readme = "This model uses the bookcorpus/bookcorpus dataset"
         encountered = {"bookcorpus/bookcorpus"}
-        result = dataset_quality_sub_score.check_readme_for_known_datasets(readme, encountered)
+        result = dataset_quality.check_readme_for_known_datasets(readme, encountered)
         assert result is True
 
     def test_check_readme_for_known_datasets_partial_match(self) -> None:
         """Test partial dataset name match in README."""
         readme = "This model uses bookcorpus data for training"
         encountered = {"bookcorpus/bookcorpus"}
-        result = dataset_quality_sub_score.check_readme_for_known_datasets(readme, encountered)
+        result = dataset_quality.check_readme_for_known_datasets(readme, encountered)
         assert result is True
 
     def test_check_readme_for_known_datasets_no_match(self) -> None:
         """Test no dataset match in README."""
         readme = "This model uses custom data"
         encountered = {"bookcorpus/bookcorpus"}
-        result = dataset_quality_sub_score.check_readme_for_known_datasets(readme, encountered)
+        result = dataset_quality.check_readme_for_known_datasets(readme, encountered)
         assert result is False
 
     def test_check_readme_for_known_datasets_empty_sets(self) -> None:
         """Test with empty inputs."""
-        result = dataset_quality_sub_score.check_readme_for_known_datasets("", set())
+        result = dataset_quality.check_readme_for_known_datasets("", set())
         assert result is False
 
 
@@ -352,7 +349,7 @@ class TestDatasetAvailabilityScoring:
 
     def test_no_dataset_available(self) -> None:
         """Test scoring when no dataset is available."""
-        score, elapsed = dataset_quality_sub_score.dataset_quality_sub_score("test-model")
+        score, elapsed = dataset_quality.dataset_quality_sub_score("test-model")
         assert score == 0.0
         assert elapsed >= 0
 
@@ -361,7 +358,7 @@ class TestDatasetAvailabilityScoring:
         """Test scoring when dataset is available via external link."""
         mock_fetch_readme.return_value = README_COMPREHENSIVE
 
-        score, elapsed = dataset_quality_sub_score.dataset_quality_sub_score(
+        score, elapsed = dataset_quality.dataset_quality_sub_score(
             "test-model", dataset_link="https://huggingface.co/datasets/test"
         )
 
@@ -378,7 +375,7 @@ class TestDatasetAvailabilityScoring:
         mock_check.return_value = True  # Found reference to known dataset
 
         encountered = {"known-dataset"}
-        score, elapsed = dataset_quality_sub_score.dataset_quality_sub_score(
+        score, elapsed = dataset_quality.dataset_quality_sub_score(
             "test-model", encountered_datasets=encountered
         )
 
@@ -393,7 +390,7 @@ class TestDatasetAvailabilityScoring:
         mock_fetch_readme.return_value = README_COMPREHENSIVE
 
         encountered: set[str] = set()
-        dataset_quality_sub_score.dataset_quality_sub_score(
+        dataset_quality.dataset_quality_sub_score(
             "test-model",
             dataset_link="https://huggingface.co/datasets/test-dataset",
             encountered_datasets=encountered,
@@ -413,7 +410,7 @@ class TestDatasetQualitySubScore:
         """Test comprehensive dataset quality scoring with external dataset."""
         mock_fetch_readme.return_value = README_COMPREHENSIVE
 
-        score, elapsed = dataset_quality_sub_score.dataset_quality_sub_score(
+        score, elapsed = dataset_quality.dataset_quality_sub_score(
             "test-model", dataset_link="https://huggingface.co/datasets/test"
         )
 
@@ -426,7 +423,7 @@ class TestDatasetQualitySubScore:
         """Test minimal dataset quality scoring with external dataset."""
         mock_fetch_readme.return_value = README_MINIMAL
 
-        score, elapsed = dataset_quality_sub_score.dataset_quality_sub_score(
+        score, elapsed = dataset_quality.dataset_quality_sub_score(
             "test-model", dataset_link="https://huggingface.co/datasets/test"
         )
 
@@ -439,7 +436,7 @@ class TestDatasetQualitySubScore:
         """Test when README cannot be fetched but dataset link provided."""
         mock_fetch_readme.return_value = None
 
-        score, elapsed = dataset_quality_sub_score.dataset_quality_sub_score(
+        score, elapsed = dataset_quality.dataset_quality_sub_score(
             "test-model", dataset_link="https://huggingface.co/datasets/test"
         )
 
@@ -453,7 +450,7 @@ class TestDatasetQualitySubScore:
         """Test scoring with empty README but dataset link provided."""
         mock_fetch_readme.return_value = README_EMPTY
 
-        score, elapsed = dataset_quality_sub_score.dataset_quality_sub_score(
+        score, elapsed = dataset_quality.dataset_quality_sub_score(
             "test-model", dataset_link="https://huggingface.co/datasets/test"
         )
 
@@ -466,7 +463,7 @@ class TestDatasetQualitySubScore:
         """Test that timing is measured correctly."""
         mock_fetch_readme.return_value = README_COMPREHENSIVE
 
-        score, elapsed = dataset_quality_sub_score.dataset_quality_sub_score(
+        score, elapsed = dataset_quality.dataset_quality_sub_score(
             "test-model", dataset_link="https://huggingface.co/datasets/test"
         )
 
@@ -479,7 +476,7 @@ class TestDatasetQualitySubScore:
         """Test dataset quality scoring without AI enhancement."""
         mock_fetch_readme.return_value = README_COMPREHENSIVE
 
-        score_no_ai, elapsed = dataset_quality_sub_score.dataset_quality_sub_score(
+        score_no_ai, elapsed = dataset_quality.dataset_quality_sub_score(
             "test-model",
             dataset_link="https://huggingface.co/datasets/test",
             use_ai=False,
@@ -498,12 +495,12 @@ class TestDatasetQualitySubScore:
         mock_fetch_readme.return_value = README_COMPREHENSIVE
         mock_ai_score.return_value = 0.9  # High AI score
 
-        score_with_ai, elapsed = dataset_quality_sub_score.dataset_quality_sub_score(
+        score_with_ai, elapsed = dataset_quality.dataset_quality_sub_score(
             "test-model",
             dataset_link="https://huggingface.co/datasets/test",
             use_ai=True,
         )
-        score_no_ai, _ = dataset_quality_sub_score.dataset_quality_sub_score(
+        score_no_ai, _ = dataset_quality.dataset_quality_sub_score(
             "test-model",
             dataset_link="https://huggingface.co/datasets/test",
             use_ai=False,
@@ -519,11 +516,11 @@ def test_all_evaluation_functions_return_valid_scores() -> None:
     """Test that all evaluation functions return valid scores."""
     test_readme = README_COMPREHENSIVE
 
-    doc_score = dataset_quality_sub_score.evaluate_dataset_documentation(test_readme)
-    license_score = dataset_quality_sub_score.evaluate_license_clarity(test_readme)
-    safety_score = dataset_quality_sub_score.evaluate_safety_privacy(test_readme)
-    curation_score = dataset_quality_sub_score.evaluate_curation_quality(test_readme)
-    repro_score = dataset_quality_sub_score.evaluate_reproducibility(test_readme)
+    doc_score = dataset_quality.evaluate_dataset_documentation(test_readme)
+    license_score = dataset_quality.evaluate_license_clarity(test_readme)
+    safety_score = dataset_quality.evaluate_safety_privacy(test_readme)
+    curation_score = dataset_quality.evaluate_curation_quality(test_readme)
+    repro_score = dataset_quality.evaluate_reproducibility(test_readme)
 
     # All scores should be between 0.0 and 1.0
     for score, name in [
@@ -542,12 +539,12 @@ def test_score_consistency() -> None:
         mock_fetch.return_value = README_COMPREHENSIVE
 
         # Test consistency without AI (deterministic)
-        score1, _ = dataset_quality_sub_score.dataset_quality_sub_score(
+        score1, _ = dataset_quality.dataset_quality_sub_score(
             "test-model",
             dataset_link="https://huggingface.co/datasets/test",
             use_ai=False,
         )
-        score2, _ = dataset_quality_sub_score.dataset_quality_sub_score(
+        score2, _ = dataset_quality.dataset_quality_sub_score(
             "test-model",
             dataset_link="https://huggingface.co/datasets/test",
             use_ai=False,
@@ -561,11 +558,11 @@ def test_all_five_criteria_included() -> None:
     test_readme = README_COMPREHENSIVE
 
     # Test each criterion individually
-    doc_score = dataset_quality_sub_score.evaluate_dataset_documentation(test_readme)
-    license_score = dataset_quality_sub_score.evaluate_license_clarity(test_readme)
-    safety_score = dataset_quality_sub_score.evaluate_safety_privacy(test_readme)
-    curation_score = dataset_quality_sub_score.evaluate_curation_quality(test_readme)
-    repro_score = dataset_quality_sub_score.evaluate_reproducibility(test_readme)
+    doc_score = dataset_quality.evaluate_dataset_documentation(test_readme)
+    license_score = dataset_quality.evaluate_license_clarity(test_readme)
+    safety_score = dataset_quality.evaluate_safety_privacy(test_readme)
+    curation_score = dataset_quality.evaluate_curation_quality(test_readme)
+    repro_score = dataset_quality.evaluate_reproducibility(test_readme)
 
     # Each should contribute to the final score
     assert doc_score > 0, "Documentation should score > 0"
@@ -580,7 +577,7 @@ def test_weight_distribution() -> None:
     with patch("src.dataset_quality_sub_score.fetch_readme") as mock_fetch:
         mock_fetch.return_value = README_COMPREHENSIVE
 
-        score, _ = dataset_quality_sub_score.dataset_quality_sub_score(
+        score, _ = dataset_quality.dataset_quality_sub_score(
             "test-model",
             dataset_link="https://huggingface.co/datasets/test",
         )
@@ -591,4 +588,37 @@ def test_weight_distribution() -> None:
 
 
 if __name__ == "__main__":
-    pytest.main([__file__])
+    # Test with a sample model
+    model_id = "google/gemma-2b"
+
+    print("=" * 60)
+    print("DATASET QUALITY SCORING TEST")
+    print("=" * 60)
+    print(f"Testing model: {model_id}")
+    print()
+
+    # Test deterministic scoring
+    print("🔍 Deterministic scoring (regex-based):")
+    score_det, elapsed_det = dataset_quality_sub_score(model_id, use_ai=False)
+    print(f"  Score: {score_det:.3f}")
+    print(f"  Time: {elapsed_det:.3f}s")
+    print()
+
+    # Test AI-enhanced scoring
+    print("🤖 AI-enhanced hybrid scoring:")
+    try:
+        score_ai, elapsed_ai = dataset_quality_sub_score(model_id, use_ai=True)
+        print(f"  Score: {score_ai:.3f}")
+        print(f"  Time: {elapsed_ai:.3f}s")
+        print(f"  Improvement: {score_ai - score_det:+.3f}")
+
+        if score_ai > score_det:
+            print("  ✅ AI enhancement improved the score")
+        elif score_ai < score_det:
+            print("  ⚠️ AI enhancement lowered the score")
+        else:
+            print("  ➡️ AI enhancement had no effect (likely AI unavailable)")
+
+    except Exception as e:
+        print(f"  ❌ AI enhancement failed: {e}")
+        print("  Make sure GEN_AI_STUDIO_API_KEY is set in your environment")

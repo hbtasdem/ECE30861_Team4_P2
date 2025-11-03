@@ -11,12 +11,12 @@ from typing import Any, Dict
 # Import scoring modules 
 import available_dataset_code_score
 import bus_factor
+import code_quality
 import dataset_quality_sub_score
 import license_sub_score
 import net_score_calculator
 import performance_claims_sub_score
 import ramp_up_sub_score
-import code_quality
 
 
 def extract_model_name(model_url: str) -> str:
@@ -35,13 +35,14 @@ def extract_model_name(model_url: str) -> str:
                 model_path = model_path.split("/tree/")[0]
             elif "/blob/" in model_path:
                 model_path = model_path.split("/blob/")[0]
-            return model_path
+            # Extract just the model name (last part after /)
+            return model_path.split("/")[-1] if "/" in model_path else model_path
     elif "/" in model_url:
         # For direct model IDs like microsoft/DialoGPT-medium
         parts = model_url.split("/")
         if len(parts) >= 2:
-            # Return organization/model format
-            return "/".join(parts[-2:])
+            # Return just the model name (last part)
+            return parts[-1]
 
     return model_url.strip()
 
@@ -124,7 +125,7 @@ def calculate_all_scores(code_link: str, dataset_link: str, model_link: str,
         result["size_score"] = {"raspberry_pi": 0.75, "jetson_nano": 0.80, "desktop_pc": 1.00, "aws_server": 1.00}
         result["size_score_latency"] = 40
     # Available Dataset Code Score
-    
+
     try:
         code_score, code_latency = (available_dataset_code_score.available_dataset_code_score(
             model_name, code_link, dataset_link, encountered_datasets, encountered_code))
@@ -143,15 +144,15 @@ def calculate_all_scores(code_link: str, dataset_link: str, model_link: str,
     # Code Quality
 
     try:
-            code_quality_score, code_quality_latency = code_quality.code_quality_score(model_name)
-            result["code_quality"] = code_quality_score
-            result["code_quality_latency"] = int(code_quality_latency * 1000)
-        
+        code_quality_score, code_quality_latency = code_quality.code_quality_score(model_name)
+        result["code_quality"] = code_quality_score
+        result["code_quality_latency"] = int(code_quality_latency * 1000)
+
     except Exception as e:
         print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
-        
+
     # Net Score (calculated from all other scores)
-        
+
     try:
         start_time = time.time()
         net_score_result = net_score_calculator.calculate_net_score(model_name)

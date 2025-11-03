@@ -20,7 +20,9 @@ types-requests
 # Testing dependencies (optional)
 pytest>=7.0.0
 pytest-cov>=4.0.0
+pytest-asyncio>=0.21.0
 httpx>=0.23.0
+pydantic>=2.0.0
 
 
 # Standard library modules (built-in, listed for reference)

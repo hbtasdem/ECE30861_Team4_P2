@@ -157,6 +157,9 @@ def validate_environment() -> int:
     # Check LOG_FILE - simple validation (don't create files)
     log_file = os.getenv("LOG_FILE")
     if log_file is not None:
+        log_dir = os.path.dirname(log_file) or "."
+        if not os.path.isdir(log_dir):
+            print(f"Error: Log file directory does not exist: {log_dir}", file=sys.stderr)
         if not os.path.exists(log_file):
             print(f"Error: Log file does not exist: {log_file}", file=sys.stderr)
             return 1

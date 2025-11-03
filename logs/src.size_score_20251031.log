@@ -1,0 +1,1417 @@
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.1, 5.2] GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2, 8.5, 14.4] GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 1.0 GB (converted)
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.0, 2.0] GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 1.5 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2560.0 GB (converted)
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.5, 2.0, 2560.0] GB
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [5.2] GB
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:164 - Smallest model size: 5.2 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 12.0GB vs 16.0GB benchmark: 75.0% → score 0.5
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 15.9GB vs 16.0GB benchmark: 99.4% → score 0.5
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 5.0GB vs 16.0GB benchmark: 31.2% → score 1.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 20.0GB vs 16.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 16.0GB vs 16.0GB benchmark: 100.0% → score 0.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 1.0GB benchmark: 50.0% → score 1.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 2.0GB benchmark: 25.0% → score 1.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 16.0GB benchmark: 3.1% → score 1.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 24.0GB benchmark: 2.1% → score 1.0
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:211 - Size scores for 0.5GB model: {'raspberry_pi': 1.0, 'jetson_nano': 1.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 1.0GB benchmark: 3000.0% → score 0.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 2.0GB benchmark: 1500.0% → score 0.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 16.0GB benchmark: 187.5% → score 0.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 24.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:211 - Size scores for 30.0GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 0.0, 'high_end_gpu': 0.0}
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:240 - Calculating size score for: invalid-url
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:85 - Fetching README from: invalid-url/README.md
+2025-10-31 18:33:41 - src.size_score - ERROR - logging_config.py:279 - Error in Failed to fetch README from invalid-url: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\ECE 30861\ECE30861_Team4_P2\src\size_score.py", line 87, in fetch_readme
+    response = requests.get(readme_url, timeout=10)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 575, in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 484, in prepare_request
+    p.prepare(
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 367, in prepare
+    self.prepare_url(url, params)
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 438, in prepare_url
+    raise MissingSchema(
+requests.exceptions.MissingSchema: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+2025-10-31 18:33:41 - src.size_score - WARNING - size_score.py:245 - No README content found for invalid-url
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.6 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.6, 7.2, 14.4] GB
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 1.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 2.0GB benchmark: 180.0% → score 0.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 16.0GB benchmark: 22.5% → score 1.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 24.0GB benchmark: 15.0% → score 1.0
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:211 - Size scores for 3.6GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.006s
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:33:41 - src.size_score - WARNING - size_score.py:252 - No memory sizes found in README for https://huggingface.co/test/model
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:33:41 - src.size_score - WARNING - size_score.py:245 - No README content found for https://huggingface.co/test/model
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2] GB
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:164 - Smallest model size: 7.2 GB
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.007s
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:33:41 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:33:41 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.1, 5.2] GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2, 8.5, 14.4] GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 1.0 GB (converted)
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.0, 2.0] GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 1.5 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2560.0 GB (converted)
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.5, 2.0, 2560.0] GB
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [5.2] GB
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:164 - Smallest model size: 5.2 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 12.0GB vs 16.0GB benchmark: 75.0% → score 0.5
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 15.9GB vs 16.0GB benchmark: 99.4% → score 0.5
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 5.0GB vs 16.0GB benchmark: 31.2% → score 1.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 20.0GB vs 16.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 16.0GB vs 16.0GB benchmark: 100.0% → score 0.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 1.0GB benchmark: 50.0% → score 1.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 2.0GB benchmark: 25.0% → score 1.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 16.0GB benchmark: 3.1% → score 1.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 24.0GB benchmark: 2.1% → score 1.0
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:211 - Size scores for 0.5GB model: {'raspberry_pi': 1.0, 'jetson_nano': 1.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 1.0GB benchmark: 3000.0% → score 0.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 2.0GB benchmark: 1500.0% → score 0.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 16.0GB benchmark: 187.5% → score 0.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 24.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:211 - Size scores for 30.0GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 0.0, 'high_end_gpu': 0.0}
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:240 - Calculating size score for: invalid-url
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:85 - Fetching README from: invalid-url/README.md
+2025-10-31 18:35:17 - src.size_score - ERROR - logging_config.py:279 - Error in Failed to fetch README from invalid-url: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\ECE 30861\ECE30861_Team4_P2\src\size_score.py", line 87, in fetch_readme
+    response = requests.get(readme_url, timeout=10)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 575, in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 484, in prepare_request
+    p.prepare(
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 367, in prepare
+    self.prepare_url(url, params)
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 438, in prepare_url
+    raise MissingSchema(
+requests.exceptions.MissingSchema: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+2025-10-31 18:35:17 - src.size_score - WARNING - size_score.py:245 - No README content found for invalid-url
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.6 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.6, 7.2, 14.4] GB
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 1.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 2.0GB benchmark: 180.0% → score 0.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 16.0GB benchmark: 22.5% → score 1.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 24.0GB benchmark: 15.0% → score 1.0
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:211 - Size scores for 3.6GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.005s
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:35:17 - src.size_score - WARNING - size_score.py:252 - No memory sizes found in README for https://huggingface.co/test/model
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:35:17 - src.size_score - WARNING - size_score.py:245 - No README content found for https://huggingface.co/test/model
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2] GB
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:164 - Smallest model size: 7.2 GB
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.000s
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:35:17 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:35:17 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.1, 5.2] GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2, 8.5, 14.4] GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 1.0 GB (converted)
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.0, 2.0] GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 1.5 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2560.0 GB (converted)
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.5, 2.0, 2560.0] GB
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [5.2] GB
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:164 - Smallest model size: 5.2 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 12.0GB vs 16.0GB benchmark: 75.0% → score 0.5
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 15.9GB vs 16.0GB benchmark: 99.4% → score 0.5
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 5.0GB vs 16.0GB benchmark: 31.2% → score 1.0
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 20.0GB vs 16.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 16.0GB vs 16.0GB benchmark: 100.0% → score 0.0
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 1.0GB benchmark: 50.0% → score 1.0
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 2.0GB benchmark: 25.0% → score 1.0
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 16.0GB benchmark: 3.1% → score 1.0
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 24.0GB benchmark: 2.1% → score 1.0
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:211 - Size scores for 0.5GB model: {'raspberry_pi': 1.0, 'jetson_nano': 1.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 1.0GB benchmark: 3000.0% → score 0.0
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 2.0GB benchmark: 1500.0% → score 0.0
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 16.0GB benchmark: 187.5% → score 0.0
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 24.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:211 - Size scores for 30.0GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 0.0, 'high_end_gpu': 0.0}
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:240 - Calculating size score for: invalid-url
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:85 - Fetching README from: invalid-url/README.md
+2025-10-31 18:45:02 - src.size_score - ERROR - logging_config.py:279 - Error in Failed to fetch README from invalid-url: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\ECE 30861\ECE30861_Team4_P2\src\size_score.py", line 87, in fetch_readme
+    response = requests.get(readme_url, timeout=10)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 575, in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 484, in prepare_request
+    p.prepare(
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 367, in prepare
+    self.prepare_url(url, params)
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 438, in prepare_url
+    raise MissingSchema(
+requests.exceptions.MissingSchema: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+2025-10-31 18:45:02 - src.size_score - WARNING - size_score.py:245 - No README content found for invalid-url
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.6 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.6, 7.2, 14.4] GB
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 1.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 2.0GB benchmark: 180.0% → score 0.0
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 16.0GB benchmark: 22.5% → score 1.0
+2025-10-31 18:45:02 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 24.0GB benchmark: 15.0% → score 1.0
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:211 - Size scores for 3.6GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.007s
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:45:02 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:45:02 - src.size_score - WARNING - size_score.py:252 - No memory sizes found in README for https://huggingface.co/test/model
+2025-10-31 18:45:03 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:45:03 - src.size_score - WARNING - size_score.py:245 - No README content found for https://huggingface.co/test/model
+2025-10-31 18:45:03 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:45:03 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:45:03 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:45:03 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:45:03 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:45:03 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2] GB
+2025-10-31 18:45:03 - src.size_score - INFO - size_score.py:164 - Smallest model size: 7.2 GB
+2025-10-31 18:45:03 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:45:03 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:45:03 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:45:03 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:45:03 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:45:03 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.007s
+2025-10-31 18:45:03 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:45:03 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:45:03 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:45:03 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:45:03 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.1, 5.2] GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2, 8.5, 14.4] GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 1.0 GB (converted)
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.0, 2.0] GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 1.5 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2560.0 GB (converted)
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.5, 2.0, 2560.0] GB
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [5.2] GB
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:164 - Smallest model size: 5.2 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 12.0GB vs 16.0GB benchmark: 75.0% → score 0.5
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 15.9GB vs 16.0GB benchmark: 99.4% → score 0.5
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 5.0GB vs 16.0GB benchmark: 31.2% → score 1.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 20.0GB vs 16.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 16.0GB vs 16.0GB benchmark: 100.0% → score 0.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 1.0GB benchmark: 50.0% → score 1.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 2.0GB benchmark: 25.0% → score 1.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 16.0GB benchmark: 3.1% → score 1.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 24.0GB benchmark: 2.1% → score 1.0
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:211 - Size scores for 0.5GB model: {'raspberry_pi': 1.0, 'jetson_nano': 1.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 1.0GB benchmark: 3000.0% → score 0.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 2.0GB benchmark: 1500.0% → score 0.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 16.0GB benchmark: 187.5% → score 0.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 24.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:211 - Size scores for 30.0GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 0.0, 'high_end_gpu': 0.0}
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:240 - Calculating size score for: invalid-url
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:85 - Fetching README from: invalid-url/README.md
+2025-10-31 18:46:31 - src.size_score - ERROR - logging_config.py:279 - Error in Failed to fetch README from invalid-url: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\ECE 30861\ECE30861_Team4_P2\src\size_score.py", line 87, in fetch_readme
+    response = requests.get(readme_url, timeout=10)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 575, in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 484, in prepare_request
+    p.prepare(
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 367, in prepare
+    self.prepare_url(url, params)
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 438, in prepare_url
+    raise MissingSchema(
+requests.exceptions.MissingSchema: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+2025-10-31 18:46:31 - src.size_score - WARNING - size_score.py:245 - No README content found for invalid-url
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.6 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.6, 7.2, 14.4] GB
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 1.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 2.0GB benchmark: 180.0% → score 0.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 16.0GB benchmark: 22.5% → score 1.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 24.0GB benchmark: 15.0% → score 1.0
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:211 - Size scores for 3.6GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.003s
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:46:31 - src.size_score - WARNING - size_score.py:252 - No memory sizes found in README for https://huggingface.co/test/model
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:46:31 - src.size_score - WARNING - size_score.py:245 - No README content found for https://huggingface.co/test/model
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2] GB
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:164 - Smallest model size: 7.2 GB
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.001s
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:46:31 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:46:31 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.1, 5.2] GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2, 8.5, 14.4] GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 1.0 GB (converted)
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.0, 2.0] GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 1.5 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2560.0 GB (converted)
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.5, 2.0, 2560.0] GB
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [5.2] GB
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:164 - Smallest model size: 5.2 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 12.0GB vs 16.0GB benchmark: 75.0% → score 0.5
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 15.9GB vs 16.0GB benchmark: 99.4% → score 0.5
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 5.0GB vs 16.0GB benchmark: 31.2% → score 1.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 20.0GB vs 16.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 16.0GB vs 16.0GB benchmark: 100.0% → score 0.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 1.0GB benchmark: 50.0% → score 1.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 2.0GB benchmark: 25.0% → score 1.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 16.0GB benchmark: 3.1% → score 1.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 24.0GB benchmark: 2.1% → score 1.0
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:211 - Size scores for 0.5GB model: {'raspberry_pi': 1.0, 'jetson_nano': 1.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 1.0GB benchmark: 3000.0% → score 0.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 2.0GB benchmark: 1500.0% → score 0.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 16.0GB benchmark: 187.5% → score 0.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 24.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:211 - Size scores for 30.0GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 0.0, 'high_end_gpu': 0.0}
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:240 - Calculating size score for: invalid-url
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:85 - Fetching README from: invalid-url/README.md
+2025-10-31 18:48:14 - src.size_score - ERROR - logging_config.py:279 - Error in Failed to fetch README from invalid-url: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\ECE 30861\ECE30861_Team4_P2\src\size_score.py", line 87, in fetch_readme
+    response = requests.get(readme_url, timeout=10)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 575, in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 484, in prepare_request
+    p.prepare(
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 367, in prepare
+    self.prepare_url(url, params)
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 438, in prepare_url
+    raise MissingSchema(
+requests.exceptions.MissingSchema: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+2025-10-31 18:48:14 - src.size_score - WARNING - size_score.py:245 - No README content found for invalid-url
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.6 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.6, 7.2, 14.4] GB
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 1.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 2.0GB benchmark: 180.0% → score 0.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 16.0GB benchmark: 22.5% → score 1.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 24.0GB benchmark: 15.0% → score 1.0
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:211 - Size scores for 3.6GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.003s
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:48:14 - src.size_score - WARNING - size_score.py:252 - No memory sizes found in README for https://huggingface.co/test/model
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:48:14 - src.size_score - WARNING - size_score.py:245 - No README content found for https://huggingface.co/test/model
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2] GB
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:164 - Smallest model size: 7.2 GB
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.002s
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:48:14 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:48:14 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.1, 5.2] GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2, 8.5, 14.4] GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 1.0 GB (converted)
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.0, 2.0] GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 1.5 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2560.0 GB (converted)
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.5, 2.0, 2560.0] GB
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [5.2] GB
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:164 - Smallest model size: 5.2 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 12.0GB vs 16.0GB benchmark: 75.0% → score 0.5
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 15.9GB vs 16.0GB benchmark: 99.4% → score 0.5
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 5.0GB vs 16.0GB benchmark: 31.2% → score 1.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 20.0GB vs 16.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 16.0GB vs 16.0GB benchmark: 100.0% → score 0.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 1.0GB benchmark: 50.0% → score 1.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 2.0GB benchmark: 25.0% → score 1.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 16.0GB benchmark: 3.1% → score 1.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 24.0GB benchmark: 2.1% → score 1.0
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:211 - Size scores for 0.5GB model: {'raspberry_pi': 1.0, 'jetson_nano': 1.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 1.0GB benchmark: 3000.0% → score 0.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 2.0GB benchmark: 1500.0% → score 0.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 16.0GB benchmark: 187.5% → score 0.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 24.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:211 - Size scores for 30.0GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 0.0, 'high_end_gpu': 0.0}
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:240 - Calculating size score for: invalid-url
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:85 - Fetching README from: invalid-url/README.md
+2025-10-31 18:49:25 - src.size_score - ERROR - logging_config.py:279 - Error in Failed to fetch README from invalid-url: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\ECE 30861\ECE30861_Team4_P2\src\size_score.py", line 87, in fetch_readme
+    response = requests.get(readme_url, timeout=10)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 575, in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 484, in prepare_request
+    p.prepare(
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 367, in prepare
+    self.prepare_url(url, params)
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 438, in prepare_url
+    raise MissingSchema(
+requests.exceptions.MissingSchema: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+2025-10-31 18:49:25 - src.size_score - WARNING - size_score.py:245 - No README content found for invalid-url
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.6 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.6, 7.2, 14.4] GB
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 1.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 2.0GB benchmark: 180.0% → score 0.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 16.0GB benchmark: 22.5% → score 1.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 24.0GB benchmark: 15.0% → score 1.0
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:211 - Size scores for 3.6GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.003s
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:49:25 - src.size_score - WARNING - size_score.py:252 - No memory sizes found in README for https://huggingface.co/test/model
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:49:25 - src.size_score - WARNING - size_score.py:245 - No README content found for https://huggingface.co/test/model
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2] GB
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:164 - Smallest model size: 7.2 GB
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.003s
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:49:25 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:49:25 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.1, 5.2] GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2, 8.5, 14.4] GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 1.0 GB (converted)
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.0, 2.0] GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 1.5 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2560.0 GB (converted)
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.5, 2.0, 2560.0] GB
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [5.2] GB
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:164 - Smallest model size: 5.2 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 12.0GB vs 16.0GB benchmark: 75.0% → score 0.5
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 15.9GB vs 16.0GB benchmark: 99.4% → score 0.5
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 5.0GB vs 16.0GB benchmark: 31.2% → score 1.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 20.0GB vs 16.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 16.0GB vs 16.0GB benchmark: 100.0% → score 0.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 1.0GB benchmark: 50.0% → score 1.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 2.0GB benchmark: 25.0% → score 1.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 16.0GB benchmark: 3.1% → score 1.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 24.0GB benchmark: 2.1% → score 1.0
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:211 - Size scores for 0.5GB model: {'raspberry_pi': 1.0, 'jetson_nano': 1.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 1.0GB benchmark: 3000.0% → score 0.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 2.0GB benchmark: 1500.0% → score 0.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 16.0GB benchmark: 187.5% → score 0.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 24.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:211 - Size scores for 30.0GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 0.0, 'high_end_gpu': 0.0}
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:240 - Calculating size score for: invalid-url
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:85 - Fetching README from: invalid-url/README.md
+2025-10-31 18:50:52 - src.size_score - ERROR - logging_config.py:279 - Error in Failed to fetch README from invalid-url: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\ECE 30861\ECE30861_Team4_P2\src\size_score.py", line 87, in fetch_readme
+    response = requests.get(readme_url, timeout=10)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 575, in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 484, in prepare_request
+    p.prepare(
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 367, in prepare
+    self.prepare_url(url, params)
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 438, in prepare_url
+    raise MissingSchema(
+requests.exceptions.MissingSchema: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+2025-10-31 18:50:52 - src.size_score - WARNING - size_score.py:245 - No README content found for invalid-url
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.6 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.6, 7.2, 14.4] GB
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 1.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 2.0GB benchmark: 180.0% → score 0.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 16.0GB benchmark: 22.5% → score 1.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 24.0GB benchmark: 15.0% → score 1.0
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:211 - Size scores for 3.6GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.005s
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:50:52 - src.size_score - WARNING - size_score.py:252 - No memory sizes found in README for https://huggingface.co/test/model
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:50:52 - src.size_score - WARNING - size_score.py:245 - No README content found for https://huggingface.co/test/model
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2] GB
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:164 - Smallest model size: 7.2 GB
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.006s
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:50:52 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:50:52 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.1, 5.2] GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2, 8.5, 14.4] GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 1.0 GB (converted)
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.0, 2.0] GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 1.5 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2560.0 GB (converted)
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.5, 2.0, 2560.0] GB
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [5.2] GB
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:164 - Smallest model size: 5.2 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 12.0GB vs 16.0GB benchmark: 75.0% → score 0.5
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 15.9GB vs 16.0GB benchmark: 99.4% → score 0.5
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 5.0GB vs 16.0GB benchmark: 31.2% → score 1.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 20.0GB vs 16.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 16.0GB vs 16.0GB benchmark: 100.0% → score 0.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 1.0GB benchmark: 50.0% → score 1.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 2.0GB benchmark: 25.0% → score 1.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 16.0GB benchmark: 3.1% → score 1.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 24.0GB benchmark: 2.1% → score 1.0
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:211 - Size scores for 0.5GB model: {'raspberry_pi': 1.0, 'jetson_nano': 1.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 1.0GB benchmark: 3000.0% → score 0.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 2.0GB benchmark: 1500.0% → score 0.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 16.0GB benchmark: 187.5% → score 0.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 24.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:211 - Size scores for 30.0GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 0.0, 'high_end_gpu': 0.0}
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:240 - Calculating size score for: invalid-url
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:85 - Fetching README from: invalid-url/README.md
+2025-10-31 18:52:24 - src.size_score - ERROR - logging_config.py:279 - Error in Failed to fetch README from invalid-url: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\ECE 30861\ECE30861_Team4_P2\src\size_score.py", line 87, in fetch_readme
+    response = requests.get(readme_url, timeout=10)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 575, in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 484, in prepare_request
+    p.prepare(
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 367, in prepare
+    self.prepare_url(url, params)
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 438, in prepare_url
+    raise MissingSchema(
+requests.exceptions.MissingSchema: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+2025-10-31 18:52:24 - src.size_score - WARNING - size_score.py:245 - No README content found for invalid-url
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.6 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.6, 7.2, 14.4] GB
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 1.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 2.0GB benchmark: 180.0% → score 0.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 16.0GB benchmark: 22.5% → score 1.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 24.0GB benchmark: 15.0% → score 1.0
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:211 - Size scores for 3.6GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.003s
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:52:24 - src.size_score - WARNING - size_score.py:252 - No memory sizes found in README for https://huggingface.co/test/model
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:52:24 - src.size_score - WARNING - size_score.py:245 - No README content found for https://huggingface.co/test/model
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2] GB
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:164 - Smallest model size: 7.2 GB
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.005s
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:52:24 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:52:24 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.1, 5.2] GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2, 8.5, 14.4] GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 1.0 GB (converted)
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.0, 2.0] GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 1.5 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2560.0 GB (converted)
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.5, 2.0, 2560.0] GB
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [5.2] GB
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:164 - Smallest model size: 5.2 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 12.0GB vs 16.0GB benchmark: 75.0% → score 0.5
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 15.9GB vs 16.0GB benchmark: 99.4% → score 0.5
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 5.0GB vs 16.0GB benchmark: 31.2% → score 1.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 20.0GB vs 16.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 16.0GB vs 16.0GB benchmark: 100.0% → score 0.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 1.0GB benchmark: 50.0% → score 1.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 2.0GB benchmark: 25.0% → score 1.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 16.0GB benchmark: 3.1% → score 1.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 24.0GB benchmark: 2.1% → score 1.0
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:211 - Size scores for 0.5GB model: {'raspberry_pi': 1.0, 'jetson_nano': 1.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 1.0GB benchmark: 3000.0% → score 0.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 2.0GB benchmark: 1500.0% → score 0.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 16.0GB benchmark: 187.5% → score 0.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 24.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:211 - Size scores for 30.0GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 0.0, 'high_end_gpu': 0.0}
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:240 - Calculating size score for: invalid-url
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:85 - Fetching README from: invalid-url/README.md
+2025-10-31 18:54:00 - src.size_score - ERROR - logging_config.py:279 - Error in Failed to fetch README from invalid-url: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\ECE 30861\ECE30861_Team4_P2\src\size_score.py", line 87, in fetch_readme
+    response = requests.get(readme_url, timeout=10)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 575, in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 484, in prepare_request
+    p.prepare(
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 367, in prepare
+    self.prepare_url(url, params)
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 438, in prepare_url
+    raise MissingSchema(
+requests.exceptions.MissingSchema: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+2025-10-31 18:54:00 - src.size_score - WARNING - size_score.py:245 - No README content found for invalid-url
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.6 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.6, 7.2, 14.4] GB
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 1.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 2.0GB benchmark: 180.0% → score 0.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 16.0GB benchmark: 22.5% → score 1.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 24.0GB benchmark: 15.0% → score 1.0
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:211 - Size scores for 3.6GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.006s
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:54:00 - src.size_score - WARNING - size_score.py:252 - No memory sizes found in README for https://huggingface.co/test/model
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:54:00 - src.size_score - WARNING - size_score.py:245 - No README content found for https://huggingface.co/test/model
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2] GB
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:164 - Smallest model size: 7.2 GB
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.006s
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:54:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:54:00 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.1, 5.2] GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2, 8.5, 14.4] GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 1.0 GB (converted)
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.0, 2.0] GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 1.5 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2560.0 GB (converted)
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.5, 2.0, 2560.0] GB
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [5.2] GB
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:164 - Smallest model size: 5.2 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 12.0GB vs 16.0GB benchmark: 75.0% → score 0.5
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 15.9GB vs 16.0GB benchmark: 99.4% → score 0.5
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 5.0GB vs 16.0GB benchmark: 31.2% → score 1.0
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 20.0GB vs 16.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 16.0GB vs 16.0GB benchmark: 100.0% → score 0.0
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 1.0GB benchmark: 50.0% → score 1.0
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 2.0GB benchmark: 25.0% → score 1.0
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 16.0GB benchmark: 3.1% → score 1.0
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 24.0GB benchmark: 2.1% → score 1.0
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:211 - Size scores for 0.5GB model: {'raspberry_pi': 1.0, 'jetson_nano': 1.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 1.0GB benchmark: 3000.0% → score 0.0
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 2.0GB benchmark: 1500.0% → score 0.0
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 16.0GB benchmark: 187.5% → score 0.0
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 24.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:211 - Size scores for 30.0GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 0.0, 'high_end_gpu': 0.0}
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:240 - Calculating size score for: invalid-url
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:85 - Fetching README from: invalid-url/README.md
+2025-10-31 18:57:59 - src.size_score - ERROR - logging_config.py:279 - Error in Failed to fetch README from invalid-url: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\ECE 30861\ECE30861_Team4_P2\src\size_score.py", line 87, in fetch_readme
+    response = requests.get(readme_url, timeout=10)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 575, in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 484, in prepare_request
+    p.prepare(
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 367, in prepare
+    self.prepare_url(url, params)
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 438, in prepare_url
+    raise MissingSchema(
+requests.exceptions.MissingSchema: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+2025-10-31 18:57:59 - src.size_score - WARNING - size_score.py:245 - No README content found for invalid-url
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.6 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.6, 7.2, 14.4] GB
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 1.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 2.0GB benchmark: 180.0% → score 0.0
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 16.0GB benchmark: 22.5% → score 1.0
+2025-10-31 18:57:59 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 24.0GB benchmark: 15.0% → score 1.0
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:211 - Size scores for 3.6GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.006s
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:57:59 - src.size_score - WARNING - size_score.py:252 - No memory sizes found in README for https://huggingface.co/test/model
+2025-10-31 18:57:59 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:58:00 - src.size_score - WARNING - size_score.py:245 - No README content found for https://huggingface.co/test/model
+2025-10-31 18:58:00 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:58:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:58:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:58:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:58:00 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:58:00 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2] GB
+2025-10-31 18:58:00 - src.size_score - INFO - size_score.py:164 - Smallest model size: 7.2 GB
+2025-10-31 18:58:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:58:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:58:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:58:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:58:00 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:58:00 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.004s
+2025-10-31 18:58:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:58:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:58:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:58:00 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:58:00 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.1, 5.2] GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2, 8.5, 14.4] GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 1.0 GB (converted)
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.0, 2.0] GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 1.5 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2560.0 GB (converted)
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.5, 2.0, 2560.0] GB
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [5.2] GB
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:164 - Smallest model size: 5.2 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 12.0GB vs 16.0GB benchmark: 75.0% → score 0.5
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 15.9GB vs 16.0GB benchmark: 99.4% → score 0.5
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 5.0GB vs 16.0GB benchmark: 31.2% → score 1.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 20.0GB vs 16.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 16.0GB vs 16.0GB benchmark: 100.0% → score 0.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 1.0GB benchmark: 50.0% → score 1.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 2.0GB benchmark: 25.0% → score 1.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 16.0GB benchmark: 3.1% → score 1.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 24.0GB benchmark: 2.1% → score 1.0
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:211 - Size scores for 0.5GB model: {'raspberry_pi': 1.0, 'jetson_nano': 1.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 1.0GB benchmark: 3000.0% → score 0.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 2.0GB benchmark: 1500.0% → score 0.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 16.0GB benchmark: 187.5% → score 0.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 24.0GB benchmark: 125.0% → score 0.0
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:211 - Size scores for 30.0GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 0.0, 'high_end_gpu': 0.0}
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:240 - Calculating size score for: invalid-url
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:85 - Fetching README from: invalid-url/README.md
+2025-10-31 18:59:47 - src.size_score - ERROR - logging_config.py:279 - Error in Failed to fetch README from invalid-url: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\ECE 30861\ECE30861_Team4_P2\src\size_score.py", line 87, in fetch_readme
+    response = requests.get(readme_url, timeout=10)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 575, in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 484, in prepare_request
+    p.prepare(
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 367, in prepare
+    self.prepare_url(url, params)
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 438, in prepare_url
+    raise MissingSchema(
+requests.exceptions.MissingSchema: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+2025-10-31 18:59:47 - src.size_score - WARNING - size_score.py:245 - No README content found for invalid-url
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.6 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.6, 7.2, 14.4] GB
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 1.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 2.0GB benchmark: 180.0% → score 0.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 16.0GB benchmark: 22.5% → score 1.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 24.0GB benchmark: 15.0% → score 1.0
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:211 - Size scores for 3.6GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.004s
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 18:59:47 - src.size_score - WARNING - size_score.py:252 - No memory sizes found in README for https://huggingface.co/test/model
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:59:47 - src.size_score - WARNING - size_score.py:245 - No README content found for https://huggingface.co/test/model
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2] GB
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:164 - Smallest model size: 7.2 GB
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.007s
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 18:59:47 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 18:59:47 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.1, 5.2] GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2, 8.5, 14.4] GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 1.0 GB (converted)
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.0, 2.0] GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 1.5 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2560.0 GB (converted)
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.5, 2.0, 2560.0] GB
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [5.2] GB
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:164 - Smallest model size: 5.2 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 12.0GB vs 16.0GB benchmark: 75.0% → score 0.5
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 15.9GB vs 16.0GB benchmark: 99.4% → score 0.5
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 5.0GB vs 16.0GB benchmark: 31.2% → score 1.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 20.0GB vs 16.0GB benchmark: 125.0% → score 0.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 16.0GB vs 16.0GB benchmark: 100.0% → score 0.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 1.0GB benchmark: 50.0% → score 1.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 2.0GB benchmark: 25.0% → score 1.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 16.0GB benchmark: 3.1% → score 1.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 24.0GB benchmark: 2.1% → score 1.0
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:211 - Size scores for 0.5GB model: {'raspberry_pi': 1.0, 'jetson_nano': 1.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 1.0GB benchmark: 3000.0% → score 0.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 2.0GB benchmark: 1500.0% → score 0.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 16.0GB benchmark: 187.5% → score 0.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 24.0GB benchmark: 125.0% → score 0.0
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:211 - Size scores for 30.0GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 0.0, 'high_end_gpu': 0.0}
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:240 - Calculating size score for: invalid-url
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:85 - Fetching README from: invalid-url/README.md
+2025-10-31 19:02:38 - src.size_score - ERROR - logging_config.py:279 - Error in Failed to fetch README from invalid-url: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\ECE 30861\ECE30861_Team4_P2\src\size_score.py", line 87, in fetch_readme
+    response = requests.get(readme_url, timeout=10)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 575, in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 484, in prepare_request
+    p.prepare(
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 367, in prepare
+    self.prepare_url(url, params)
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 438, in prepare_url
+    raise MissingSchema(
+requests.exceptions.MissingSchema: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+2025-10-31 19:02:38 - src.size_score - WARNING - size_score.py:245 - No README content found for invalid-url
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.6 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.6, 7.2, 14.4] GB
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 1.0GB benchmark: 360.0% → score 0.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 2.0GB benchmark: 180.0% → score 0.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 16.0GB benchmark: 22.5% → score 1.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 24.0GB benchmark: 15.0% → score 1.0
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:211 - Size scores for 3.6GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.003s
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 19:02:38 - src.size_score - WARNING - size_score.py:252 - No memory sizes found in README for https://huggingface.co/test/model
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 19:02:38 - src.size_score - WARNING - size_score.py:245 - No README content found for https://huggingface.co/test/model
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2] GB
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:164 - Smallest model size: 7.2 GB
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.004s
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 19:02:38 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 19:02:38 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.1 GB
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.1, 5.2] GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 8.5 GB
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2, 8.5, 14.4] GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 1.0 GB (converted)
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.0, 2.0] GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 1.5 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2.0 GB (converted)
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:138 - Found memory size: 2560.0 GB (converted)
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [1.5, 2.0, 2560.0] GB
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 5.2 GB
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [5.2] GB
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:164 - Smallest model size: 5.2 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 12.0GB vs 16.0GB benchmark: 75.0% → score 0.5
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 15.9GB vs 16.0GB benchmark: 99.4% → score 0.5
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 5.0GB vs 16.0GB benchmark: 31.2% → score 1.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 20.0GB vs 16.0GB benchmark: 125.0% → score 0.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 16.0GB vs 16.0GB benchmark: 100.0% → score 0.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 1.0GB benchmark: 50.0% → score 1.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 2.0GB benchmark: 25.0% → score 1.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 16.0GB benchmark: 3.1% → score 1.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 0.5GB vs 24.0GB benchmark: 2.1% → score 1.0
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:211 - Size scores for 0.5GB model: {'raspberry_pi': 1.0, 'jetson_nano': 1.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 1.0GB benchmark: 3000.0% → score 0.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 2.0GB benchmark: 1500.0% → score 0.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 16.0GB benchmark: 187.5% → score 0.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 30.0GB vs 24.0GB benchmark: 125.0% → score 0.0
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:211 - Size scores for 30.0GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 0.0, 'high_end_gpu': 0.0}
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:240 - Calculating size score for: invalid-url
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:85 - Fetching README from: invalid-url/README.md
+2025-10-31 19:07:46 - src.size_score - ERROR - logging_config.py:279 - Error in Failed to fetch README from invalid-url: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+Traceback (most recent call last):
+  File "C:\Users\User\Downloads\ECE 30861\ECE30861_Team4_P2\src\size_score.py", line 87, in fetch_readme
+    response = requests.get(readme_url, timeout=10)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 73, in get
+    return request("get", url, params=params, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 575, in request
+    prep = self.prepare_request(req)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\sessions.py", line 484, in prepare_request
+    p.prepare(
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 367, in prepare
+    self.prepare_url(url, params)
+  File "C:\Users\User\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\site-packages\requests\models.py", line 438, in prepare_url
+    raise MissingSchema(
+requests.exceptions.MissingSchema: Invalid URL 'invalid-url/README.md': No scheme supplied. Perhaps you meant https://invalid-url/README.md?
+2025-10-31 19:07:46 - src.size_score - WARNING - size_score.py:245 - No README content found for invalid-url
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 3.6 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 14.4 GB
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [3.6, 7.2, 14.4] GB
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:164 - Smallest model size: 3.6 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 1.0GB benchmark: 360.0% → score 0.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 2.0GB benchmark: 180.0% → score 0.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 16.0GB benchmark: 22.5% → score 1.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 3.6GB vs 24.0GB benchmark: 15.0% → score 1.0
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:211 - Size scores for 3.6GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.020s
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [] GB
+2025-10-31 19:07:46 - src.size_score - WARNING - size_score.py:252 - No memory sizes found in README for https://huggingface.co/test/model
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 19:07:46 - src.size_score - WARNING - size_score.py:245 - No README content found for https://huggingface.co/test/model
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:240 - Calculating size score for: https://huggingface.co/test/model
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:125 - Found memory size: 7.2 GB
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:145 - Extracted memory sizes: [7.2] GB
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:164 - Smallest model size: 7.2 GB
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:269 - Size score calculation completed in 0.019s
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 1.0GB benchmark: 720.0% → score 0.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 2.0GB benchmark: 360.0% → score 0.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 16.0GB benchmark: 45.0% → score 1.0
+2025-10-31 19:07:46 - src.size_score - DEBUG - size_score.py:189 - Model 7.2GB vs 24.0GB benchmark: 30.0% → score 1.0
+2025-10-31 19:07:46 - src.size_score - INFO - size_score.py:211 - Size scores for 7.2GB model: {'raspberry_pi': 0.0, 'jetson_nano': 0.0, 'desktop_gpu': 1.0, 'high_end_gpu': 1.0}
