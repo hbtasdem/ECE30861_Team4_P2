@@ -1,9 +1,11 @@
 # models.py
-from sqlalchemy import Column, Integer, String, Text, BigInteger, Boolean, DateTime, ForeignKey
-from sqlalchemy.orm import declarative_base, relationship
 from datetime import datetime
 
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import declarative_base, relationship
+
 Base = declarative_base()
+
 
 class User(Base):
     __tablename__ = 'users'
@@ -12,6 +14,7 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False)
     is_admin = Column(Boolean, default=False)
     models = relationship('Model', back_populates='uploader')
+
 
 class Model(Base):
     __tablename__ = 'models'
@@ -26,12 +29,21 @@ class Model(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     uploader = relationship('User', back_populates='models')
-    model_metadata = relationship('ModelMetadata', back_populates='model', cascade='all, delete-orphan')
+    model_metadata = relationship(
+        'ModelMetadata',
+        back_populates='model',
+        cascade='all, delete-orphan'
+    )
+
 
 class ModelMetadata(Base):
     __tablename__ = 'model_metadata'
     id = Column(Integer, primary_key=True)
-    model_id = Column(Integer, ForeignKey('models.id', ondelete='CASCADE'), nullable=False)
+    model_id = Column(
+        Integer,
+        ForeignKey('models.id', ondelete='CASCADE'),
+        nullable=False
+    )
     key = Column(String(255), nullable=False)
     value = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow)

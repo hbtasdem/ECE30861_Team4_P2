@@ -6,9 +6,12 @@ from pathlib import Path
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-from fastapi import FastAPI
-from database import init_db
-from upload.routes import router as upload_router
+from typing import Any, Dict  # noqa: E402
+
+from fastapi import FastAPI  # noqa: E402
+
+from database import init_db  # noqa: E402
+from upload.routes import router as upload_router  # noqa: E402
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -24,8 +27,9 @@ if os.getenv("TESTING") != "true":
 # Include routers
 app.include_router(upload_router)
 
+
 @app.get("/")
-async def root():
+async def root() -> Dict[str, Any]:
     """API root - returns available endpoints"""
     return {
         "message": "Model Registry API",
@@ -37,8 +41,9 @@ async def root():
         }
     }
 
+
 @app.get("/health")
-async def health_check():
+async def health_check() -> Dict[str, str]:
     """Health check endpoint"""
     return {"status": "ok"}
 
