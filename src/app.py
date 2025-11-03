@@ -4,14 +4,10 @@ import sys
 from pathlib import Path
 from typing import Any, Dict
 
+from fastapi import FastAPI  # noqa: E402
+
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
-from typing import Any
-
-from typing import Any, Dict  # noqa: E402
-
-from fastapi import FastAPI  # noqa: E402
-sys.path.insert(0, os.path.dirname(__file__))
 
 from database import init_db  # noqa: E402
 from upload.routes import router as upload_router  # noqa: E402
