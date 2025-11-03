@@ -94,7 +94,7 @@ def code_quality_score(model_name: str) -> Tuple[float, float]:
     print(rd_score)  #
     print(lic_score)  #
 
-    overall_score = j_score + rd_score + lic_score
+    overall_score = round(j_score + rd_score + lic_score, 2)
     latency = time.time() - start_time
     return overall_score, latency
 

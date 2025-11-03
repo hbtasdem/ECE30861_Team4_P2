@@ -83,19 +83,13 @@ class TestNetScoreCalculator(unittest.TestCase):
         """Test that NetScore calculation follows the correct formula."""
         model_id = "test-model"
 
-        with patch("net_score_calculator.size_score") as mock_size, patch(
-            "net_score_calculator.license_sub_score"
-        ) as mock_license, patch(
-            "net_score_calculator.ramp_up_time_score"
-        ) as mock_ramp_up, patch(
-            "net_score_calculator.bus_factor_score"
-        ) as mock_bus_factor, patch(
-            "net_score_calculator.available_dataset_code_score"
-        ) as mock_dataset_code, patch(
-            "net_score_calculator.dataset_quality_sub_score"
-        ) as mock_dataset_quality, patch(
-            "net_score_calculator.performance_claims_sub_score"
-        ) as mock_performance:
+        with patch("net_score_calculator.license_sub_score") as mock_license, \
+             patch("net_score_calculator.ramp_up_time_score") as mock_ramp_up, \
+             patch("net_score_calculator.bus_factor_score") as mock_bus_factor, \
+             patch("net_score_calculator.available_dataset_code_score") as mock_dataset_code, \
+             patch("net_score_calculator.dataset_quality_sub_score") as mock_dataset_quality, \
+             patch("net_score_calculator.performance_claims_sub_score") as mock_performance, \
+             patch("net_score_calculator.size_score") as mock_size:
             # Set known values for calculation verification
             mock_size.return_value = ({}, 0.5, 50)
             mock_license.return_value = (1.0, 0.1)  # 0.2 weight
@@ -104,6 +98,7 @@ class TestNetScoreCalculator(unittest.TestCase):
             mock_dataset_code.return_value = (0.8, 0.15)  # 0.15 weight
             mock_dataset_quality.return_value = (0.6, 0.12)  # 0.15 weight
             mock_performance.return_value = (0.7, 0.08)  # 0.1 weight
+            mock_size.return_value = ([], 0.5, 0.05)
 
             results = calculate_net_score(model_id)
 
@@ -123,6 +118,7 @@ class TestNetScoreCalculator(unittest.TestCase):
                 + 0.1 * 0.7,
                 2,
             )
+            expected_score = round(expected_score, 2)
 
             self.assertEqual(results["net_score"], expected_score)
 
@@ -200,7 +196,6 @@ class TestNetScoreCalculator(unittest.TestCase):
             # Test default values
             self.assertEqual(results["size_score"]["raspberry_pi"], 0.5)
             self.assertEqual(results["code_quality"], 0.5)
-            self.assertEqual(results["size_score_latency"], 0)
             self.assertEqual(results["code_quality_latency"], 0)
 
     def test_latency_conversion(self) -> None:

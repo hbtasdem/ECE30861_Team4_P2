@@ -5,10 +5,12 @@ from pathlib import Path
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
+from typing import Any
 
 from typing import Any, Dict  # noqa: E402
 
 from fastapi import FastAPI  # noqa: E402
+sys.path.insert(0, os.path.dirname(__file__))
 
 from database import init_db  # noqa: E402
 from upload.routes import router as upload_router  # noqa: E402
@@ -46,6 +48,8 @@ async def root() -> Dict[str, Any]:
 async def health_check() -> Dict[str, str]:
     """Health check endpoint"""
     return {"status": "ok"}
+# uvicorn src.app:app --host 127.0.0.1 --port 8000 --reload
+# then in browser add /health to the end and you see... something!
 
 if __name__ == "__main__":
     import uvicorn
