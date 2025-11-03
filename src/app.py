@@ -9,6 +9,7 @@ from fastapi import FastAPI
 sys.path.insert(0, os.path.dirname(__file__))
 
 from database import init_db  # noqa: E402
+from rate.routes import router as rate_router  # noqa: E402
 from upload.routes import router as upload_router  # noqa: E402
 
 # Initialize FastAPI app
@@ -26,6 +27,7 @@ if os.getenv("TESTING") != "true":
 
 # Include routers
 app.include_router(upload_router)
+app.include_router(rate_router)
 
 
 @app.get("/health")
