@@ -86,7 +86,7 @@ def main() -> None:
     try:
         data = {
             "name": "SensitiveModel",
-            "is_sensitive": True,
+            "is_sensitive": "true",
         }
         files = {"file": ("model.zip", create_zip("SensitiveModel"), "application/zip")}
         resp = requests.post(f"{BASE_URL}/api/models/upload", data=data, files=files)

@@ -17,7 +17,7 @@ file_service = FileStorageService()
 
 
 @router.post("/upload", response_model=UploadResponse)
-async def upload_model(
+async def upload_model(  # type: ignore[misc]
     file: UploadFile = File(..., description="Model zip file"),
     name: str = Form(..., description="Model name"),
     description: Optional[str] = Form(None),
