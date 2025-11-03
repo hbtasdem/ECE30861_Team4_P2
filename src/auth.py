@@ -20,7 +20,7 @@ def get_current_user(db: Any = None) -> User:
         user = User(id=user_id)
         user.is_admin = False
         return user
-    
+
     if _current_user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"

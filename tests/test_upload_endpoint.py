@@ -11,18 +11,17 @@ import tempfile
 from pathlib import Path
 from typing import Any, Generator
 
-import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
-
-# Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.app import app
-from src.auth import clear_test_user, set_test_user
-from src.database import get_db
-from src.models import Base, Model, ModelMetadata, User
+import pytest  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
+from sqlalchemy import create_engine  # noqa: E402
+from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
+
+from src.app import app  # noqa: E402
+from src.auth import clear_test_user, set_test_user  # noqa: E402
+from src.database import get_db  # noqa: E402
+from src.models import Base, Model, ModelMetadata, User  # noqa: E402
 
 
 # Setup test database
@@ -56,10 +55,10 @@ def client(test_db: Session) -> TestClient:
         yield test_db
 
     app.dependency_overrides[get_db] = override_get_db
-    
+
     client = TestClient(app)
     yield client
-    
+
     # Clean up
     clear_test_user()
     app.dependency_overrides.clear()
@@ -151,7 +150,9 @@ class TestUploadEndpointValidation:
         )
         assert response.status_code == 422
 
-    def test_upload_missing_model_name(self, client: TestClient, sample_zip_file: io.BytesIO) -> None:
+    def test_upload_missing_model_name(
+        self, client: TestClient, sample_zip_file: io.BytesIO
+    ) -> None:
         """Test upload fails when model name is missing."""
         sample_zip_file.seek(0)
         response = client.post(
@@ -172,7 +173,9 @@ class TestUploadEndpointValidation:
         data = response.json()
         assert "Only .zip files are allowed" in data["detail"]
 
-    def test_upload_invalid_metadata_json(self, client: TestClient, sample_zip_file: io.BytesIO) -> None:
+    def test_upload_invalid_metadata_json(
+        self, client: TestClient, sample_zip_file: io.BytesIO
+    ) -> None:
         """Test upload with invalid JSON metadata is handled gracefully."""
         sample_zip_file.seek(0)
         response = client.post(
@@ -241,7 +244,9 @@ class TestUploadEndpointEdgeCases:
         )
         assert response.status_code == 200
 
-    def test_upload_special_characters_in_name(self, client: TestClient, sample_zip_file: io.BytesIO) -> None:
+    def test_upload_special_characters_in_name(
+        self, client: TestClient, sample_zip_file: io.BytesIO
+    ) -> None:
         """Test upload with special characters in model name."""
         sample_zip_file.seek(0)
         response = client.post(
@@ -251,7 +256,9 @@ class TestUploadEndpointEdgeCases:
         )
         assert response.status_code == 200
 
-    def test_upload_unicode_model_name(self, client: TestClient, sample_zip_file: io.BytesIO) -> None:
+    def test_upload_unicode_model_name(
+        self, client: TestClient, sample_zip_file: io.BytesIO
+    ) -> None:
         """Test upload with unicode characters in model name."""
         sample_zip_file.seek(0)
         response = client.post(
@@ -261,7 +268,9 @@ class TestUploadEndpointEdgeCases:
         )
         assert response.status_code == 200
 
-    def test_upload_multiple_sequential(self, client: TestClient, sample_zip_file: io.BytesIO) -> None:
+    def test_upload_multiple_sequential(
+        self, client: TestClient, sample_zip_file: io.BytesIO
+    ) -> None:
         """Test uploading multiple models sequentially."""
         model_ids = []
         for i in range(3):
@@ -304,7 +313,9 @@ class TestUploadResponseStructure:
         assert isinstance(data["file_path"], str)
         assert isinstance(data["file_size"], int)
 
-    def test_upload_model_id_is_positive(self, client: TestClient, sample_zip_file: io.BytesIO) -> None:
+    def test_upload_model_id_is_positive(
+        self, client: TestClient, sample_zip_file: io.BytesIO
+    ) -> None:
         """Test that model_id is a positive integer."""
         sample_zip_file.seek(0)
         response = client.post(
@@ -316,7 +327,9 @@ class TestUploadResponseStructure:
         model_id = response.json()["model_id"]
         assert model_id > 0
 
-    def test_upload_file_size_accuracy(self, client: TestClient, sample_zip_file: io.BytesIO) -> None:
+    def test_upload_file_size_accuracy(
+        self, client: TestClient, sample_zip_file: io.BytesIO
+    ) -> None:
         """Test that reported file_size matches actual file size."""
         sample_zip_file.seek(0)
         file_content = sample_zip_file.read()
