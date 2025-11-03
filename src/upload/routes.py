@@ -3,12 +3,12 @@ import json
 from typing import Optional
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
-from schemas import ModelCreate, UploadResponse
 from sqlalchemy.orm import Session
 
 from auth import get_current_user
 from database import get_db
 from models import User
+from schemas import ModelCreate, UploadResponse
 from upload.repositories.model_repository import ModelRepository
 from upload.services.file_service import FileStorageService
 

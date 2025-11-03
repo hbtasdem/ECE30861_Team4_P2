@@ -1,7 +1,8 @@
 # database.py
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
 import os
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 # Use SQLite for simplicity; configure with environment variable or default
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
@@ -25,5 +26,5 @@ def get_db():
 
 def init_db():
     """Initialize database tables"""
-    from models import Base, User, Model, ModelMetadata  # Import all models to register them
+    from models import Base, Model, ModelMetadata, User  # Import all models to register them
     Base.metadata.create_all(bind=engine)

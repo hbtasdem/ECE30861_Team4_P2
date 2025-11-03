@@ -1,10 +1,10 @@
 # repositories/model_repository.py
 from typing import Dict
 
-from schemas import ModelCreate
 from sqlalchemy.orm import Session
 
 from models import Model, ModelMetadata
+from schemas import ModelCreate
 
 
 class ModelRepository:
