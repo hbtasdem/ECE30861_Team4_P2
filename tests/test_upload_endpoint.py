@@ -46,7 +46,7 @@ test_user = User(id=1, username="testuser", email="test@example.com", is_admin=F
 
 
 @pytest.fixture
-def client(test_db: Session) -> TestClient:
+def client(test_db: Session) -> Generator[TestClient, None, None]:
     """Create a test client with test database and mocked auth."""
     # Set test user using the auth module's function
     set_test_user(test_user)
@@ -88,7 +88,7 @@ class TestUploadEndpointBasic:
                 "name": "MyAwesomeModel",
                 "description": "A test model for unit testing",
                 "version": "1.0.0",
-                "is_sensitive": False,
+                "is_sensitive": "false",
             },
             files={"file": ("model.zip", sample_zip_file, "application/zip")},
         )
@@ -132,7 +132,7 @@ class TestUploadEndpointBasic:
             "/api/models/upload",
             data={
                 "name": "SensitiveModel",
-                "is_sensitive": True,
+                "is_sensitive": "true",
             },
             files={"file": ("model.zip", sample_zip_file, "application/zip")},
         )
