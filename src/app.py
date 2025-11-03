@@ -2,11 +2,10 @@
 import os
 import sys
 from pathlib import Path
+from typing import Any, Dict
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
-
-from typing import Any, Dict  # noqa: E402
 
 from fastapi import FastAPI  # noqa: E402
 
@@ -46,6 +45,8 @@ async def root() -> Dict[str, Any]:
 async def health_check() -> Dict[str, str]:
     """Health check endpoint"""
     return {"status": "ok"}
+# uvicorn src.app:app --host 127.0.0.1 --port 8000 --reload
+# then in browser add /health to the end and you see... something!
 
 if __name__ == "__main__":
     import uvicorn

@@ -5,7 +5,7 @@ This module provides a comprehensive logging system with:
 - Verbosity levels: 0=silent, 1=informational, 2=debug (default=0)
 - File and console output with different formats
 - Log rotation and management
-- Environment variable configuration (VERBOSITY)
+- Environment variable configuration (LOG_LEVEL)
 - Structured logging with correlation IDs
 """
 
@@ -64,13 +64,13 @@ class LoggingConfig:
     def _verbosity_to_log_level(self, verbosity: int) -> int:
         """Convert verbosity level to logging level."""
         if verbosity == 0:
-            return logging.CRITICAL + 1  # Silent - no output
+            return logging.CRITICAL  # Silent - no output
         elif verbosity == 1:
             return logging.INFO  # Informational messages
         elif verbosity == 2:
             return logging.DEBUG  # Debug messages
         else:
-            return logging.CRITICAL + 1  # Default to silent
+            return logging.CRITICAL  # Default to silent
 
     def get_formatter(self, format_type: str = "detailed") -> logging.Formatter:
         """Get appropriate formatter based on type."""

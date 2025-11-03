@@ -72,8 +72,7 @@ class TestMain(unittest.TestCase):
         mock_code_quality.return_value = (0.5, 0.1)
         mock_net_score.return_value = {"net_score": 0.75}
         # Test with a sample model URL
-        result = calculate_all_scores("", "", "https://huggingface.co/test/model",
-                                     set(), set())
+        result = calculate_all_scores("", "", "https://huggingface.co/test/model", set(), set())
         # Verify the result structure
         self.assertIsInstance(result, dict)
         self.assertIn("name", result)
