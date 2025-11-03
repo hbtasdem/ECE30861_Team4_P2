@@ -8,7 +8,7 @@ import time
 from io import StringIO
 from typing import Any, Dict
 
-# Import scoring modules 
+# Import scoring modules
 import available_dataset_code_score
 import bus_factor
 import code_quality
