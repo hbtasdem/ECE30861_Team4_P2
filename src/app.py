@@ -2,6 +2,7 @@
 import os
 import sys
 from pathlib import Path
+from typing import Any
 
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
@@ -41,6 +42,8 @@ async def root():
 async def health_check():
     """Health check endpoint"""
     return {"status": "ok"}
+# uvicorn src.app:app --host 127.0.0.1 --port 8000 --reload
+# then in browser add /health to the end and you see... something!
 
 if __name__ == "__main__":
     import uvicorn

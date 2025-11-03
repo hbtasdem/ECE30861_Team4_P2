@@ -1,6 +1,6 @@
 # crud/repositories/model_repository.py
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 from sqlalchemy.orm import Session
 
@@ -17,7 +17,7 @@ class CRUDModelRepository:
     def get_model_by_id(self, model_id: int) -> Optional[Model]:
         """Get model by ID"""
         result = self.db.query(Model).filter(Model.id == model_id).first()
-        return result
+        return cast(Optional[Model], result)
 
     def get_models_by_uploader(self, uploader_id: int) -> List[Any]:
         """Get all models uploaded by a specific user"""
