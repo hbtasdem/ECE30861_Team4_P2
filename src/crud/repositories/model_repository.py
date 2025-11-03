@@ -17,6 +17,8 @@ class CRUDModelRepository:
     def get_model_by_id(self, model_id: int) -> Optional[Model]:
         """Get model by ID"""
         result = self.db.query(Model).filter(Model.id == model_id).first()
+        if result is None:
+            return None
         return result
 
     def get_models_by_uploader(self, uploader_id: int) -> List[Any]:

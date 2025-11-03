@@ -1,5 +1,6 @@
-# auth.py
+﻿# auth.py
 
+import os
 from typing import Any, Optional
 
 from fastapi import Depends, HTTPException, status
@@ -13,6 +14,13 @@ _current_user: Optional[Any] = None
 # db is a placeholder for a database session dependency
 def get_current_user(db: Any = None) -> User:
     """Get current authenticated user (mock for now)"""
+    # Check for test mode via environment variable
+    if os.getenv("TEST_USER_ID"):
+        user_id = int(os.getenv("TEST_USER_ID", "0"))
+        user = User(id=user_id)
+        user.is_admin = False
+        return user
+    
     if _current_user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated"
