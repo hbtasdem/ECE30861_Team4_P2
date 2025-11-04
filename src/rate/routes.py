@@ -1,46 +1,46 @@
-from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
+# /artifact/model/{id}/rate
+# Example usage:
+# In terminal: uvicorn src.app:app --reload --host 127.0.0.1 --port 8000
+# In browser go to: http://127.0.0.1:8000/artifact/model/1234567890/rate
+# The example python dict has an example Artifact with ID 1234567890
 
-from main import calculate_all_scores  # Import your real scoring function
+from typing import Any, Dict
+
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import JSONResponse
+
+# Use example python dict for database for now
+from dict_artifacts_db import artifacts_db
 
 router = APIRouter()
-latest_model_url = None  # This stores the last URL sent via terminal
 
 
-@router.get("/rate", response_class=HTMLResponse)  # type: ignore[misc]
-async def rate_endpoint() -> HTMLResponse:
-    if not latest_model_url:
-        return "<p>No model URL provided yet. Use the terminal to set one.</p>"
-
-    try:
-        result = calculate_all_scores("", "", latest_model_url, set(), set())
-
-        # Build HTML dynamically for all keys in the result
-        html_content = f"<h1>Model Rating Result for {result.get('name')}</h1><ul>"
-        for key, value in result.items():
-            if isinstance(value, dict):
-                # For nested dictionaries like size_score
-                html_content += f"<li><strong>{key}:</strong><ul>"
-                for sub_key, sub_val in value.items():
-                    html_content += f"<li>{sub_key}: {sub_val}</li>"
-                html_content += "</ul></li>"
-            else:
-                html_content += f"<li><strong>{key}:</strong> {value}</li>"
-        html_content += "</ul>"
-
-        return html_content
-
-    except Exception as e:
-        return f"<p>Error scoring model: {e}</p>"
-
-
-@router.post("/rate")  # type: ignore[misc]
-async def set_model_url_endpoint(request: Request) -> HTMLResponse:
+@router.get("/artifact/model/{artifact_id}/rate")  # type: ignore
+async def get_model_rating(artifact_id: str) -> JSONResponse:
     """
-    Set the latest model URL via terminal/CLI. The GET /rate page will
-    display the score for this URL.
+    Return the stored ModelRating for a given artifact ID.
     """
-    global latest_model_url
-    data = await request.json()
-    latest_model_url = data.get("model_url")
-    return {"status": "ok", "model_url": latest_model_url}
+    if not artifact_id or not artifact_id.isdigit():
+        raise HTTPException(
+            status_code=400,
+            detail="There is missing field(s) in the artifact_id or it is formed improperly, or is invalid."
+        )
+    # TODO add authentication check
+    # if not valid authentication token
+    #   raise HTTPException(status_code=403,
+    #       detail="Authentication failed due to invalid or missing AuthenticationToken.")
+
+    artifact = artifacts_db.get(artifact_id)
+
+    if not artifact:
+        raise HTTPException(status_code=404, detail="Artifact does not exist.")
+
+    # The rating is already stored in the artifact
+    rating: Dict[str, Any] = artifact.get("rating")
+    if not rating:
+        raise HTTPException(
+            status_code=500,
+            detail="The artifact rating system encountered an error while computing at least one metric."
+        )
+
+    return JSONResponse(content=rating)

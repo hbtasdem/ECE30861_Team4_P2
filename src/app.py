@@ -27,7 +27,7 @@ if os.getenv("TESTING") != "true":
 
 # Include routers
 app.include_router(upload_router)
-app.include_router(rate_router)
+app.include_router(rate_router)  # /artifact/model/{id}/rate
 
 
 @app.get("/health")
