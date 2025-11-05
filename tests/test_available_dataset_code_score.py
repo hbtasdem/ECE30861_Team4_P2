@@ -7,7 +7,8 @@ from unittest.mock import Mock, patch
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 # Import after path modification
-from available_dataset_code_score import available_dataset_code_score  # noqa: E402
+from available_dataset_code_score import \
+    available_dataset_code_score  # noqa: E402
 from available_dataset_code_score import detect_code_examples  # noqa: E402
 from available_dataset_code_score import detect_dataset_links  # noqa: E402
 
