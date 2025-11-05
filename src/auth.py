@@ -1,11 +1,11 @@
 ﻿# auth.py
 
 import os
-from typing import Any, Optional
+from typing import Any, Optional, cast
 
 from fastapi import Depends, HTTPException, status
 
-from models import User
+from src.models import User
 
 # Mock for testing; in production, use JWT or session-based auth
 _current_user: Optional[Any] = None
@@ -18,7 +18,7 @@ def get_current_user(db: Any = None) -> User:
     if os.getenv("TEST_USER_ID"):
         user_id = int(os.getenv("TEST_USER_ID", "0"))
         user = User(id=user_id)
-        user.is_admin = False
+        user.is_admin = cast(Any, False)
         return user
 
     if _current_user is None:
@@ -28,9 +28,9 @@ def get_current_user(db: Any = None) -> User:
     # If _current_user is an int (just the ID), create a minimal User object
     if isinstance(_current_user, int):
         user = User(id=_current_user)
-        user.is_admin = False
+        user.is_admin = cast(Any, False)
         return user
-    return _current_user
+    return cast(User, _current_user)
 
 
 def set_test_user(user: Any) -> None:

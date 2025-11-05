@@ -9,8 +9,8 @@ from fastapi import FastAPI  # noqa: E402
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-from database import init_db  # noqa: E402
-from upload.routes import router as upload_router  # noqa: E402
+from src.database import init_db  # noqa: E402
+from src.upload.routes import router as upload_router  # noqa: E402
 
 # Initialize FastAPI app
 app = FastAPI(

@@ -1,284 +1,290 @@
 """
-Comprehensive test suite for the upload endpoint.
+Comprehensive test suite for the URL-based upload endpoint.
+Tests URL registration instead of file uploads.
 Run with: pytest tests/test_upload_endpoint.py -v
 Or: pytest tests/test_upload_endpoint.py -v -k "test_name" (for specific test)
 """
 
-import io
 import json
-import sys
-import tempfile
-from pathlib import Path
-from typing import Any, Generator
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-import pytest  # noqa: E402
-from fastapi.testclient import TestClient  # noqa: E402
-from sqlalchemy import create_engine  # noqa: E402
-from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
-
-from src.app import app  # noqa: E402
-from src.auth import clear_test_user, set_test_user  # noqa: E402
-from src.database import get_db  # noqa: E402
-from src.models import Base, Model, ModelMetadata, User  # noqa: E402
-
-
-# Setup test database
-@pytest.fixture
-def test_db() -> Generator[Session, None, None]:
-    """Create an in-memory SQLite database for testing."""
-    engine = create_engine("sqlite:///:memory:")
-    Base.metadata.create_all(engine)
-    TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    db = TestingSessionLocal()
-
-    # Create test user
-    test_user = User(id=1, username="testuser", email="test@example.com", is_admin=False)
-    db.add(test_user)
-    db.commit()
-
-    yield db
-    db.close()
-
-
-test_user = User(id=1, username="testuser", email="test@example.com", is_admin=False)
-
-
-@pytest.fixture
-def client(test_db: Session) -> Generator[TestClient, None, None]:
-    """Create a test client with test database and mocked auth."""
-    # Set test user using the auth module's function
-    set_test_user(test_user)
-
-    def override_get_db() -> Generator[Session, None, None]:
-        yield test_db
-
-    app.dependency_overrides[get_db] = override_get_db
-
-    client = TestClient(app)
-    yield client
-
-    # Clean up
-    clear_test_user()
-    app.dependency_overrides.clear()
-
-
-@pytest.fixture
-def sample_zip_file() -> io.BytesIO:
-    """Create a minimal valid ZIP file for testing."""
-    # This is a valid ZIP file header (minimal ZIP)
-    zip_content = (
-        b"PK\x03\x04\x14\x00\x00\x00\x08\x00\x00\x00!\x00"
-        b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x0b\x00\x00\x00test.txt"
-        b"test content"
-    )
-    return io.BytesIO(zip_content)
+import pytest
+from fastapi.testclient import TestClient
 
 
 class TestUploadEndpointBasic:
-    """Basic upload endpoint tests."""
+    """Basic URL-based upload endpoint tests."""
 
-    def test_upload_success(self, client: TestClient, sample_zip_file: io.BytesIO) -> None:
-        """Test successful model upload with all required fields."""
-        sample_zip_file.seek(0)
+    def test_upload_success_with_all_fields(self, client: TestClient) -> None:
+        """Test successful model registration with all fields."""
         response = client.post(
             "/api/models/upload",
             data={
                 "name": "MyAwesomeModel",
                 "description": "A test model for unit testing",
                 "version": "1.0.0",
+                "model_url": "https://huggingface.co/user/model",
+                "artifact_type": "model",
                 "is_sensitive": "false",
             },
-            files={"file": ("model.zip", sample_zip_file, "application/zip")},
         )
         assert response.status_code == 200
         data = response.json()
-        assert data["message"] == "Model uploaded successfully"
+        assert data["message"] == "Model registered successfully"
         assert data["model_id"] is not None
-        assert data["file_size"] > 0
-        assert "model" in data["file_path"]
+        assert data["model_url"] == "https://huggingface.co/user/model"
+        assert data["artifact_type"] == "model"
 
-    def test_upload_minimal_fields(self, client: TestClient, sample_zip_file: io.BytesIO) -> None:
-        """Test upload with only required fields."""
-        sample_zip_file.seek(0)
+    def test_upload_minimal_fields(self, client: TestClient) -> None:
+        """Test registration with only required fields."""
         response = client.post(
             "/api/models/upload",
-            data={"name": "MinimalModel"},
-            files={"file": ("model.zip", sample_zip_file, "application/zip")},
+            data={
+                "name": "MinimalModel",
+                "model_url": "https://example.com/model.zip",
+            },
         )
         assert response.status_code == 200
         data = response.json()
         assert data["model_id"] is not None
+        assert data["artifact_type"] == "model"  # Default value
 
-    def test_upload_with_metadata(self, client: TestClient, sample_zip_file: io.BytesIO) -> None:
-        """Test upload with JSON metadata."""
-        sample_zip_file.seek(0)
+    def test_upload_with_metadata(self, client: TestClient) -> None:
+        """Test registration with JSON metadata."""
         metadata = {"framework": "PyTorch", "task": "classification", "accuracy": 0.95}
         response = client.post(
             "/api/models/upload",
             data={
                 "name": "ModelWithMetadata",
+                "model_url": "https://example.com/model",
                 "metadata": json.dumps(metadata),
             },
-            files={"file": ("model.zip", sample_zip_file, "application/zip")},
         )
         assert response.status_code == 200
 
-    def test_upload_sensitive_model(self, client: TestClient, sample_zip_file: io.BytesIO) -> None:
-        """Test uploading a sensitive model."""
-        sample_zip_file.seek(0)
+    def test_upload_sensitive_model(self, client: TestClient) -> None:
+        """Test registering a sensitive model."""
         response = client.post(
             "/api/models/upload",
             data={
                 "name": "SensitiveModel",
+                "model_url": "https://example.com/sensitive",
                 "is_sensitive": "true",
             },
-            files={"file": ("model.zip", sample_zip_file, "application/zip")},
         )
         assert response.status_code == 200
 
 
 class TestUploadEndpointValidation:
-    """Test validation and error handling."""
+    """Test validation and error handling for URL-based uploads."""
 
-    def test_upload_missing_file(self, client: TestClient) -> None:
-        """Test upload fails when file is missing."""
+    def test_upload_missing_url(self, client: TestClient) -> None:
+        """Test upload fails when model_url is missing."""
         response = client.post(
             "/api/models/upload",
-            data={"name": "NoFileModel"},
+            data={"name": "NoUrlModel"},
         )
         assert response.status_code == 422
 
-    def test_upload_missing_model_name(
-        self, client: TestClient, sample_zip_file: io.BytesIO
-    ) -> None:
+    def test_upload_missing_model_name(self, client: TestClient) -> None:
         """Test upload fails when model name is missing."""
-        sample_zip_file.seek(0)
         response = client.post(
             "/api/models/upload",
-            data={},
-            files={"file": ("model.zip", sample_zip_file, "application/zip")},
+            data={"model_url": "https://example.com/model"},
         )
         assert response.status_code == 422
 
-    def test_upload_non_zip_file(self, client: TestClient) -> None:
-        """Test upload rejects non-ZIP files."""
+    def test_upload_empty_url(self, client: TestClient) -> None:
+        """Test upload rejects empty URL."""
         response = client.post(
             "/api/models/upload",
-            data={"name": "BadFileType"},
-            files={"file": ("model.txt", io.BytesIO(b"not a zip"), "text/plain")},
+            data={
+                "name": "EmptyUrlModel",
+                "model_url": "",
+            },
         )
         assert response.status_code == 400
         data = response.json()
-        assert "Only .zip files are allowed" in data["detail"]
+        assert "cannot be empty" in data["detail"].lower()
 
-    def test_upload_invalid_metadata_json(
-        self, client: TestClient, sample_zip_file: io.BytesIO
-    ) -> None:
+    def test_upload_invalid_url_http(self, client: TestClient) -> None:
+        """Test upload rejects URLs without http:// or https://."""
+        response = client.post(
+            "/api/models/upload",
+            data={
+                "name": "BadUrlModel",
+                "model_url": "ftp://example.com/model",
+            },
+        )
+        assert response.status_code == 400
+        data = response.json()
+        assert "http://" in data["detail"].lower() or "https://" in data["detail"].lower()
+
+    def test_upload_invalid_url_no_scheme(self, client: TestClient) -> None:
+        """Test upload rejects URLs with no scheme."""
+        response = client.post(
+            "/api/models/upload",
+            data={
+                "name": "NoSchemeModel",
+                "model_url": "example.com/model",
+            },
+        )
+        assert response.status_code == 400
+
+    def test_upload_invalid_metadata_json(self, client: TestClient) -> None:
         """Test upload with invalid JSON metadata is handled gracefully."""
-        sample_zip_file.seek(0)
         response = client.post(
             "/api/models/upload",
             data={
                 "name": "BadMetadata",
+                "model_url": "https://example.com/model",
                 "metadata": "not valid json {]",
             },
-            files={"file": ("model.zip", sample_zip_file, "application/zip")},
         )
         # Should still succeed, just skip invalid metadata
         assert response.status_code == 200
 
-    def test_upload_empty_zip_file(self, client: TestClient) -> None:
-        """Test upload with empty ZIP file."""
-        empty_zip = io.BytesIO(
-            b"PK\x05\x06\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-        )
+
+class TestUploadEndpointArtifactTypes:
+    """Test different artifact types."""
+
+    def test_upload_model_artifact(self, client: TestClient) -> None:
+        """Test uploading with model artifact type."""
         response = client.post(
             "/api/models/upload",
-            data={"name": "EmptyZipModel"},
-            files={"file": ("empty.zip", empty_zip, "application/zip")},
+            data={
+                "name": "ModelArtifact",
+                "model_url": "https://example.com/model",
+                "artifact_type": "model",
+            },
         )
         assert response.status_code == 200
+        assert response.json()["artifact_type"] == "model"
+
+    def test_upload_checkpoint_artifact(self, client: TestClient) -> None:
+        """Test uploading with checkpoint artifact type."""
+        response = client.post(
+            "/api/models/upload",
+            data={
+                "name": "CheckpointArtifact",
+                "model_url": "https://example.com/checkpoint",
+                "artifact_type": "checkpoint",
+            },
+        )
+        assert response.status_code == 200
+        assert response.json()["artifact_type"] == "checkpoint"
+
+    def test_upload_weights_artifact(self, client: TestClient) -> None:
+        """Test uploading with weights artifact type."""
+        response = client.post(
+            "/api/models/upload",
+            data={
+                "name": "WeightsArtifact",
+                "model_url": "https://example.com/weights",
+                "artifact_type": "weights",
+            },
+        )
+        assert response.status_code == 200
+        assert response.json()["artifact_type"] == "weights"
+
+    def test_upload_default_artifact_type(self, client: TestClient) -> None:
+        """Test default artifact type is 'model'."""
+        response = client.post(
+            "/api/models/upload",
+            data={
+                "name": "DefaultArtifactType",
+                "model_url": "https://example.com/model",
+            },
+        )
+        assert response.status_code == 200
+        assert response.json()["artifact_type"] == "model"
 
 
 class TestUploadEndpointVersioning:
     """Test different version formats."""
 
-    def test_upload_custom_version(self, client: TestClient, sample_zip_file: io.BytesIO) -> None:
+    def test_upload_custom_version(self, client: TestClient) -> None:
         """Test upload with custom version number."""
-        sample_zip_file.seek(0)
         response = client.post(
             "/api/models/upload",
             data={
                 "name": "VersionedModel",
+                "model_url": "https://example.com/model",
                 "version": "2.5.3-beta",
             },
-            files={"file": ("model.zip", sample_zip_file, "application/zip")},
         )
         assert response.status_code == 200
 
-    def test_upload_default_version(self, client: TestClient, sample_zip_file: io.BytesIO) -> None:
+    def test_upload_default_version(self, client: TestClient) -> None:
         """Test upload uses default version when not specified."""
-        sample_zip_file.seek(0)
         response = client.post(
             "/api/models/upload",
-            data={"name": "DefaultVersionModel"},
-            files={"file": ("model.zip", sample_zip_file, "application/zip")},
+            data={
+                "name": "DefaultVersionModel",
+                "model_url": "https://example.com/model",
+            },
         )
         assert response.status_code == 200
-        # Could also verify it defaults to 1.0.0 in database
 
 
 class TestUploadEndpointEdgeCases:
     """Test edge cases and special scenarios."""
 
-    def test_upload_long_model_name(self, client: TestClient, sample_zip_file: io.BytesIO) -> None:
+    def test_upload_long_model_name(self, client: TestClient) -> None:
         """Test upload with very long model name."""
-        sample_zip_file.seek(0)
-        long_name = "A" * 200  # Very long name
+        long_name = "A" * 200
         response = client.post(
             "/api/models/upload",
-            data={"name": long_name},
-            files={"file": ("model.zip", sample_zip_file, "application/zip")},
+            data={
+                "name": long_name,
+                "model_url": "https://example.com/model",
+            },
         )
         assert response.status_code == 200
 
-    def test_upload_special_characters_in_name(
-        self, client: TestClient, sample_zip_file: io.BytesIO
-    ) -> None:
+    def test_upload_special_characters_in_name(self, client: TestClient) -> None:
         """Test upload with special characters in model name."""
-        sample_zip_file.seek(0)
         response = client.post(
             "/api/models/upload",
-            data={"name": "Model-123_v2.0@Beta!"},
-            files={"file": ("model.zip", sample_zip_file, "application/zip")},
+            data={
+                "name": "Model-123_v2.0@Beta!",
+                "model_url": "https://example.com/model",
+            },
         )
         assert response.status_code == 200
 
-    def test_upload_unicode_model_name(
-        self, client: TestClient, sample_zip_file: io.BytesIO
-    ) -> None:
+    def test_upload_unicode_model_name(self, client: TestClient) -> None:
         """Test upload with unicode characters in model name."""
-        sample_zip_file.seek(0)
         response = client.post(
             "/api/models/upload",
-            data={"name": "模型_Model_モデル"},
-            files={"file": ("model.zip", sample_zip_file, "application/zip")},
+            data={
+                "name": "model-multilang-test",
+                "model_url": "https://example.com/model",
+            },
         )
         assert response.status_code == 200
 
-    def test_upload_multiple_sequential(
-        self, client: TestClient, sample_zip_file: io.BytesIO
-    ) -> None:
+    def test_upload_long_url(self, client: TestClient) -> None:
+        """Test upload with very long URL (up to 2048 chars)."""
+        long_url = "https://example.com/" + "a" * 1900
+        response = client.post(
+            "/api/models/upload",
+            data={
+                "name": "LongUrlModel",
+                "model_url": long_url,
+            },
+        )
+        assert response.status_code == 200
+
+    def test_upload_multiple_sequential(self, client: TestClient) -> None:
         """Test uploading multiple models sequentially."""
         model_ids = []
         for i in range(3):
-            sample_zip_file.seek(0)
             response = client.post(
                 "/api/models/upload",
-                data={"name": f"SequentialModel{i}"},
-                files={"file": ("model.zip", sample_zip_file, "application/zip")},
+                data={
+                    "name": f"SequentialModel{i}",
+                    "model_url": f"https://example.com/model{i}",
+                },
             )
             assert response.status_code == 200
             model_ids.append(response.json()["model_id"])
@@ -290,13 +296,14 @@ class TestUploadEndpointEdgeCases:
 class TestUploadResponseStructure:
     """Test response structure and data integrity."""
 
-    def test_upload_response_fields(self, client: TestClient, sample_zip_file: io.BytesIO) -> None:
+    def test_upload_response_fields(self, client: TestClient) -> None:
         """Test upload response contains all required fields."""
-        sample_zip_file.seek(0)
         response = client.post(
             "/api/models/upload",
-            data={"name": "ResponseTestModel"},
-            files={"file": ("model.zip", sample_zip_file, "application/zip")},
+            data={
+                "name": "ResponseTestModel",
+                "model_url": "https://example.com/model",
+            },
         )
         assert response.status_code == 200
         data = response.json()
@@ -304,81 +311,64 @@ class TestUploadResponseStructure:
         # Verify all required fields are present
         assert "message" in data
         assert "model_id" in data
-        assert "file_path" in data
-        assert "file_size" in data
+        assert "model_url" in data
+        assert "artifact_type" in data
 
         # Verify field types
         assert isinstance(data["message"], str)
         assert isinstance(data["model_id"], int)
-        assert isinstance(data["file_path"], str)
-        assert isinstance(data["file_size"], int)
+        assert isinstance(data["model_url"], str)
+        assert isinstance(data["artifact_type"], str)
 
-    def test_upload_model_id_is_positive(
-        self, client: TestClient, sample_zip_file: io.BytesIO
-    ) -> None:
+    def test_upload_model_id_is_positive(self, client: TestClient) -> None:
         """Test that model_id is a positive integer."""
-        sample_zip_file.seek(0)
         response = client.post(
             "/api/models/upload",
-            data={"name": "PositiveIdModel"},
-            files={"file": ("model.zip", sample_zip_file, "application/zip")},
+            data={
+                "name": "PositiveIdModel",
+                "model_url": "https://example.com/model",
+            },
         )
         assert response.status_code == 200
         model_id = response.json()["model_id"]
         assert model_id > 0
 
-    def test_upload_file_size_accuracy(
-        self, client: TestClient, sample_zip_file: io.BytesIO
-    ) -> None:
-        """Test that reported file_size matches actual file size."""
-        sample_zip_file.seek(0)
-        file_content = sample_zip_file.read()
-        actual_size = len(file_content)
-
-        sample_zip_file.seek(0)
+    def test_upload_url_in_response(self, client: TestClient) -> None:
+        """Test that registered URL is returned in response."""
+        test_url = "https://huggingface.co/user/model"
         response = client.post(
             "/api/models/upload",
-            data={"name": "FileSizeTestModel"},
-            files={"file": ("model.zip", sample_zip_file, "application/zip")},
+            data={
+                "name": "UrlResponseModel",
+                "model_url": test_url,
+            },
         )
         assert response.status_code == 200
-        reported_size = response.json()["file_size"]
-        assert reported_size == actual_size
+        returned_url = response.json()["model_url"]
+        assert returned_url == test_url
 
 
-# ============================================================================
-# Test Runner Configuration
-# ============================================================================
+class TestDownloadRedirectEndpoint:
+    """Test the download redirect endpoint for accessing artifacts."""
 
-if __name__ == "__main__":
-    print("""
-    ╔══════════════════════════════════════════════════════════════╗
-    ║        Upload Endpoint Test Suite - Quick Reference          ║
-    ╚══════════════════════════════════════════════════════════════╝
+    def test_get_download_url_success(self, client: TestClient) -> None:
+        """Test retrieving download URL for a model."""
+        # First upload a model
+        upload_response = client.post(
+            "/api/models/upload",
+            data={
+                "name": "DownloadTestModel",
+                "model_url": "https://example.com/model.zip",
+            },
+        )
+        assert upload_response.status_code == 200
+        model_id = upload_response.json()["model_id"]
 
-    Run all tests:
-        pytest tests/test_upload_endpoint.py -v
+        # Then retrieve its download URL
+        download_response = client.get(f"/api/models/models/{model_id}/download-redirect")
+        assert download_response.status_code == 200
 
-    Run specific test class:
-        pytest tests/test_upload_endpoint.py::TestUploadEndpointBasic -v
-
-    Run specific test:
-        pytest tests/test_upload_endpoint.py::TestUploadEndpointBasic::test_upload_success -v
-
-    Run with coverage:
-        pytest tests/test_upload_endpoint.py --cov=src.upload --cov-report=html
-
-    Run in quiet mode (only show failures):
-        pytest tests/test_upload_endpoint.py -q
-
-    Run with verbose output and print statements:
-        pytest tests/test_upload_endpoint.py -v -s
-
-    Test Categories:
-    ├── TestUploadEndpointBasic      - Happy path scenarios
-    ├── TestUploadEndpointValidation - Error handling & validation
-    ├── TestUploadEndpointVersioning - Version format handling
-    ├── TestUploadEndpointEdgeCases  - Special cases & boundaries
-    └── TestUploadResponseStructure  - Response validation
-
-    """)
+    def test_get_download_url_invalid_id(self, client: TestClient) -> None:
+        """Test retrieving download URL for non-existent model."""
+        response = client.get("/api/models/models/99999/download-redirect")
+        assert response.status_code == 404
