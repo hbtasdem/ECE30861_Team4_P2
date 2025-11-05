@@ -53,8 +53,6 @@ class ModelRepository:
             Model object if found, None otherwise
         """
         result = self.db.query(Model).filter(Model.id == model_id).first()
-        if result is None:
-            return None
         return result
 
     def add_model_metadata(
