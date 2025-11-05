@@ -1,8 +1,8 @@
-# schemas.py
+# upload_schemas.py
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, HttpUrl
 
 
 class ModelCreate(BaseModel):
@@ -10,6 +10,8 @@ class ModelCreate(BaseModel):
     description: Optional[str] = None
     version: str = '1.0.0'
     is_sensitive: bool = False
+    model_url: str  # URL to the model artifact
+    artifact_type: str = 'model'  # Type: 'model', 'checkpoint', 'weights', etc.
 
 
 class ModelUpdate(BaseModel):
@@ -17,6 +19,8 @@ class ModelUpdate(BaseModel):
     description: Optional[str] = None
     version: Optional[str] = None
     is_sensitive: Optional[bool] = None
+    model_url: Optional[str] = None
+    artifact_type: Optional[str] = None
 
 
 class ModelResponse(BaseModel):
@@ -25,8 +29,8 @@ class ModelResponse(BaseModel):
     name: str
     description: Optional[str]
     version: str
-    file_path: str
-    file_size: int
+    model_url: str
+    artifact_type: str
     uploader_id: int
     is_sensitive: bool
     created_at: datetime
@@ -36,5 +40,5 @@ class ModelResponse(BaseModel):
 class UploadResponse(BaseModel):
     message: str
     model_id: int
-    file_path: str
-    file_size: int
+    model_url: str
+    artifact_type: str
