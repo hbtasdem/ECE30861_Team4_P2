@@ -2,8 +2,7 @@
 import json
 from typing import Optional
 
-from fastapi import (APIRouter, Depends, File, Form, HTTPException, UploadFile,
-                     status)
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from schemas import ModelCreate, UploadResponse
 from sqlalchemy.orm import Session
 
