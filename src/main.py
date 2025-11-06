@@ -47,8 +47,13 @@ def extract_model_name(model_url: str) -> str:
     return model_url.strip()
 
 
-def calculate_all_scores(code_link: str, dataset_link: str, model_link: str,
-                         encountered_datasets: set[str], encountered_code: set[str]) -> Dict[str, Any]:
+def calculate_all_scores(
+    code_link: str,
+    dataset_link: str,
+    model_link: str,
+    encountered_datasets: set[str],
+    encountered_code: set[str]
+) -> Dict[str, Any]:
     """Calculate all scores for a given set of links."""
     model_name = extract_model_name(model_link)
     # Extract just the model name (without organization) for JSON display
@@ -97,32 +102,55 @@ def calculate_all_scores(code_link: str, dataset_link: str, model_link: str,
         result["bus_factor"] = bus_score_normalized
         result["bus_factor_latency"] = int(bus_latency * 1000)
     except Exception as e:
-        print(f"Error calculating bus factor for {model_name}: {e}", file=sys.stderr)
+        error_msg = f"Error calculating bus factor for {model_name}: {e}"
+        print(error_msg, file=sys.stderr)
     # Performance Claims Score
     try:
-        perf_score, perf_latency = (performance_claims_sub_score.performance_claims_sub_score(model_name))
+        perf_score, perf_latency = (
+            performance_claims_sub_score.performance_claims_sub_score(model_name)
+        )
         result["performance_claims"] = perf_score
         result["performance_claims_latency"] = int(perf_latency * 1000)
     except Exception as e:
-        print(f"Error calculating performance claims for {model_name}: {e}", file=sys.stderr)
+        error_msg = f"Error calculating performance claims for {model_name}: {e}"
+        print(error_msg, file=sys.stderr)
     # License Score
     try:
-        license_score, license_latency = license_sub_score.license_sub_score(model_name)
+        license_score, license_latency = (
+            license_sub_score.license_sub_score(model_name)
+        )
         result["license"] = license_score
         result["license_latency"] = int(license_latency * 1000)
     except Exception as e:
-        print(f"Error calculating license score for {model_name}: {e}", file=sys.stderr)
+        error_msg = f"Error calculating license score for {model_name}: {e}"
+        print(error_msg, file=sys.stderr)
     # Size Scores
-    # using realistic values based on model type. This would ideally be calculated from actual model size
+    # using realistic values based on model type.
+    # This would ideally be calculated from actual model size
     if "bert" in model_name.lower():
-        result["size_score"] = {"raspberry_pi": 0.20, "jetson_nano": 0.40, "desktop_pc": 0.95, "aws_server": 1.00}
+        result["size_score"] = {
+            "raspberry_pi": 0.20,
+            "jetson_nano": 0.40,
+            "desktop_pc": 0.95,
+            "aws_server": 1.00
+        }
         result["size_score_latency"] = 50
     elif "whisper" in model_name.lower():
-        result["size_score"] = {"raspberry_pi": 0.90, "jetson_nano": 0.95, "desktop_pc": 1.00, "aws_server": 1.00}
+        result["size_score"] = {
+            "raspberry_pi": 0.90,
+            "jetson_nano": 0.95,
+            "desktop_pc": 1.00,
+            "aws_server": 1.00
+        }
         result["size_score_latency"] = 15
     else:
         # Default for other models
-        result["size_score"] = {"raspberry_pi": 0.75, "jetson_nano": 0.80, "desktop_pc": 1.00, "aws_server": 1.00}
+        result["size_score"] = {
+            "raspberry_pi": 0.75,
+            "jetson_nano": 0.80,
+            "desktop_pc": 1.00,
+            "aws_server": 1.00
+        }
         result["size_score_latency"] = 40
     # Available Dataset Code Score
 

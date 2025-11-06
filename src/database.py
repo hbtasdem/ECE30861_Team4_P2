@@ -1,5 +1,4 @@
 # database.py
-
 import os
 from typing import Generator
 
@@ -28,6 +27,5 @@ def get_db() -> Generator[Session, None, None]:
 
 def init_db() -> None:
     """Initialize database tables"""
-    from models import Base, Model, ModelMetadata, User
-
+    from src.models import Base, Model, ModelMetadata, User  # Import all models to register them
     Base.metadata.create_all(bind=engine)
