@@ -16,7 +16,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 
-class ModelCreate(BaseModel):
+class ModelCreate(BaseModel):  # type: ignore[misc]
     """Schema for creating a new model."""
 
     name: str
@@ -27,7 +27,7 @@ class ModelCreate(BaseModel):
     artifact_type: str = 'model'  # Type: 'model', 'checkpoint', 'weights', etc.
 
 
-class ModelUpdate(BaseModel):
+class ModelUpdate(BaseModel):  # type: ignore[misc]
     """Schema for updating an existing model."""
 
     name: Optional[str] = None
@@ -38,7 +38,7 @@ class ModelUpdate(BaseModel):
     artifact_type: Optional[str] = None
 
 
-class ModelResponse(BaseModel):
+class ModelResponse(BaseModel):  # type: ignore[misc]
     """Schema for returning model data in responses."""
 
     model_config = ConfigDict(from_attributes=True)
@@ -54,7 +54,7 @@ class ModelResponse(BaseModel):
     updated_at: datetime
 
 
-class UploadResponse(BaseModel):
+class UploadResponse(BaseModel):  # type: ignore[misc]
     """Schema for upload endpoint response."""
 
     message: str

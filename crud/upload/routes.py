@@ -26,7 +26,7 @@ from src.database import get_db  # noqa: E402
 router = APIRouter(prefix="/api/models", tags=["models"])
 
 
-@router.post("/upload", response_model=UploadResponse)
+@router.post("/upload", response_model=UploadResponse)  # type: ignore[misc]
 async def upload_model(
     name: str = Form(..., description="Model name"),
     model_url: str = Form(..., description="URL to model artifact"),
@@ -90,7 +90,7 @@ async def upload_model(
         )
 
 
-@router.get("/models/{model_id}/download-redirect")
+@router.get("/models/{model_id}/download-redirect")  # type: ignore[misc]
 async def get_download_url(
     model_id: int,
     db: Session = Depends(get_db)
@@ -114,7 +114,7 @@ async def get_download_url(
     return {"download_url": str(model.model_url)}
 
 
-@router.get("/enumerate", response_model=List[ModelResponse])
+@router.get("/enumerate", response_model=List[ModelResponse])  # type: ignore[misc]
 async def enumerate_models(
     skip: int = 0,
     limit: int = 100,

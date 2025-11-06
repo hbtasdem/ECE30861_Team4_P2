@@ -40,7 +40,7 @@ if os.getenv("TESTING") != "true":
 app.include_router(upload_router)
 
 
-@app.get("/")
+@app.get("/")  # type: ignore[misc]
 def root() -> Dict[str, Any]:
     """API root - returns available endpoints"""
     return {
@@ -54,7 +54,7 @@ def root() -> Dict[str, Any]:
     }
 
 
-@app.get("/health")
+@app.get("/health")  # type: ignore[misc]
 def health_check() -> Dict[str, str]:
     """Health check endpoint"""
     return {"status": "ok"}
