@@ -51,7 +51,8 @@ def extract_model_id_from_url(url: str) -> str:
         if match:
             return match.group(1)
 
-    if '/' in url and ' ' not in url and '://' not in url:  # If it looks like 'namespace/model_name'
+    # If it looks like 'namespace/model_name'
+    if '/' in url and ' ' not in url and '://' not in url:
         return url
 
     return url
