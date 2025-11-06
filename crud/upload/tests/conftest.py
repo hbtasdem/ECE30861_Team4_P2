@@ -61,7 +61,7 @@ def client(test_db: Session) -> Generator[Any, None, None]:
     """Create a FastAPI TestClient with dependency overrides."""
     from fastapi.testclient import TestClient
 
-    from crud.upload.app import app
+    from crud.app import app
     from crud.upload.auth import get_current_user
     from src.database import get_db
     from src.models import User

@@ -35,7 +35,7 @@ README_NONE = ""
 
 @patch("src.ramp_up_sub_score.get_model_info")
 @patch("src.ramp_up_sub_score.fetch_readme")
-@pytest.mark.parametrize(
+@pytest.mark.parametrize(  # type: ignore[misc]
     "downloads,likes,readme,expected_min_score",
     [
         (100000, 500, README_WITH_CODE, 0.99),

@@ -4,6 +4,9 @@ import os
 import sys
 import tempfile
 from pathlib import Path
+from typing import Generator
+
+from fastapi.testclient import TestClient
 
 # Set testing mode BEFORE any imports
 os.environ["TESTING"] = "true"
@@ -18,7 +21,7 @@ from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
 from src.models import Base, User  # noqa: E402
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="function")  # type: ignore[misc]
 def test_db() -> Session:
     """Create a temporary file-based SQLite database for each test."""
     # Create temporary database file
@@ -54,22 +57,22 @@ def test_db() -> Session:
         pass
 
 
-@pytest.fixture(scope="function")
-def client(test_db: Session):
+@pytest.fixture(scope="function")  # type: ignore[misc]
+def client(test_db: Session) -> Generator[TestClient, None, None]:
     """Create a FastAPI TestClient with dependency overrides."""
     from fastapi.testclient import TestClient
 
-    from crud.upload.app import app
+    from crud.app import app
     from crud.upload.auth import get_current_user
     from src.database import get_db
     from src.models import User
 
     test_user = User(id=1, username="testuser", email="test@example.com", is_admin=False)
 
-    def override_get_db():
+    def override_get_db() -> Generator[Session, None, None]:
         yield test_db
 
-    def override_get_current_user():
+    def override_get_current_user() -> User:
         return test_user
 
     # Apply overrides
