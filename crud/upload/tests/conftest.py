@@ -4,12 +4,14 @@ import os
 import sys
 import tempfile
 from pathlib import Path
+from typing import Any, Generator
 
 # Set testing mode BEFORE any imports
 os.environ["TESTING"] = "true"
 
-# Add src to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Add project root to path
+project_root = Path(__file__).parent.parent.parent.parent  # Go from crud/upload/tests to project root
+sys.path.insert(0, str(project_root))
 
 import pytest  # noqa: E402
 from sqlalchemy import create_engine  # noqa: E402
@@ -19,7 +21,7 @@ from src.models import Base, User  # noqa: E402
 
 
 @pytest.fixture(scope="function")
-def test_db() -> Session:
+def test_db() -> Generator[Session, None, None]:
     """Create a temporary file-based SQLite database for each test."""
     # Create temporary database file
     temp_db = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
@@ -55,7 +57,7 @@ def test_db() -> Session:
 
 
 @pytest.fixture(scope="function")
-def client(test_db: Session):
+def client(test_db: Session) -> Generator[Any, None, None]:
     """Create a FastAPI TestClient with dependency overrides."""
     from fastapi.testclient import TestClient
 
@@ -66,10 +68,10 @@ def client(test_db: Session):
 
     test_user = User(id=1, username="testuser", email="test@example.com", is_admin=False)
 
-    def override_get_db():
+    def override_get_db() -> Generator[Session, None, None]:
         yield test_db
 
-    def override_get_current_user():
+    def override_get_current_user() -> User:
         return test_user
 
     # Apply overrides
