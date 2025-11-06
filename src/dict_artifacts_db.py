@@ -13,7 +13,6 @@
 #     "rating" : json object from metrics calculation
 # }
 
-from enum import Enum
 from typing import Any, Dict
 
 artifacts_db: Dict[str, Dict[str, Any]] = {

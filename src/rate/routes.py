@@ -1,4 +1,5 @@
 # /artifact/model/{id}/rate
+# This is NOT CONNECTED TO A REAL DATABASE, only example hardcoded for now
 # Example usage:
 # In terminal: uvicorn src.app:app --reload --host 127.0.0.1 --port 8000
 # In browser go to: http://127.0.0.1:8000/artifact/model/1234567890/rate
