@@ -32,12 +32,6 @@ https://huggingface.co/google-bert/bert-base-uncased
         # Should succeed (exit code 0) or fail gracefully
         self.assertIn(result.returncode, [0, 1])
 
-    def test_test_command(self) -> None:
-        """Test run script test command - skip to avoid infinite loop."""
-        # Skip this test to avoid infinite loop when testing 'python run test'
-        # The test command functionality is verified by running it manually
-        self.skipTest("Skipping to avoid infinite loop with 'python run test'")
-
     def test_run_script_with_csv_file(self) -> None:
         """Test run script with valid CSV file."""
         with tempfile.NamedTemporaryFile(mode="w", delete=False, suffix=".txt") as f:

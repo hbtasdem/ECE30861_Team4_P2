@@ -14,7 +14,7 @@ Key features:
 import os
 from typing import Any, Optional, cast
 
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 
 from src.models import User
 

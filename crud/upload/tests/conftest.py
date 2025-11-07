@@ -20,7 +20,7 @@ from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
 from src.models import Base, User  # noqa: E402
 
 
-@pytest.fixture(scope="function")  # type: ignore[misc]
+@pytest.fixture(scope="function")
 def test_db() -> Generator[Session, None, None]:
     """Create a temporary file-based SQLite database for each test."""
     # Create temporary database file
@@ -56,12 +56,12 @@ def test_db() -> Generator[Session, None, None]:
         pass
 
 
-@pytest.fixture(scope="function")  # type: ignore[misc]
+@pytest.fixture(scope="function")
 def client(test_db: Session) -> Generator[Any, None, None]:
     """Create a FastAPI TestClient with dependency overrides."""
     from fastapi.testclient import TestClient
 
-    from crud.upload.app import app
+    from crud.app import app
     from crud.upload.auth import get_current_user
     from src.database import get_db
     from src.models import User

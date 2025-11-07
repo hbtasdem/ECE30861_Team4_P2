@@ -4,7 +4,6 @@ Tests the basic enumerate functionality to list all registered models.
 Run with: pytest tests/test_enumerate.py -v
 """
 
-import pytest
 from fastapi.testclient import TestClient
 
 

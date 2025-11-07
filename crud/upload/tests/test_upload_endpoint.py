@@ -7,7 +7,6 @@ Or: pytest tests/test_upload_endpoint.py -v -k "test_name" (for specific test)
 
 import json
 
-import pytest
 from fastapi.testclient import TestClient
 
 
