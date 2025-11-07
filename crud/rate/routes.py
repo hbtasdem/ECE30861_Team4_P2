@@ -16,7 +16,7 @@ from crud.rate.dict_artifacts_db import artifacts_db
 router = APIRouter()
 
 
-@router.get("/artifact/model/{artifact_id}/rate")  # type: ignore
+@router.get("/artifact/model/{artifact_id}/rate")
 async def get_model_rating(artifact_id: str) -> JSONResponse:
     """
     Return the stored ModelRating for a given artifact ID.

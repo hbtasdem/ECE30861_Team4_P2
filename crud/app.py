@@ -12,9 +12,7 @@ Key features:
 
 # app.py
 import os
-import sys
-from pathlib import Path
-from typing import Any, Callable, Dict
+from typing import Any, Dict
 
 from fastapi import FastAPI
 
@@ -38,7 +36,7 @@ app.include_router(upload_router)
 app.include_router(rate_router)  # /artifact/model/{id}/rate
 
 
-@app.get("/")  # type: ignore[misc]
+@app.get("/")
 def root() -> Dict[str, Any]:
     """API root - returns available endpoints"""
     return {
@@ -52,7 +50,7 @@ def root() -> Dict[str, Any]:
     }
 
 
-@app.get("/health")  # type: ignore[misc]
+@app.get("/health")
 def health_check() -> Dict[str, str]:
     """Health check endpoint"""
     return {"status": "ok"}

@@ -27,7 +27,7 @@ MINIMAL_MODEL_RESPONSE: Dict[str, Any] = {
 EMPTY_MODEL_RESPONSE: Dict[str, Any] = {}
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "model_id,expected_success",
     [
         ("gpt2", True),

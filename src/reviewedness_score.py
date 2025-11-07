@@ -1,7 +1,6 @@
 # Metric calculation: reviewedness
 
 import os
-import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Mapping, Union

@@ -36,7 +36,7 @@ GPL-2.0
 README_EMPTY: str = ""
 
 
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "readme_text,expected_score",
     [
         (README_YAML, 1),

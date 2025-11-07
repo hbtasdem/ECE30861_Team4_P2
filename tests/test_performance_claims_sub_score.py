@@ -7,7 +7,7 @@ import src.performance_claims_sub_score as performance
 
 
 @patch("src.performance_claims_sub_score.get_model_info")
-@pytest.mark.parametrize(  # type: ignore[misc]
+@pytest.mark.parametrize(
     "downloads,likes,expected_min_score",
     [
         (100000, 500, 0.99),

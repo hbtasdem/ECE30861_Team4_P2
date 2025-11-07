@@ -17,15 +17,15 @@ from typing import Any, Dict
 
 artifacts_db: Dict[str, Dict[str, Any]] = {
     "1234567890": {
-        "metadata" : {
-            "name" : "bert-base-uncased",
-            "id" : 1234567890,
+        "metadata": {
+            "name": "bert-base-uncased",
+            "id": 1234567890,
             "type": "MODEL"
         },
         "data": {
-            "url" : "https://github.com/google-research/bert"
+            "url": "https://github.com/google-research/bert"
         },
-        "rating" : {
+        "rating": {
             "name": "bert-base-uncased",
             "category": "MODEL",
             "net_score": 0.95,

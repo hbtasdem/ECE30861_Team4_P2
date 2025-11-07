@@ -2,7 +2,6 @@ import re
 import time
 from typing import Optional, Set, Tuple
 
-import src.license_sub_score as license_sub_score
 from src.license_sub_score import fetch_readme
 
 
