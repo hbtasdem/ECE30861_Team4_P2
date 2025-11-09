@@ -2,6 +2,7 @@
 '''this file is not finalized, it is a hardcoded placeholder for the more complex treescore calc which will take place
 once models are uploaded to the registry and therefore have recorded score'''
 import time
+from typing import Tuple
 
 import lineage_tree
 
