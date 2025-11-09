@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 from typing import Any, Optional
 
 import jwt  # NEW: JWT library for token generation and validation
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 from passlib.context import CryptContext  # NEW: Password hashing
 
 from src.models import User
@@ -65,13 +65,13 @@ def create_access_token(
 
 def decode_access_token(token: str) -> dict[str, Any]:  # NEW: JWT token validation
     """Decode and validate a JWT access token.
-    
+
     Args:
         token: JWT token string
-        
+
     Returns:
         Decoded token payload
-        
+
     Raises:
         HTTPException: If token is invalid or expired
     """
@@ -100,16 +100,16 @@ def get_current_user(  # UPDATED: Now validates JWT from X-Authorization header
     db: Any = None
 ) -> User:
     """Get current authenticated user from X-Authorization header token.
-    
+
     Expected header format: X-Authorization: bearer <token>
-    
+
     Args:
         authorization: X-Authorization header value
         db: Database session dependency
-        
+
     Returns:
         Authenticated User object
-        
+
     Raises:
         HTTPException: If not authenticated or token invalid
     """
@@ -132,11 +132,11 @@ def get_current_user(  # UPDATED: Now validates JWT from X-Authorization header
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid authorization header format"
             )
-        
+
         token = authorization[7:]  # Remove "bearer " prefix
         payload = decode_access_token(token)
         token_user_id: Optional[str] = payload.get("sub")
-        
+
         if token_user_id is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -153,7 +153,7 @@ def get_current_user(  # UPDATED: Now validates JWT from X-Authorization header
             hashed_password=""
         )
         return user
-        
+
     except HTTPException:
         raise
     except Exception as e:

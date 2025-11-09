@@ -6,10 +6,11 @@ Comprehensive test script demonstrating all three implemented features:
 3. User authentication (PUT /authenticate) - login and get JWT token
 """
 
-import json
 import os
 import sys
+import tempfile
 from pathlib import Path
+from typing import Generator, Tuple
 
 # Add project root to path
 project_root = Path(__file__).parent
@@ -17,18 +18,17 @@ sys.path.insert(0, str(project_root))
 
 os.environ["TESTING"] = "true"
 
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-import tempfile
+from fastapi.testclient import TestClient  # noqa: E402
+from sqlalchemy import create_engine  # noqa: E402
+from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
 
-from crud.upload.app import app
-from crud.upload.auth import create_access_token, verify_password
-from src.models import Base, User
-from src.database import get_db
+from crud.upload.app import app  # noqa: E402
+from crud.upload.auth import create_access_token, verify_password  # noqa: E402
+from src.database import get_db  # noqa: E402
+from src.models import Base, User  # noqa: E402
 
 
-def setup_test_db():
+def setup_test_db() -> Tuple[TestClient, Session, str]:
     """Create test database and return client."""
     temp_db = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
     temp_db_path = temp_db.name
@@ -43,7 +43,7 @@ def setup_test_db():
     TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     db = TestingSessionLocal()
 
-    def override_get_db():
+    def override_get_db() -> Generator[Session, None, None]:
         yield db
 
     app.dependency_overrides[get_db] = override_get_db
@@ -51,14 +51,14 @@ def setup_test_db():
     return TestClient(app), db, temp_db_path
 
 
-def test_feature_1_enumerate():
+def test_feature_1_enumerate() -> None:
     """Test Feature 1: Basic Enumerate (GET /api/models/enumerate)"""
     print("\n" + "="*70)
     print("FEATURE 1: Basic Enumerate - Directory of All Models")
     print("="*70)
-    
+
     client, db, temp_db_path = setup_test_db()
-    
+
     try:
         # Test enumerate empty list
         print("\n1a. Testing enumerate with no models...")
@@ -68,7 +68,7 @@ def test_feature_1_enumerate():
         assert isinstance(data, list), "Response should be a list"
         assert len(data) == 0, "Should be empty"
         print("✓ Enumerate returns empty list when no models exist")
-        
+
         # Create a test user first
         print("\n1b. Uploading test models...")
         test_user = User(
@@ -81,11 +81,11 @@ def test_feature_1_enumerate():
         db.add(test_user)
         db.commit()
         print("✓ Test user created")
-        
+
         # Generate test token
         token = create_access_token(data={"sub": "1", "is_admin": False})
         headers = {"X-Authorization": f"bearer {token}"}
-        
+
         for i in range(3):
             response = client.post(
                 "/api/models/upload",
@@ -98,7 +98,7 @@ def test_feature_1_enumerate():
             )
             assert response.status_code == 200, f"Upload failed: {response.text}"
             print(f"  ✓ Uploaded model {i}")
-        
+
         # Test enumerate with models
         print("\n1c. Testing enumerate with models...")
         response = client.get("/api/models/enumerate")
@@ -106,7 +106,7 @@ def test_feature_1_enumerate():
         models = response.json()
         assert len(models) == 3, f"Expected 3 models, got {len(models)}"
         print(f"✓ Enumerate returns all {len(models)} models")
-        
+
         # Test pagination
         print("\n1d. Testing enumerate with pagination...")
         response = client.get("/api/models/enumerate?skip=0&limit=2")
@@ -114,30 +114,30 @@ def test_feature_1_enumerate():
         models = response.json()
         assert len(models) == 2, f"Expected 2 models with limit=2, got {len(models)}"
         print(f"✓ Enumerate respects pagination (limit=2 returned {len(models)} models)")
-        
+
         # Test skip
         response = client.get("/api/models/enumerate?skip=1&limit=10")
         models = response.json()
         assert len(models) == 2, f"Expected 2 models after skip=1, got {len(models)}"
         print(f"✓ Enumerate respects skip parameter (skip=1 returned {len(models)} models)")
-        
+
         print("\n✓ FEATURE 1 PASSED: Enumerate working correctly!")
-        
+
     finally:
         try:
             os.remove(temp_db_path)
-        except:
+        except OSError:
             pass
 
 
-def test_feature_2_registration():
+def test_feature_2_registration() -> None:
     """Test Feature 2: User Registration (POST /auth/register)"""
     print("\n" + "="*70)
     print("FEATURE 2: User Registration - Create New User")
     print("="*70)
-    
+
     client, db, temp_db_path = setup_test_db()
-    
+
     try:
         # Test registration with valid data
         print("\n2a. Testing user registration with valid credentials...")
@@ -150,7 +150,7 @@ def test_feature_2_registration():
                 "password": "securepassword123"
             }
         }
-        
+
         response = client.post(
             "/auth/register",
             json=registration_data
@@ -160,19 +160,19 @@ def test_feature_2_registration():
         assert "token" in result, "Response should contain token"
         assert result["token"].startswith("bearer "), "Token should be in bearer format"
         print("✓ User registered successfully with bearer token returned")
-        
+
         # Verify user was created in database
         print("\n2b. Verifying user was created in database...")
         user = db.query(User).filter(User.username == "newuser").first()
         assert user is not None, "User should be created in database"
         assert user.email == "newuser", "Email should match username"
-        print(f"✓ User 'newuser' created in database with hashed password")
-        
+        print("✓ User 'newuser' created in database with hashed password")
+
         # Verify password was hashed correctly
         print("\n2c. Verifying password was hashed...")
-        assert verify_password("securepassword123", user.hashed_password), "Password verification failed"
+        assert verify_password("securepassword123", str(user.hashed_password)), "Password verification failed"
         print("✓ Password hashed and verifiable")
-        
+
         # Test registration with duplicate user (should fail)
         print("\n2d. Testing duplicate registration (should fail)...")
         response = client.post(
@@ -181,24 +181,24 @@ def test_feature_2_registration():
         )
         assert response.status_code == 409, f"Expected 409, got {response.status_code}"
         print("✓ Duplicate registration correctly rejected with 409")
-        
+
         print("\n✓ FEATURE 2 PASSED: User registration working correctly!")
-        
+
     finally:
         try:
             os.remove(temp_db_path)
-        except:
+        except OSError:
             pass
 
 
-def test_feature_3_authentication():
+def test_feature_3_authentication() -> None:
     """Test Feature 3: User Authentication (PUT /authenticate)"""
     print("\n" + "="*70)
     print("FEATURE 3: User Authentication - Login and Get JWT Token")
     print("="*70)
-    
+
     client, db, temp_db_path = setup_test_db()
-    
+
     try:
         # Create a test user
         print("\n3a. Creating test user...")
@@ -212,7 +212,7 @@ def test_feature_3_authentication():
         db.add(test_user)
         db.commit()
         print("✓ Test user created")
-        
+
         # Test authentication with valid credentials
         print("\n3b. Testing authentication with valid credentials...")
         auth_data = {
@@ -224,7 +224,7 @@ def test_feature_3_authentication():
                 "password": "testpassword"  # UPDATED: Use same password as pre-hashed value
             }
         }
-        
+
         response = client.put(
             "/authenticate",
             json=auth_data
@@ -235,7 +235,7 @@ def test_feature_3_authentication():
         token = result["token"]
         assert token.startswith("bearer "), "Token should be in bearer format"
         print("✓ Authentication successful, bearer token returned")
-        
+
         # Extract and verify token
         print("\n3c. Verifying JWT token...")
         token_without_bearer = token[7:]  # Remove "bearer " prefix
@@ -244,7 +244,7 @@ def test_feature_3_authentication():
         assert payload.get("sub") == "1", "Token sub claim should be user ID"
         assert "exp" in payload, "Token should have expiration"
         print(f"✓ JWT token valid with claims: sub={payload.get('sub')}, exp={payload.get('exp')}")
-        
+
         # Test authentication with wrong password
         print("\n3d. Testing authentication with invalid password...")
         wrong_auth_data = {
@@ -256,14 +256,14 @@ def test_feature_3_authentication():
                 "password": "wrongpassword"
             }
         }
-        
+
         response = client.put(
             "/authenticate",
             json=wrong_auth_data
         )
         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
         print("✓ Invalid password correctly rejected with 401")
-        
+
         # Test authentication with nonexistent user
         print("\n3e. Testing authentication with nonexistent user...")
         nonexistent_auth_data = {
@@ -275,34 +275,34 @@ def test_feature_3_authentication():
                 "password": "anypassword"
             }
         }
-        
+
         response = client.put(
             "/authenticate",
             json=nonexistent_auth_data
         )
         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
         print("✓ Nonexistent user correctly rejected with 401")
-        
+
         print("\n✓ FEATURE 3 PASSED: User authentication working correctly!")
-        
+
     finally:
         try:
             os.remove(temp_db_path)
-        except:
+        except OSError:
             pass
 
 
-def main():
+def main() -> None:
     """Run all feature tests."""
     print("\n" + "🚀 "*35)
     print("COMPREHENSIVE FEATURE TEST SUITE".center(70))
     print("🚀 "*35)
-    
+
     try:
         test_feature_1_enumerate()
         test_feature_2_registration()
         test_feature_3_authentication()
-        
+
         print("\n" + "="*70)
         print("✓ ALL FEATURES PASSED SUCCESSFULLY!".center(70))
         print("="*70)
@@ -312,7 +312,7 @@ def main():
         print("  3. ✓ User Authentication: PUT /authenticate validates credentials and returns JWT")
         print("\nAll features implemented per OpenAPI specification!")
         print("="*70 + "\n")
-        
+
     except AssertionError as e:
         print(f"\n✗ TEST FAILED: {e}")
         sys.exit(1)

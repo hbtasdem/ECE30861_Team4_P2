@@ -22,8 +22,8 @@ from fastapi import FastAPI
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from crud.rate.routes import router as rate_router
-from crud.upload.auth_routes import router as auth_router  # NEW: Import authentication routes
+from crud.rate.routes import router as rate_router  # noqa: E402
+from crud.upload.auth_routes import router as auth_router  # noqa: E402
 from crud.upload.routes import router as upload_router  # noqa: E402
 from src.database import init_db  # noqa: E402
 

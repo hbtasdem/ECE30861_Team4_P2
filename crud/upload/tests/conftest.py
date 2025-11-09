@@ -17,8 +17,8 @@ import pytest  # noqa: E402
 from sqlalchemy import create_engine  # noqa: E402
 from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
 
+from crud.upload.auth import create_access_token  # noqa: E402
 from src.models import Base, User  # noqa: E402
-from crud.upload.auth import create_access_token  # UPDATED: Import token creation
 
 
 @pytest.fixture(scope="function")
@@ -64,21 +64,22 @@ def test_db() -> Generator[Session, None, None]:
         pass
 
 
-@pytest.fixture(scope="function")  # type: ignore[misc]
+@pytest.fixture(scope="function")
 def test_token() -> str:  # UPDATED: New fixture to generate test JWT token
     """Generate a test JWT token for authentication."""
     token = create_access_token(data={"sub": "1", "is_admin": False})
     return f"bearer {token}"  # UPDATED: Return in bearer format
 
 
-@pytest.fixture(scope="function")  # type: ignore[misc]
+@pytest.fixture(scope="function")
 def client(test_db: Session) -> Generator[Any, None, None]:
     """Create a FastAPI TestClient with dependency overrides."""
     from fastapi.testclient import TestClient
 
     from crud.app import app
     from crud.upload.auth import get_current_user
-    from crud.upload.routes import get_current_user_with_auth  # UPDATED: Import helper function
+    from crud.upload.routes import \
+        get_current_user_with_auth  # UPDATED: Import helper function
     from src.database import get_db
     from src.models import User
 

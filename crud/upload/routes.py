@@ -137,7 +137,7 @@ async def enumerate_models(
     Args:
         skip: Number of models to skip (default: 0)
         limit: Maximum number of models to return (default: 100, max: 1000)
-        
+
     Returns:
         List of ModelResponse objects
     """
