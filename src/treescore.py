@@ -6,7 +6,7 @@ import time
 import lineage_tree
 
 
-def treescore_calc(model_name: str):
+def treescore_calc(model_name: str) -> Tuple[float, float]:
     """
     Calculate tree score based on model lineage depth and quality.
     Score is based on:

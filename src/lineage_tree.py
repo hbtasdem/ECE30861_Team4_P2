@@ -6,7 +6,7 @@ import time
 import requests
 
 
-def get_model_config(model_identifier: str):
+def get_model_config(model_identifier: str) -> Optional[Dict[str, Any]]:
     """
     Return JSON metadata for a Hugging Face model via API.
     model_identifier can be either:
@@ -32,7 +32,7 @@ def get_model_config(model_identifier: str):
         return None
 
 
-def check_lineage(model_identifier: str):
+def check_lineage(model_identifier: str) -> Tuple[Optional[Dict[str, Any]], float]:
     """
     Create a lineage tree by checking base-model tag in the metadata.
     Returns a dict with lineage information and the score calculation time.
