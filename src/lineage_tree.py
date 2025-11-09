@@ -2,12 +2,12 @@
 
 import json
 import time
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Tuple, cast
 
 import requests
 
 
-def get_model_config(model_identifier: str) -> Optional[Dict[str, Any]]:
+def get_model_config(model_identifier: str) -> Dict[str, Any] | None:
     """
     Return JSON metadata for a Hugging Face model via API.
     model_identifier can be either:
@@ -27,7 +27,7 @@ def get_model_config(model_identifier: str) -> Optional[Dict[str, Any]]:
     try:
         resp = requests.get(api_url, timeout=10)
         resp.raise_for_status()
-        return resp.json()
+        return cast(Dict[str, Any], resp.json())
     except Exception as e:
         print(f"Could not fetch HF API metadata for {model_path}: {e}")
         return None
