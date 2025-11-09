@@ -61,3 +61,38 @@ class UploadResponse(BaseModel):  # type: ignore[misc]
     model_id: int
     model_url: str
     artifact_type: str
+
+
+# NEW: Authentication schemas per OpenAPI spec
+
+
+class UserSchema(BaseModel):  # type: ignore[misc]
+    """User information schema per OpenAPI spec."""
+
+    name: str  # NEW: Username or email
+    is_admin: bool = False  # NEW: Admin flag
+
+
+class UserAuthenticationInfo(BaseModel):  # type: ignore[misc]
+    """Authentication secret schema per OpenAPI spec."""
+
+    password: str  # NEW: User password
+
+
+class AuthRequest(BaseModel):  # type: ignore[misc]
+    """Authentication request per OpenAPI AuthenticationRequest schema."""
+
+    user: UserSchema  # NEW: User credentials
+    secret: UserAuthenticationInfo  # NEW: Authentication secret
+
+
+class UserRegistrationRequest(AuthRequest):  # type: ignore[misc]
+    """User registration request extends auth request."""
+
+    pass
+
+
+class AuthResponse(BaseModel):  # type: ignore[misc]
+    """Authentication response with token per OpenAPI AuthenticationToken schema."""
+
+    token: str  # NEW: Bearer token for authenticated requests

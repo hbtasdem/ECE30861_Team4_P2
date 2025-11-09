@@ -1,7 +1,8 @@
 # models.py
 from datetime import datetime
 
-from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import (BigInteger, Boolean, Column, DateTime, ForeignKey,
+                        Integer, String, Text)
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -12,7 +13,9 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(255), unique=True, nullable=False)
     email = Column(String(255), unique=True, nullable=False)
+    hashed_password = Column(String(255), nullable=False)
     is_admin = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
     models = relationship('Model', back_populates='uploader')
 
 

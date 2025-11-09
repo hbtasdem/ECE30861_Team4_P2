@@ -23,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from crud.upload.routes import router as upload_router  # noqa: E402
+from crud.upload.auth_routes import router as auth_router  # NEW: Import authentication routes
 from src.database import init_db  # noqa: E402
 
 # Initialize FastAPI app
@@ -38,6 +39,7 @@ if os.getenv("TESTING") != "true":
 
 # Include routers
 app.include_router(upload_router)
+app.include_router(auth_router)  # NEW: Include authentication routes
 
 
 @app.get("/")  # type: ignore[misc]

@@ -15,18 +15,30 @@ All endpoints require authentication and validate input parameters.
 import json
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, Form, HTTPException, status
+from fastapi import (APIRouter, Depends, Form,  # UPDATED: Added Header import
+                     Header, HTTPException, status)
 from sqlalchemy.orm import Session
 
 from crud.upload.auth import get_current_user  # noqa: E402
 from crud.upload.model_repository import ModelRepository  # noqa: E402
-from crud.upload.models import ModelCreate, ModelResponse, UploadResponse  # noqa: E402
+from crud.upload.models import (ModelCreate, ModelResponse,  # noqa: E402
+                                UploadResponse)
 from src.database import get_db  # noqa: E402
+
+
+# UPDATED: Helper function for getting current user with authorization header
+async def get_current_user_with_auth(
+    x_authorization: Optional[str] = Header(None),
+    db: Session = Depends(get_db)
+) -> Any:
+    """Helper to pass x_authorization header to get_current_user."""
+    return get_current_user(authorization=x_authorization, db=db)
+
 
 router = APIRouter(prefix="/api/models", tags=["models"])
 
 
-@router.post("/upload", response_model=UploadResponse)  # type: ignore[misc]
+@router.post("/upload", response_model=UploadResponse)
 async def upload_model(
     name: str = Form(..., description="Model name"),
     model_url: str = Form(..., description="URL to model artifact"),
@@ -35,7 +47,7 @@ async def upload_model(
     artifact_type: str = Form("model"),
     is_sensitive: bool = Form(False),
     metadata: Optional[str] = Form(None),
-    current_user: Any = Depends(get_current_user),
+    current_user: Any = Depends(get_current_user_with_auth),  # UPDATED: Use helper function
     db: Session = Depends(get_db)
 ) -> UploadResponse:
     """Register a model via URL"""
@@ -125,7 +137,7 @@ async def enumerate_models(
     Args:
         skip: Number of models to skip (default: 0)
         limit: Maximum number of models to return (default: 100, max: 1000)
-
+        
     Returns:
         List of ModelResponse objects
     """
