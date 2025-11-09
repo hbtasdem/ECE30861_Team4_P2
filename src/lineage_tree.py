@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-import requests
 import json
 import time
+
+import requests
 
 
 def get_model_config(model_identifier: str):
