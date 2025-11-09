@@ -78,8 +78,7 @@ def client(test_db: Session) -> Generator[Any, None, None]:
 
     from crud.app import app
     from crud.upload.auth import get_current_user
-    from crud.upload.routes import \
-        get_current_user_with_auth  # UPDATED: Import helper function
+    from crud.upload.routes import get_current_user_with_auth  # UPDATED: Import helper function
     from src.database import get_db
     from src.models import User
 

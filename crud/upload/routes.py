@@ -15,14 +15,12 @@ All endpoints require authentication and validate input parameters.
 import json
 from typing import Any, Dict, List, Optional
 
-from fastapi import (APIRouter, Depends, Form,  # UPDATED: Added Header import
-                     Header, HTTPException, status)
+from fastapi import APIRouter, Depends, Form, Header, HTTPException, status  # UPDATED: Added Header import
 from sqlalchemy.orm import Session
 
 from crud.upload.auth import get_current_user  # noqa: E402
 from crud.upload.model_repository import ModelRepository  # noqa: E402
-from crud.upload.models import (ModelCreate, ModelResponse,  # noqa: E402
-                                UploadResponse)
+from crud.upload.models import ModelCreate, ModelResponse, UploadResponse  # noqa: E402
 from src.database import get_db  # noqa: E402
 
 
