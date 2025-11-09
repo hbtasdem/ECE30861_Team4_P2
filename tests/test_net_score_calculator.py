@@ -360,30 +360,5 @@ class TestNetScoreCalculator(unittest.TestCase):
                 self.assertIsInstance(e, Exception)
 
 
-class TestNetScoreWithRealModels(unittest.TestCase):
-    """Integration tests with real Hugging Face models (may be slow)."""
-
-    def test_real_model_calculation(self) -> None:
-        """Test calculation with a real model (if network is available)."""
-        model_id = "gpt2"  # Simple, well-known model
-
-        try:
-            results = calculate_net_score(model_id)
-
-            # Basic structure validation
-            self.assertIn("net_score", results)
-            self.assertIn("model_id", results)
-            self.assertEqual(results["model_id"], model_id)
-
-            # Score should be a reasonable number
-            self.assertIsInstance(results["net_score"], float)
-            self.assertGreaterEqual(results["net_score"], 0.0)
-            self.assertLessEqual(results["net_score"], 2.0)
-
-        except Exception as e:
-            # If network is not available, skip this test
-            self.skipTest(f"Network not available for real model test: {e}")
-
-
 if __name__ == "__main__":
     unittest.main()

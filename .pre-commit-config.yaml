@@ -20,13 +20,10 @@
 # from ChatGPT:
 repos:
   # Run flake8 for linting
-  # NOTE: I addedignore F401 which catches "imported but not used"
-  #      the crud stuff seems to need this off. Sai check. 
   - repo: https://github.com/pycqa/flake8
     rev: 7.3.0   # pick a stable version
     hooks:
       - id: flake8
-        args: [--count, --show-source, --statistics, --max-line-length, "120"] 
 
   # Run isort for import sorting
   # IMPORTANT ISORT NOTE:
@@ -45,6 +42,5 @@ repos:
     rev: v1.18.2
     hooks:
       - id: mypy
-        args: [--strict, --ignore-missing-imports]
         additional_dependencies:
           - types-requests

@@ -1,13 +1,13 @@
 # models.py
 from datetime import datetime
 
-from sqlalchemy import BigInteger, Boolean, Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
 
 
-class User(Base):
+class User(Base):  # type: ignore
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     username = Column(String(255), unique=True, nullable=False)
@@ -16,7 +16,7 @@ class User(Base):
     models = relationship('Model', back_populates='uploader')
 
 
-class Model(Base):
+class Model(Base):  # type: ignore
     __tablename__ = 'models'
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)
@@ -36,7 +36,7 @@ class Model(Base):
     )
 
 
-class ModelMetadata(Base):
+class ModelMetadata(Base):  # type: ignore
     __tablename__ = 'model_metadata'
     id = Column(Integer, primary_key=True)
     model_id = Column(

@@ -11,7 +11,7 @@ Only fetches repo metadata/files, not full model weights.
 
 import json
 import time
-from typing import Any, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 from huggingface_hub import HfApi, hf_hub_download
 
