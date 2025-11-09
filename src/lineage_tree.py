@@ -2,7 +2,7 @@
 
 import json
 import time
-from typing import Any, Dict, Tuple, cast
+from typing import Any, Dict, Optional, Tuple, cast
 
 import requests
 
