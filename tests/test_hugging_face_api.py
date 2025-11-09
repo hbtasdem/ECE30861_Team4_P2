@@ -1,14 +1,11 @@
 import json
 from typing import Any, Dict
 from unittest.mock import Mock, patch
-import os
+
 import pytest
 import requests
-import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-import hugging_face_api
-
+from src import hugging_face_api
 
 # Sample API response data
 VALID_MODEL_RESPONSE: Dict[str, Any] = {

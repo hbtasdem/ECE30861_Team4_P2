@@ -51,13 +51,14 @@ def treescore_calc(model_name: str):
     total_latency = time.time() - start_time
     return score, total_latency
 
+
 if __name__ == "__main__":
     import sys
     if len(sys.argv) < 2:
         print("Usage: treescore.py <model_identifier>")
         print("Example: treescore.py microsoft/DialoGPT-medium")
         sys.exit(1)
-    
+
     for model_id in sys.argv[1:]:
         score, latency = treescore_calc(model_id)
         print(f"\nTreescore for {model_id}: {score:.4f}")
@@ -65,7 +66,7 @@ if __name__ == "__main__":
 
 '''this part can be used for complex calcs once registry is uploaded and metric scores are calculated for models
 That way, this set up will be able to pull the already calculates model scores for parents of the lineage graph'''
-#!/usr/bin/env python3
+# !/usr/bin/env python3
 
 # import time
 # import json
@@ -94,59 +95,59 @@ That way, this set up will be able to pull the already calculates model scores f
 #     registry = load_model_registry()
 #     parent_scores = []
 #     visited = set()  # Prevent circular references
-    
+
 #     def traverse(model_id, depth):
 #         if depth >= max_depth or model_id in visited:
 #             return
-        
+
 #         visited.add(model_id)
-        
+
 #         # Get lineage info
 #         lineage_info, _ = lineage_tree.check_lineage(model_id)
-        
+
 #         if not lineage_info or not lineage_info.get("has_lineage"):
 #             return
-        
+
 #         base_model = lineage_info.get("base_model")
 #         if not base_model:
 #             return
-        
+  
 #         # Check if parent score exists in registry
 #         if base_model in registry:
 #             score = registry[base_model].get("net_score", 0.0)
 #             parent_scores.append((base_model, score))
-            
+     
 #             # Recursively check parent's parents
 #             traverse(base_model, depth + 1)
-    
+
 #     # Start traversal
 #     traverse(model_identifier, 0)
-    
+
 #     return parent_scores
 
 
 # def treescore_calc(model_identifier: str):
 #     """
 #     Calculate tree score by averaging net scores of all parent models.
-    
+
 #     Score calculation:
 #     - If no parents found: 0.0
 #     - If parents found: average of all parent net_scores
-    
+
 #     Returns (score, latency_in_seconds)
 #     """
 #     start_time = time.time()
-    
+
 #     parent_scores = get_parent_scores(model_identifier, max_depth=3)
-    
+
 #     if not parent_scores:
 #         # No parent models found or no scores available
 #         return 0.0, time.time() - start_time
-    
+
 #     # Calculate average of parent scores
 #     total_score = sum(score for _, score in parent_scores)
 #     avg_score = total_score / len(parent_scores)
-    
+
 #     total_latency = time.time() - start_time
 #     return avg_score, total_latency
 
@@ -157,7 +158,7 @@ That way, this set up will be able to pull the already calculates model scores f
 #         print("Usage: treescore.py <model_identifier>")
 #         print("Example: treescore.py microsoft/DialoGPT-medium")
 #         sys.exit(1)
-    
+
 #     for model_id in sys.argv[1:]:
 #         score, latency = treescore_calc(model_id)
 #         print(f"\nTreescore for {model_id}: {score:.4f}")

@@ -2,12 +2,8 @@ from typing import Any
 from unittest.mock import patch
 
 import pytest
-import os
-import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-
-import performance_claims_sub_score as performance
+import src.performance_claims_sub_score as performance
 
 
 @patch("src.performance_claims_sub_score.get_model_info")

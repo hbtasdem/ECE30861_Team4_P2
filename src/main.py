@@ -183,7 +183,7 @@ def calculate_all_scores(
         print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
 
     # Net Score (calculated from all other scores)
-    
+
     try:
         treescore_val, treescore_latency = treescore.treescore_calc(model_name)
         result["treescore"] = treescore_val

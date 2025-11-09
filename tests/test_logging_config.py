@@ -11,15 +11,14 @@ Tests cover:
 """
 
 import logging
+import os
 import shutil
 import tempfile
 from pathlib import Path
 from typing import Any
 from unittest.mock import patch
-import os
+
 import pytest
-import sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from src.logging_config import (LoggerManager, LoggingConfig, get_logger, log_error_with_context, log_function_call,
                                 log_performance, set_log_level)
@@ -279,3 +278,4 @@ class TestJsonFormatter:
 
 if __name__ == "__main__":
     pytest.main([__file__])
+    

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import requests
-from urllib.parse import urlparse
 import json
 import time
 
@@ -20,9 +19,9 @@ def get_model_config(model_identifier: str):
         model_path = model_path.split("/tree")[0].split("/blob")[0].strip('/')
     else:
         model_path = model_identifier.strip()
-    
+
     api_url = f"https://huggingface.co/api/models/{model_path}"
-    
+
     try:
         resp = requests.get(api_url, timeout=10)
         resp.raise_for_status()
@@ -38,19 +37,19 @@ def check_lineage(model_identifier: str):
     Returns a dict with lineage information and the score calculation time.
     """
     start_time = time.time()
-    
+
     metadata = get_model_config(model_identifier)
-    
+
     if not metadata:
         return None, time.time() - start_time
-    
+
     lineage_info = {
         "model": model_identifier,
         "base_model": None,
         "has_lineage": False,
         "lineage_depth": 0
     }
-    
+
     # Check for base_model in metadata
     # Common locations: metadata['base_model'], metadata['tags'], metadata['cardData']
     if isinstance(metadata, dict):
@@ -59,14 +58,14 @@ def check_lineage(model_identifier: str):
             lineage_info["base_model"] = metadata["base_model"]
             lineage_info["has_lineage"] = True
             lineage_info["lineage_depth"] = 1
-        
+
         # Check in cardData
         elif "cardData" in metadata and isinstance(metadata["cardData"], dict):
             if "base_model" in metadata["cardData"]:
                 lineage_info["base_model"] = metadata["cardData"]["base_model"]
                 lineage_info["has_lineage"] = True
                 lineage_info["lineage_depth"] = 1
-        
+
         # Check tags for base model references
         elif "tags" in metadata and isinstance(metadata["tags"], list):
             for tag in metadata["tags"]:
@@ -75,7 +74,7 @@ def check_lineage(model_identifier: str):
                     lineage_info["has_lineage"] = True
                     lineage_info["lineage_depth"] = 1
                     break
-    
+
     elapsed_time = time.time() - start_time
     return lineage_info, elapsed_time
 
@@ -86,7 +85,7 @@ if __name__ == "__main__":
         print("Usage: lineage_tree.py <model_identifier>")
         print("Example: lineage_tree.py microsoft/DialoGPT-medium")
         sys.exit(1)
-    
+
     for model_id in sys.argv[1:]:
         lineage_info, latency = check_lineage(model_id)
         if lineage_info:

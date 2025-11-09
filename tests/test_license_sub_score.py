@@ -1,11 +1,9 @@
 from typing import Optional
 from unittest.mock import Mock, patch
-import os
-import pytest
-import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-import license_sub_score as license
+import pytest
+
+from src import license_sub_score as license
 
 README_YAML: str = """---
 name: Example Model
