@@ -21,7 +21,7 @@ from src.models import Base, User  # noqa: E402
 from crud.upload.auth import create_access_token  # UPDATED: Import token creation
 
 
-@pytest.fixture(scope="function")  # type: ignore[misc]
+@pytest.fixture(scope="function")
 def test_db() -> Generator[Session, None, None]:
     """Create a temporary file-based SQLite database for each test."""
     # Create temporary database file
@@ -76,7 +76,7 @@ def client(test_db: Session) -> Generator[Any, None, None]:
     """Create a FastAPI TestClient with dependency overrides."""
     from fastapi.testclient import TestClient
 
-    from crud.upload.app import app
+    from crud.app import app
     from crud.upload.auth import get_current_user
     from crud.upload.routes import get_current_user_with_auth  # UPDATED: Import helper function
     from src.database import get_db
@@ -84,10 +84,10 @@ def client(test_db: Session) -> Generator[Any, None, None]:
 
     # UPDATED: Create test user with hashed_password to match database schema
     test_user = User(
-        id=1, 
-        username="testuser", 
-        email="test@example.com", 
-        hashed_password="$2b$12$w9wxhMSXjJh/NLXdVJr8se0qR/0XNPq8U3QXzPzW4nH5gKmJsQJri",  # UPDATED: Same pre-hashed password
+        id=1,
+        username="testuser",
+        email="test@example.com",
+        hashed_password="$2b$12$w9wxhMSXjJh/NLXdVJr8se0qR/0XNPq8U3QXzPzW4nH5gKmJsQJri",  # UPDATED: Pre-hashed 'testpassword'
         is_admin=False
     )
 
@@ -96,7 +96,7 @@ def client(test_db: Session) -> Generator[Any, None, None]:
 
     def override_get_current_user() -> User:
         return test_user
-    
+
     async def override_get_current_user_with_auth() -> User:  # UPDATED: Override helper function too
         return test_user
 

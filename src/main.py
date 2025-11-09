@@ -17,6 +17,7 @@ import license_sub_score
 import net_score_calculator
 import performance_claims_sub_score
 import ramp_up_sub_score
+import treescore
 
 
 def extract_model_name(model_url: str) -> str:
@@ -85,6 +86,8 @@ def calculate_all_scores(
         "dataset_quality_latency": 0,
         "code_quality": 0.0,
         "code_quality_latency": 0,
+        "treescore": 0.0,
+        "treescore_latency": 0.0,
     }
     # Calculate each score with timing
     # Ramp Up Time
@@ -180,6 +183,13 @@ def calculate_all_scores(
         print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
 
     # Net Score (calculated from all other scores)
+
+    try:
+        treescore_val, treescore_latency = treescore.treescore_calc(model_name)
+        result["treescore"] = treescore_val
+        result["treescore_latency"] = int(treescore_latency * 1000)
+    except Exception as e:
+        print(f"Error calculating treescore for {model_name}: {e}", file=sys.stderr)
 
     try:
         start_time = time.time()

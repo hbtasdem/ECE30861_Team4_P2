@@ -102,7 +102,7 @@ async def upload_model(
         )
 
 
-@router.get("/models/{model_id}/download-redirect")  # type: ignore[misc]
+@router.get("/models/{model_id}/download-redirect")
 async def get_download_url(
     model_id: int,
     db: Session = Depends(get_db)
@@ -126,7 +126,7 @@ async def get_download_url(
     return {"download_url": str(model.model_url)}
 
 
-@router.get("/enumerate", response_model=List[ModelResponse])  # type: ignore[misc]
+@router.get("/enumerate", response_model=List[ModelResponse])
 async def enumerate_models(
     skip: int = 0,
     limit: int = 100,

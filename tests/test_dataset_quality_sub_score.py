@@ -1,8 +1,9 @@
+# NOTE FROM GEORGIA: this doesn't test anything. Test isn't in the function names so pytest doesn't see them.
+# There's errors with them, so phase1 team probably just took out "test" to ignore it?
 import re
 import time
 from typing import Optional, Set, Tuple
 
-import src.license_sub_score as license_sub_score
 from src.license_sub_score import fetch_readme
 
 

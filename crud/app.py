@@ -14,16 +14,17 @@ Key features:
 import os
 import sys
 from pathlib import Path
-from typing import Any, Callable, Dict
+from typing import Any, Dict
 
-from fastapi import FastAPI  # noqa: E402
+from fastapi import FastAPI
 
 # Add src and parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from crud.upload.routes import router as upload_router  # noqa: E402
+from crud.rate.routes import router as rate_router
 from crud.upload.auth_routes import router as auth_router  # NEW: Import authentication routes
+from crud.upload.routes import router as upload_router  # noqa: E402
 from src.database import init_db  # noqa: E402
 
 # Initialize FastAPI app
@@ -40,9 +41,10 @@ if os.getenv("TESTING") != "true":
 # Include routers
 app.include_router(upload_router)
 app.include_router(auth_router)  # NEW: Include authentication routes
+app.include_router(rate_router)  # /artifact/model/{id}/rate
 
 
-@app.get("/")  # type: ignore[misc]
+@app.get("/")
 def root() -> Dict[str, Any]:
     """API root - returns available endpoints"""
     return {
@@ -56,15 +58,15 @@ def root() -> Dict[str, Any]:
     }
 
 
-@app.get("/health")  # type: ignore[misc]
+@app.get("/health")
 def health_check() -> Dict[str, str]:
     """Health check endpoint"""
     return {"status": "ok"}
 
 
-# uvicorn src.app:app --host 127.0.0.1 --port 8000 --reload
-# then in browser add /health to the end and you see... something!
+# uvicorn crud.app:app --host 127.0.0.1 --port 8000 --reload
+# go to local host website in browser
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
