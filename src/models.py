@@ -12,7 +12,9 @@ class User(Base):  # type: ignore
     id = Column(Integer, primary_key=True)
     username = Column(String(255), unique=True, nullable=False)
     email = Column(String(255), unique=True, nullable=False)
+    hashed_password = Column(String(255), nullable=False)
     is_admin = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
     models = relationship('Model', back_populates='uploader')
 
 

@@ -11,7 +11,7 @@ Key operations:
 - Manage model URL information
 """
 
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 from sqlalchemy.orm import Session
 
@@ -62,9 +62,9 @@ class ModelRepository:
         Returns:
             Model object if found, None otherwise
         """
-        return self.db.query(Model).filter(Model.id == model_id).first()  # type: ignore[no-any-return]
+        return self.db.query(Model).filter(Model.id == model_id).first()
 
-    def get_all_models(self, skip: int = 0, limit: int = 100) -> List[Model]:
+    def get_all_models(self, skip: int = 0, limit: int = 100) -> list[Model]:
         """Get all models with pagination.
 
         Args:
@@ -74,7 +74,7 @@ class ModelRepository:
         Returns:
             List of Model objects
         """
-        return self.db.query(Model).offset(skip).limit(limit).all()  # type: ignore[no-any-return]
+        return self.db.query(Model).offset(skip).limit(limit).all()
 
     def add_model_metadata(
         self,

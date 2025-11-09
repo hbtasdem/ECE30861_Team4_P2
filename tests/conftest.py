@@ -22,7 +22,7 @@ from src.models import Base, User  # noqa: E402
 
 
 @pytest.fixture(scope="function")
-def test_db() -> Session:
+def test_db() -> Generator[Session, None, None]:
     """Create a temporary file-based SQLite database for each test."""
     # Create temporary database file
     temp_db = tempfile.NamedTemporaryFile(delete=False, suffix=".db")

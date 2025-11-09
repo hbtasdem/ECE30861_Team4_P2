@@ -12,13 +12,20 @@ Key features:
 
 # app.py
 import os
+import sys
+from pathlib import Path
 from typing import Any, Dict
 
 from fastapi import FastAPI
 
-from crud.rate.routes import router as rate_router
-from crud.upload.routes import router as upload_router
-from src.database import init_db
+# Add src and parent to path for imports
+sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from crud.rate.routes import router as rate_router  # noqa: E402
+from crud.upload.auth_routes import router as auth_router  # noqa: E402
+from crud.upload.routes import router as upload_router  # noqa: E402
+from src.database import init_db  # noqa: E402
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -33,6 +40,7 @@ if os.getenv("TESTING") != "true":
 
 # Include routers
 app.include_router(upload_router)
+app.include_router(auth_router)  # NEW: Include authentication routes
 app.include_router(rate_router)  # /artifact/model/{id}/rate
 
 

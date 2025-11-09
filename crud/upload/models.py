@@ -16,7 +16,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 
-class ModelCreate(BaseModel):  # type: ignore[misc]
+class ModelCreate(BaseModel):
     """Schema for creating a new model."""
 
     name: str
@@ -27,7 +27,7 @@ class ModelCreate(BaseModel):  # type: ignore[misc]
     artifact_type: str = 'model'  # Type: 'model', 'checkpoint', 'weights', etc.
 
 
-class ModelUpdate(BaseModel):  # type: ignore[misc]
+class ModelUpdate(BaseModel):
     """Schema for updating an existing model."""
 
     name: Optional[str] = None
@@ -38,7 +38,7 @@ class ModelUpdate(BaseModel):  # type: ignore[misc]
     artifact_type: Optional[str] = None
 
 
-class ModelResponse(BaseModel):  # type: ignore[misc]
+class ModelResponse(BaseModel):
     """Schema for returning model data in responses."""
 
     model_config = ConfigDict(from_attributes=True)
@@ -54,10 +54,45 @@ class ModelResponse(BaseModel):  # type: ignore[misc]
     updated_at: datetime
 
 
-class UploadResponse(BaseModel):  # type: ignore[misc]
+class UploadResponse(BaseModel):
     """Schema for upload endpoint response."""
 
     message: str
     model_id: int
     model_url: str
     artifact_type: str
+
+
+# NEW: Authentication schemas per OpenAPI spec
+
+
+class UserSchema(BaseModel):
+    """User information schema per OpenAPI spec."""
+
+    name: str  # NEW: Username or email
+    is_admin: bool = False  # NEW: Admin flag
+
+
+class UserAuthenticationInfo(BaseModel):
+    """Authentication secret schema per OpenAPI spec."""
+
+    password: str  # NEW: User password
+
+
+class AuthRequest(BaseModel):
+    """Authentication request per OpenAPI AuthenticationRequest schema."""
+
+    user: UserSchema  # NEW: User credentials
+    secret: UserAuthenticationInfo  # NEW: Authentication secret
+
+
+class UserRegistrationRequest(AuthRequest):
+    """User registration request extends auth request."""
+
+    pass
+
+
+class AuthResponse(BaseModel):
+    """Authentication response with token per OpenAPI AuthenticationToken schema."""
+
+    token: str  # NEW: Bearer token for authenticated requests

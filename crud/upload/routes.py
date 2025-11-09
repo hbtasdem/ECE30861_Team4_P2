@@ -15,13 +15,23 @@ All endpoints require authentication and validate input parameters.
 import json
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, Form, HTTPException, status
+from fastapi import APIRouter, Depends, Form, Header, HTTPException, status  # UPDATED: Added Header import
 from sqlalchemy.orm import Session
 
 from crud.upload.auth import get_current_user  # noqa: E402
 from crud.upload.model_repository import ModelRepository  # noqa: E402
 from crud.upload.models import ModelCreate, ModelResponse, UploadResponse  # noqa: E402
 from src.database import get_db  # noqa: E402
+
+
+# UPDATED: Helper function for getting current user with authorization header
+async def get_current_user_with_auth(
+    x_authorization: Optional[str] = Header(None),
+    db: Session = Depends(get_db)
+) -> Any:
+    """Helper to pass x_authorization header to get_current_user."""
+    return get_current_user(authorization=x_authorization, db=db)
+
 
 router = APIRouter(prefix="/api/models", tags=["models"])
 
@@ -35,7 +45,7 @@ async def upload_model(
     artifact_type: str = Form("model"),
     is_sensitive: bool = Form(False),
     metadata: Optional[str] = Form(None),
-    current_user: Any = Depends(get_current_user),
+    current_user: Any = Depends(get_current_user_with_auth),  # UPDATED: Use helper function
     db: Session = Depends(get_db)
 ) -> UploadResponse:
     """Register a model via URL"""
