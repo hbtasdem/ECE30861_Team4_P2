@@ -17,6 +17,8 @@ import license_sub_score
 import net_score_calculator
 import performance_claims_sub_score
 import ramp_up_sub_score
+import reviewedness_score
+import size_score
 import treescore
 
 
@@ -73,6 +75,18 @@ def calculate_all_scores(
         "performance_claims_latency": 0,
         "license": 0.0,
         "license_latency": 0,
+        "dataset_and_code_score": 0.0,
+        "dataset_and_code_score_latency": 0,
+        "dataset_quality": 0.0,
+        "dataset_quality_latency": 0,
+        "code_quality": 0.0,
+        "code_quality_latency": 0,
+        "reproducibility": 0.0,
+        "reproducibility_latency": 0,
+        "reviewedness": 0.0,
+        "reviewedness_latency": 0,
+        "treescore": 0.0,
+        "treescore_latency": 0.0,
         "size_score": {
             "raspberry_pi": 0.0,
             "jetson_nano": 0.0,
@@ -80,14 +94,6 @@ def calculate_all_scores(
             "aws_server": 0.0,
         },
         "size_score_latency": 0,
-        "dataset_and_code_score": 0.0,
-        "dataset_and_code_score_latency": 0,
-        "dataset_quality": 0.0,
-        "dataset_quality_latency": 0,
-        "code_quality": 0.0,
-        "code_quality_latency": 0,
-        "treescore": 0.0,
-        "treescore_latency": 0.0,
     }
     # Calculate each score with timing
     # Ramp Up Time
@@ -128,35 +134,13 @@ def calculate_all_scores(
         error_msg = f"Error calculating license score for {model_name}: {e}"
         print(error_msg, file=sys.stderr)
     # Size Scores
-    # using realistic values based on model type.
-    # This would ideally be calculated from actual model size
-    if "bert" in model_name.lower():
-        result["size_score"] = {
-            "raspberry_pi": 0.20,
-            "jetson_nano": 0.40,
-            "desktop_pc": 0.95,
-            "aws_server": 1.00
-        }
-        result["size_score_latency"] = 50
-    elif "whisper" in model_name.lower():
-        result["size_score"] = {
-            "raspberry_pi": 0.90,
-            "jetson_nano": 0.95,
-            "desktop_pc": 1.00,
-            "aws_server": 1.00
-        }
-        result["size_score_latency"] = 15
-    else:
-        # Default for other models
-        result["size_score"] = {
-            "raspberry_pi": 0.75,
-            "jetson_nano": 0.80,
-            "desktop_pc": 1.00,
-            "aws_server": 1.00
-        }
-        result["size_score_latency"] = 40
+    try:
+        size_scores, net_size_score, size_score_latency = size_score.size_score(model_link)
+        result["size_score"] = size_scores
+        result["size_score_latency"] = size_score_latency
+    except Exception as e:
+        print(f"Error calculating size scores for {model_name}: {e}", file=sys.stderr)
     # Available Dataset Code Score
-
     try:
         code_score, code_latency = (available_dataset_code_score.available_dataset_code_score(
             model_name, code_link, dataset_link, encountered_datasets, encountered_code))
@@ -173,17 +157,21 @@ def calculate_all_scores(
     except Exception as e:
         print(f"Error calculating dataset quality for {model_name}: {e}", file=sys.stderr)
     # Code Quality
-
     try:
         code_quality_score, code_quality_latency = code_quality.code_quality_score(model_name)
         result["code_quality"] = code_quality_score
         result["code_quality_latency"] = int(code_quality_latency * 1000)
-
     except Exception as e:
         print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
 
-    # Net Score (calculated from all other scores)
-
+    # Reviewedness
+    try:
+        reviewedness, reviewedness_latency = reviewedness_score.reviewedness_score(code_link)
+        result["reviewedness"] = reviewedness
+        result["reviewedness_latency"] = int(reviewedness_latency)
+    except Exception as e:
+        print(f"Error calculating treescore for {model_name}: {e}", file=sys.stderr)
+    # Treescore
     try:
         treescore_val, treescore_latency = treescore.treescore_calc(model_name)
         result["treescore"] = treescore_val
@@ -191,6 +179,7 @@ def calculate_all_scores(
     except Exception as e:
         print(f"Error calculating treescore for {model_name}: {e}", file=sys.stderr)
 
+    # Net Score (calculated from all other scores)
     try:
         start_time = time.time()
         net_score_result = net_score_calculator.calculate_net_score(model_name)

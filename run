@@ -136,7 +136,6 @@ def run_tests() -> int:
         return 0 if failed == 0 else 1
 
     except subprocess.TimeoutExpired:
-        proc.kill()
         print("Tests timed out", file=sys.stderr)
         return 1
     except Exception as e:

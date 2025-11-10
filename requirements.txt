@@ -9,6 +9,9 @@ python-multipart>=0.0.6
 # Database and ORM
 sqlalchemy>=2.0.0
 
+# AWS stuff
+boto3
+
 # Development and build dependencies
 pyinstaller>=5.0.0
 pre-commit
