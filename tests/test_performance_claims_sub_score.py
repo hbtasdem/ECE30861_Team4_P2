@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-import src.performance_claims_sub_score as performance
+import ECE30861_Team4_P2.src.metrics.performance_claims_score as performance
 
 
 @patch("src.performance_claims_sub_score.get_model_info")

@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-import src.ramp_up_sub_score as ramp_up_sub_score
+import ECE30861_Team4_P2.src.metrics.ramp_up_time_score as ramp_up_time_score
 
 README_WITH_CODE = """
 # Example Model
@@ -55,7 +55,7 @@ def test_ramp_up_time_score(
 ) -> None:
     mock_get_model_info.return_value = ({"downloads": downloads, "likes": likes}, 0.01)
     mock_fetch_readme.return_value = readme
-    score, elapsed = ramp_up_sub_score.ramp_up_time_score("mock-model")
+    score, elapsed = ramp_up_time_score.ramp_up_time_score("mock-model")
     assert score >= expected_min_score
     assert 0.0 <= score <= 1.0
     assert elapsed >= 0
@@ -65,7 +65,7 @@ def test_ramp_up_time_score_no_info(monkeypatch: pytest.MonkeyPatch) -> None:
     def mock_get_model_info(model_id: str) -> tuple[None, float]:
         return None, 0.01
 
-    monkeypatch.setattr(ramp_up_sub_score, "get_model_info", mock_get_model_info)
-    score, elapsed = ramp_up_sub_score.ramp_up_time_score("mock-model")
+    monkeypatch.setattr(ramp_up_time_score, "get_model_info", mock_get_model_info)
+    score, elapsed = ramp_up_time_score.ramp_up_time_score("mock-model")
     assert score == 0.0
     assert elapsed >= 0

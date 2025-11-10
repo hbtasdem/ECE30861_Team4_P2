@@ -8,7 +8,7 @@ from unittest.mock import patch
 # Add the src directory to the path so we can import main
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from main import calculate_all_scores, extract_model_name, main  # noqa: E402
+from ECE30861_Team4_P2.src.main import calculate_all_scores, extract_model_name, main  # noqa: E402
 
 
 class TestMain(unittest.TestCase):

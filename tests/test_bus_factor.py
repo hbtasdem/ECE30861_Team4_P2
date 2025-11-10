@@ -5,11 +5,9 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 # Add the src directory to the path so we can import bus_factor
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src/metrics"))
 
-from bus_factor import bus_factor_score  # noqa: E402
-from bus_factor import get_huggingface_contributors  # noqa: E402
-
+from bus_factor_score import bus_factor_score, get_huggingface_contributors  # noqa: E402
 
 class TestBusFactorScore(unittest.TestCase):
     """Unit tests for bus_factor_score function with timing measurements."""

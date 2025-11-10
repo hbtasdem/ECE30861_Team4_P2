@@ -18,7 +18,7 @@ from sqlalchemy import create_engine  # noqa: E402
 from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
 
 from crud.upload.auth import create_access_token  # noqa: E402
-from src.models import Base, User  # noqa: E402
+from ECE30861_Team4_P2.src.artifact_definitions import Base, User  # noqa: E402
 
 
 @pytest.fixture(scope="function")
@@ -80,7 +80,7 @@ def client(test_db: Session) -> Generator[Any, None, None]:
     from crud.upload.auth import get_current_user
     from crud.upload.routes import get_current_user_with_auth  # UPDATED: Import helper function
     from src.database import get_db
-    from src.models import User
+    from ECE30861_Team4_P2.src.artifact_definitions import User
 
     # UPDATED: Create test user with hashed_password to match database schema
     test_user = User(

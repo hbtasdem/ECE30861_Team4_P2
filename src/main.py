@@ -9,17 +9,17 @@ from io import StringIO
 from typing import Any, Dict
 
 # Import scoring modules
-import available_dataset_code_score
-import bus_factor
-import code_quality
-import dataset_quality_sub_score
-import license_sub_score
+import ECE30861_Team4_P2.src.metrics.available_dataset_code_score
+import ECE30861_Team4_P2.src.metrics.bus_factor_score as bus_factor_score
+import ECE30861_Team4_P2.src.metrics.code_quality_score as code_quality_score
+import ECE30861_Team4_P2.src.metrics.dataset_quality_score as dataset_quality_score
+import ECE30861_Team4_P2.src.metrics.license_score as license_score
 import net_score_calculator
-import performance_claims_sub_score
-import ramp_up_sub_score
-import reviewedness_score
-import size_score
-import treescore
+import ECE30861_Team4_P2.src.metrics.performance_claims_score as performance_claims_score
+import ECE30861_Team4_P2.src.metrics.ramp_up_time_score as ramp_up_time_score
+import ECE30861_Team4_P2.src.metrics.reviewedness_score
+import ECE30861_Team4_P2.src.metrics.size_score
+import ECE30861_Team4_P2.src.metrics.tree_score as tree_score
 
 
 def extract_model_name(model_url: str) -> str:
@@ -98,14 +98,14 @@ def calculate_all_scores(
     # Calculate each score with timing
     # Ramp Up Time
     try:
-        ramp_score, ramp_latency = ramp_up_sub_score.ramp_up_time_score(model_name)
+        ramp_score, ramp_latency = ramp_up_time_score.ramp_up_time_score(model_name)
         result["ramp_up_time"] = ramp_score
         result["ramp_up_time_latency"] = int(ramp_latency * 1000)
     except Exception as e:
         print(f"Error calculating ramp up score for {model_name}: {e}", file=sys.stderr)
     # Bus Factor
     try:
-        bus_score_raw, bus_latency = bus_factor.bus_factor_score(model_name)
+        bus_score_raw, bus_latency = bus_factor_score.bus_factor_score(model_name)
         # Normalize bus factor: cap at 20 contributors, then scale to 0-1
         bus_score_normalized = min(bus_score_raw / 20.0, 1.0)
         result["bus_factor"] = bus_score_normalized
@@ -116,7 +116,7 @@ def calculate_all_scores(
     # Performance Claims Score
     try:
         perf_score, perf_latency = (
-            performance_claims_sub_score.performance_claims_sub_score(model_name)
+            performance_claims_score.performance_claims_sub_score(model_name)
         )
         result["performance_claims"] = perf_score
         result["performance_claims_latency"] = int(perf_latency * 1000)
@@ -126,7 +126,7 @@ def calculate_all_scores(
     # License Score
     try:
         license_score, license_latency = (
-            license_sub_score.license_sub_score(model_name)
+            license_score.license_sub_score(model_name)
         )
         result["license"] = license_score
         result["license_latency"] = int(license_latency * 1000)
@@ -150,7 +150,7 @@ def calculate_all_scores(
         print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
     # Dataset Quality Score
     try:
-        dataset_score, dataset_latency = (dataset_quality_sub_score.dataset_quality_sub_score(
+        dataset_score, dataset_latency = (dataset_quality_score.dataset_quality_sub_score(
             model_name, dataset_link, encountered_datasets))
         result["dataset_quality"] = dataset_score
         result["dataset_quality_latency"] = int(dataset_latency * 1000)
@@ -158,7 +158,7 @@ def calculate_all_scores(
         print(f"Error calculating dataset quality for {model_name}: {e}", file=sys.stderr)
     # Code Quality
     try:
-        code_quality_score, code_quality_latency = code_quality.code_quality_score(model_name)
+        code_quality_score, code_quality_latency = code_quality_score.code_quality_score(model_name)
         result["code_quality"] = code_quality_score
         result["code_quality_latency"] = int(code_quality_latency * 1000)
     except Exception as e:
@@ -173,7 +173,7 @@ def calculate_all_scores(
         print(f"Error calculating treescore for {model_name}: {e}", file=sys.stderr)
     # Treescore
     try:
-        treescore_val, treescore_latency = treescore.treescore_calc(model_name)
+        treescore_val, treescore_latency = tree_score.treescore_calc(model_name)
         result["treescore"] = treescore_val
         result["treescore_latency"] = int(treescore_latency * 1000)
     except Exception as e:

@@ -27,5 +27,5 @@ def get_db() -> Generator[Session, None, None]:
 
 def init_db() -> None:
     """Initialize database tables"""
-    from src.models import Base, Model, ModelMetadata, User  # noqa: F401 Import all models to register them
+    from ECE30861_Team4_P2.src.artifact_definitions import Base, Model, ModelMetadata, User  # noqa: F401 Import all models to register them
     Base.metadata.create_all(bind=engine)

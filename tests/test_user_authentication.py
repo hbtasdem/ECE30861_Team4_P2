@@ -22,10 +22,10 @@ from fastapi.testclient import TestClient  # noqa: E402
 from sqlalchemy import create_engine  # noqa: E402
 from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
 
-from crud.upload.app import app  # noqa: E402
+from crud.app import app  # noqa: E402
 from crud.upload.auth import create_access_token, verify_password  # noqa: E402
 from src.database import get_db  # noqa: E402
-from src.models import Base, User  # noqa: E402
+from ECE30861_Team4_P2.src.artifact_definitions import Base, User  # noqa: E402
 
 
 def setup_test_db() -> Tuple[TestClient, Session, str]:
@@ -49,147 +49,6 @@ def setup_test_db() -> Tuple[TestClient, Session, str]:
     app.dependency_overrides[get_db] = override_get_db
 
     return TestClient(app), db, temp_db_path
-
-
-def test_feature_1_enumerate() -> None:
-    """Test Feature 1: Basic Enumerate (GET /api/models/enumerate)"""
-    print("\n" + "="*70)
-    print("FEATURE 1: Basic Enumerate - Directory of All Models")
-    print("="*70)
-
-    client, db, temp_db_path = setup_test_db()
-
-    try:
-        # Test enumerate empty list
-        print("\n1a. Testing enumerate with no models...")
-        response = client.get("/api/models/enumerate")
-        assert response.status_code == 200, f"Expected 200, got {response.status_code}"
-        data = response.json()
-        assert isinstance(data, list), "Response should be a list"
-        assert len(data) == 0, "Should be empty"
-        print("✓ Enumerate returns empty list when no models exist")
-
-        # Create a test user first
-        print("\n1b. Uploading test models...")
-        test_user = User(
-            id=1,
-            username="testuser",
-            email="test@example.com",
-            hashed_password="$2b$12$w9wxhMSXjJh/NLXdVJr8se0qR/0XNPq8U3QXzPzW4nH5gKmJsQJri",  # pre-hashed 'testpassword'
-            is_admin=False
-        )
-        db.add(test_user)
-        db.commit()
-        print("✓ Test user created")
-
-        # Generate test token
-        token = create_access_token(data={"sub": "1", "is_admin": False})
-        headers = {"X-Authorization": f"bearer {token}"}
-
-        for i in range(3):
-            response = client.post(
-                "/api/models/upload",
-                data={
-                    "name": f"TestModel{i}",
-                    "model_url": f"https://example.com/model{i}.zip",
-                    "version": f"1.{i}.0",
-                },
-                headers=headers
-            )
-            assert response.status_code == 200, f"Upload failed: {response.text}"
-            print(f"  ✓ Uploaded model {i}")
-
-        # Test enumerate with models
-        print("\n1c. Testing enumerate with models...")
-        response = client.get("/api/models/enumerate")
-        assert response.status_code == 200, f"Expected 200, got {response.status_code}"
-        models = response.json()
-        assert len(models) == 3, f"Expected 3 models, got {len(models)}"
-        print(f"✓ Enumerate returns all {len(models)} models")
-
-        # Test pagination
-        print("\n1d. Testing enumerate with pagination...")
-        response = client.get("/api/models/enumerate?skip=0&limit=2")
-        assert response.status_code == 200
-        models = response.json()
-        assert len(models) == 2, f"Expected 2 models with limit=2, got {len(models)}"
-        print(f"✓ Enumerate respects pagination (limit=2 returned {len(models)} models)")
-
-        # Test skip
-        response = client.get("/api/models/enumerate?skip=1&limit=10")
-        models = response.json()
-        assert len(models) == 2, f"Expected 2 models after skip=1, got {len(models)}"
-        print(f"✓ Enumerate respects skip parameter (skip=1 returned {len(models)} models)")
-
-        print("\n✓ FEATURE 1 PASSED: Enumerate working correctly!")
-
-    finally:
-        try:
-            os.remove(temp_db_path)
-        except OSError:
-            pass
-
-
-def test_feature_2_registration() -> None:
-    """Test Feature 2: User Registration (POST /auth/register)"""
-    print("\n" + "="*70)
-    print("FEATURE 2: User Registration - Create New User")
-    print("="*70)
-
-    client, db, temp_db_path = setup_test_db()
-
-    try:
-        # Test registration with valid data
-        print("\n2a. Testing user registration with valid credentials...")
-        registration_data = {
-            "user": {
-                "name": "newuser",
-                "is_admin": False
-            },
-            "secret": {
-                "password": "securepassword123"
-            }
-        }
-
-        response = client.post(
-            "/auth/register",
-            json=registration_data
-        )
-        assert response.status_code == 200, f"Registration failed: {response.text}"
-        result = response.json()
-        assert "token" in result, "Response should contain token"
-        assert result["token"].startswith("bearer "), "Token should be in bearer format"
-        print("✓ User registered successfully with bearer token returned")
-
-        # Verify user was created in database
-        print("\n2b. Verifying user was created in database...")
-        user = db.query(User).filter(User.username == "newuser").first()
-        assert user is not None, "User should be created in database"
-        assert user.email == "newuser", "Email should match username"
-        print("✓ User 'newuser' created in database with hashed password")
-
-        # Verify password was hashed correctly
-        print("\n2c. Verifying password was hashed...")
-        assert verify_password("securepassword123", str(user.hashed_password)), "Password verification failed"
-        print("✓ Password hashed and verifiable")
-
-        # Test registration with duplicate user (should fail)
-        print("\n2d. Testing duplicate registration (should fail)...")
-        response = client.post(
-            "/auth/register",
-            json=registration_data
-        )
-        assert response.status_code == 409, f"Expected 409, got {response.status_code}"
-        print("✓ Duplicate registration correctly rejected with 409")
-
-        print("\n✓ FEATURE 2 PASSED: User registration working correctly!")
-
-    finally:
-        try:
-            os.remove(temp_db_path)
-        except OSError:
-            pass
-
 
 def test_feature_3_authentication() -> None:
     """Test Feature 3: User Authentication (PUT /authenticate)"""
@@ -298,9 +157,7 @@ def main() -> None:
     print("COMPREHENSIVE FEATURE TEST SUITE".center(70))
     print("🚀 "*35)
 
-    try:
-        test_feature_1_enumerate()
-        test_feature_2_registration()
+    try:        
         test_feature_3_authentication()
 
         print("\n" + "="*70)

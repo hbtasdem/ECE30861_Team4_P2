@@ -3,7 +3,7 @@ import time
 from typing import Tuple
 
 from hugging_face_api import get_model_info
-from license_sub_score import fetch_readme
+from ECE30861_Team4_P2.src.metrics.license_score import fetch_readme
 
 
 def normalize_sigmoid(value: int, mid: int, steepness: float) -> float:
