@@ -18,7 +18,8 @@ import pytest  # noqa: E402
 from sqlalchemy import create_engine  # noqa: E402
 from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
 
-from ECE30861_Team4_P2.src.artifact_definitions import Base, User  # noqa: E402
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+from artifact_definitions import Base, User  # noqa: E402
 
 
 @pytest.fixture(scope="function")

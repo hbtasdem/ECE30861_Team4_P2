@@ -3,23 +3,26 @@
 
 import csv
 import json
-import sys
+import sys, os
 import time
 from io import StringIO
 from typing import Any, Dict
 
-# Import scoring modules
-import ECE30861_Team4_P2.src.metrics.available_dataset_code_score
-import ECE30861_Team4_P2.src.metrics.bus_factor_score as bus_factor_score
-import ECE30861_Team4_P2.src.metrics.code_quality_score as code_quality_score
-import ECE30861_Team4_P2.src.metrics.dataset_quality_score as dataset_quality_score
-import ECE30861_Team4_P2.src.metrics.license_score as license_score
 import net_score_calculator
-import ECE30861_Team4_P2.src.metrics.performance_claims_score as performance_claims_score
-import ECE30861_Team4_P2.src.metrics.ramp_up_time_score as ramp_up_time_score
-import ECE30861_Team4_P2.src.metrics.reviewedness_score
-import ECE30861_Team4_P2.src.metrics.size_score
-import ECE30861_Team4_P2.src.metrics.tree_score as tree_score
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "metrics"))
+
+# Import scoring modules
+import available_dataset_code_score
+import bus_factor_score as bus_factor_score
+import code_quality_score as code_quality_score
+import dataset_quality_score as dataset_quality_score
+import license_score as license_score
+import performance_claims_score as performance_claims_score
+import ramp_up_time_score as ramp_up_time_score
+import reviewedness_score
+import size_score
+import tree_score as tree_score
 
 
 def extract_model_name(model_url: str) -> str:

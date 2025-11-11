@@ -11,15 +11,18 @@ Missing functions (Size, CodeQuality) are set to 0.5 as defaults.
 """
 
 
-import time
+import time, sys, os
 from typing import Dict, Literal, TypedDict
-from ECE30861_Team4_P2.src.metrics.available_dataset_code_score import available_dataset_code_score
-from ECE30861_Team4_P2.src.metrics.bus_factor_score import bus_factor_score
-from ECE30861_Team4_P2.src.metrics.dataset_quality_score import dataset_quality_sub_score
-from ECE30861_Team4_P2.src.metrics.license_score import license_sub_score
-from ECE30861_Team4_P2.src.metrics.performance_claims_score import performance_claims_sub_score
-from ECE30861_Team4_P2.src.metrics.ramp_up_time_score import ramp_up_time_score
-from ECE30861_Team4_P2.src.metrics.size_score import size_score
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "metrics"))
+
+from available_dataset_code_score import available_dataset_code_score
+from bus_factor_score import bus_factor_score
+from dataset_quality_score import dataset_quality_sub_score
+from license_score import license_sub_score
+from performance_claims_score import performance_claims_sub_score
+from ramp_up_time_score import ramp_up_time_score
+from size_score import size_score
 
 
 class ProjectMetadata(TypedDict):

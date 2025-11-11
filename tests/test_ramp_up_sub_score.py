@@ -1,9 +1,11 @@
 from typing import Any
 from unittest.mock import patch
+import sys, os
 
 import pytest
 
-import ECE30861_Team4_P2.src.metrics.ramp_up_time_score as ramp_up_time_score
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src/metrics"))
+import ramp_up_time_score
 
 README_WITH_CODE = """
 # Example Model
@@ -33,8 +35,8 @@ No code or example here.
 README_NONE = ""
 
 
-@patch("src.ramp_up_sub_score.get_model_info")
-@patch("src.ramp_up_sub_score.fetch_readme")
+@patch("ramp_up_time_score.get_model_info")
+@patch("ramp_up_time_score.fetch_readme")
 @pytest.mark.parametrize(
     "downloads,likes,readme,expected_min_score",
     [

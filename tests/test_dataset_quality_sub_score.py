@@ -2,9 +2,13 @@
 # There's errors with them, so phase1 team probably just took out "test" to ignore it?
 import re
 import time
+import sys
+import os
 from typing import Optional, Set, Tuple
 
-from ECE30861_Team4_P2.src.metrics.license_score import fetch_readme
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src/metrics"))
+from license_score import fetch_readme
 
 
 def _get_ai_score(readme_text: str, model_id: str, aspect: str) -> float:

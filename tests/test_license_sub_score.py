@@ -2,8 +2,10 @@ from typing import Optional
 from unittest.mock import Mock, patch
 
 import pytest
+import sys, os
 
-from ECE30861_Team4_P2.src.metrics import license_score as license
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src/metrics"))
+import license_score as license
 
 README_YAML: str = """---
 name: Example Model
