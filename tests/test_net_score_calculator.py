@@ -8,6 +8,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from net_score_calculator import calculate_net_score, print_score_summary  # noqa: E402
 
+
 class TestNetScoreCalculator(unittest.TestCase):
     """Test cases for NetScore calculator with different HF models."""
 

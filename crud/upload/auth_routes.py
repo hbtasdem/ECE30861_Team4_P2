@@ -16,8 +16,8 @@ from crud.upload.auth import create_access_token  # NEW: Auth functions
 from crud.upload.auth import hash_password, verify_password
 from crud.upload.models import AuthRequest  # NEW: Request/response models
 from crud.upload.models import AuthResponse, UserRegistrationRequest
-from src.database import get_db  # UPDATED: Use proper dependency injection
 from ECE30861_Team4_P2.src.artifact_definitions import User
+from src.database import get_db  # UPDATED: Use proper dependency injection
 
 router = APIRouter(prefix="/auth", tags=["authentication"])  # NEW: Authentication router
 

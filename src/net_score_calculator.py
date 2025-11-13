@@ -11,18 +11,20 @@ Missing functions (Size, CodeQuality) are set to 0.5 as defaults.
 """
 
 
-import time, sys, os
+import os
+import sys
+import time
 from typing import Dict, Literal, TypedDict
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "metrics"))
 
-from available_dataset_code_score import available_dataset_code_score
-from bus_factor_score import bus_factor_score
-from dataset_quality_score import dataset_quality_sub_score
-from license_score import license_sub_score
-from performance_claims_score import performance_claims_sub_score
-from ramp_up_time_score import ramp_up_time_score
-from size_score import size_score
+from available_dataset_code_score import available_dataset_code_score  # noqa: E402
+from bus_factor_score import bus_factor_score  # noqa: E402
+from dataset_quality_score import dataset_quality_sub_score  # noqa: E402
+from license_score import license_sub_score  # noqa: E402
+from performance_claims_score import performance_claims_sub_score  # noqa: E402
+from ramp_up_time_score import ramp_up_time_score  # noqa: E402
+from size_score import size_score  # noqa: E402
 
 
 class ProjectMetadata(TypedDict):

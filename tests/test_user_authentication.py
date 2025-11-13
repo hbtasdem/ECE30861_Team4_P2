@@ -157,7 +157,7 @@
 #     print("COMPREHENSIVE FEATURE TEST SUITE".center(70))
 #     print("🚀 "*35)
 
-#     try:        
+#     try:
 #         test_feature_3_authentication()
 
 #         print("\n" + "="*70)

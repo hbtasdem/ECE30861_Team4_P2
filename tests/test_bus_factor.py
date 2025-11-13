@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src/metrics"))
 
 from bus_factor_score import bus_factor_score, get_huggingface_contributors  # noqa: E402
 
+
 class TestBusFactorScore(unittest.TestCase):
     """Unit tests for bus_factor_score function with timing measurements."""
 

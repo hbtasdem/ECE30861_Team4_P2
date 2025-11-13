@@ -22,7 +22,7 @@ from fastapi import FastAPI
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from crud.rate.routes import router as rate_router  # noqa: E402
+from crud.rate.rate_route import router as rate_route  # noqa: E402
 from crud.upload.auth_routes import router as auth_router  # noqa: E402
 from crud.upload.routes import router as upload_router  # noqa: E402
 from src.database import init_db  # noqa: E402
@@ -41,7 +41,7 @@ if os.getenv("TESTING") != "true":
 # Include routers
 app.include_router(upload_router)
 app.include_router(auth_router)  # NEW: Include authentication routes
-app.include_router(rate_router)  # /artifact/model/{id}/rate
+app.include_router(rate_route)  # /artifact/model/{id}/rate
 
 
 @app.get("/")
@@ -52,8 +52,7 @@ def root() -> Dict[str, Any]:
         "endpoints": {
             "health": "/health",
             "upload": "/api/models/upload",
-            "docs": "/docs",
-            "redoc": "/redoc"
+            "rate": "/artifact/model/{id}/rate"
         }
     }
 

@@ -1,11 +1,13 @@
+import os
+import sys
 from typing import Any
 from unittest.mock import patch
-import sys, os
 
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src/metrics"))
-import performance_claims_score as performance
+
+import performance_claims_score as performance  # noqa: E402
 
 
 @patch("performance_claims_score.get_model_info")

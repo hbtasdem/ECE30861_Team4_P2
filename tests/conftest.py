@@ -65,8 +65,8 @@ def client(test_db: Session) -> Generator[TestClient, None, None]:
 
     from crud.app import app
     from crud.upload.auth import get_current_user
-    from src.database import get_db
     from ECE30861_Team4_P2.src.artifact_definitions import User
+    from src.database import get_db
 
     test_user = User(id=1, username="testuser", email="test@example.com", is_admin=False)
 

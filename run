@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """ECE 461 Model Scorer - TA-compliant executable script."""
 
 import os

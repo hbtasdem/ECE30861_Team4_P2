@@ -3,7 +3,8 @@
 
 import csv
 import json
-import sys, os
+import os
+import sys
 import time
 from io import StringIO
 from typing import Any, Dict
@@ -13,16 +14,16 @@ import net_score_calculator
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "metrics"))
 
 # Import scoring modules
-import available_dataset_code_score
-import bus_factor_score as bus_factor_score
-import code_quality_score as code_quality_score
-import dataset_quality_score as dataset_quality_score
-import license_score as license_score
-import performance_claims_score as performance_claims_score
-import ramp_up_time_score as ramp_up_time_score
-import reviewedness_score
-import size_score
-import tree_score as tree_score
+import available_dataset_code_score  # noqa: E402
+import bus_factor_score as bus_factor_score  # noqa: E402
+import code_quality_score as code_quality_score  # noqa: E402
+import dataset_quality_score as dataset_quality_score  # noqa: E402
+import license_score as license_score  # noqa: E402
+import performance_claims_score as performance_claims_score  # noqa: E402
+import ramp_up_time_score as ramp_up_time_score  # noqa: E402
+import reviewedness_score  # noqa: E402
+import size_score  # noqa: E402
+import tree_score as tree_score  # noqa: E402
 
 
 def extract_model_name(model_url: str) -> str:
@@ -128,10 +129,10 @@ def calculate_all_scores(
         print(error_msg, file=sys.stderr)
     # License Score
     try:
-        license_score, license_latency = (
+        lic_score, license_latency = (
             license_score.license_sub_score(model_name)
         )
-        result["license"] = license_score
+        result["license"] = lic_score
         result["license_latency"] = int(license_latency * 1000)
     except Exception as e:
         error_msg = f"Error calculating license score for {model_name}: {e}"
@@ -161,8 +162,8 @@ def calculate_all_scores(
         print(f"Error calculating dataset quality for {model_name}: {e}", file=sys.stderr)
     # Code Quality
     try:
-        code_quality_score, code_quality_latency = code_quality_score.code_quality_score(model_name)
-        result["code_quality"] = code_quality_score
+        code_qual_score, code_quality_latency = code_quality_score.code_quality_score(model_name)
+        result["code_quality"] = code_qual_score
         result["code_quality_latency"] = int(code_quality_latency * 1000)
     except Exception as e:
         print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
