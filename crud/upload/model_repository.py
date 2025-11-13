@@ -16,7 +16,7 @@ from typing import Dict, Optional
 from sqlalchemy.orm import Session
 
 from crud.upload.models import ModelCreate
-from ECE30861_Team4_P2.src.artifact_definitions import Model, ModelMetadata
+from src.artifact_definitions import Model, ModelMetadata
 
 
 class ModelRepository:
