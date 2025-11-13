@@ -10,16 +10,53 @@ Note: Only uses existing implemented scoring functions.
 Missing functions (Size, CodeQuality) are set to 0.5 as defaults.
 """
 
-import time
 
-from available_dataset_code_score import available_dataset_code_score
-from bus_factor import bus_factor_score
-from dataset_quality_sub_score import dataset_quality_sub_score
-from license_sub_score import license_sub_score
-from performance_claims_sub_score import performance_claims_sub_score
-from ramp_up_sub_score import ramp_up_time_score
-from schema import ProjectMetadata
-from size_score import size_score
+import os
+import sys
+import time
+from typing import Dict, Literal, TypedDict
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "metrics"))
+
+from available_dataset_code_score import available_dataset_code_score  # noqa: E402
+from bus_factor_score import bus_factor_score  # noqa: E402
+from dataset_quality_score import dataset_quality_sub_score  # noqa: E402
+from license_score import license_sub_score  # noqa: E402
+from performance_claims_score import performance_claims_sub_score  # noqa: E402
+from ramp_up_time_score import ramp_up_time_score  # noqa: E402
+from size_score import size_score  # noqa: E402
+
+
+class ProjectMetadata(TypedDict):
+    name: str
+    category: Literal["MODEL", "DATASET", "CODE"]
+
+    net_score: float
+    net_score_latency: int
+
+    ramp_up_time: float
+    ramp_up_time_latency: int
+
+    bus_factor: float
+    bus_factor_latency: int
+
+    performance_claims: float
+    performance_claims_latency: int
+
+    license: float
+    license_latency: int
+
+    size_score: Dict[str, float]  # {"raspberry_pi": 0.8, ... }
+    size_score_latency: int
+
+    dataset_and_code_score: float
+    dataset_and_code_score_latency: int
+
+    dataset_quality: float
+    dataset_quality_latency: int
+
+    code_quality: float
+    code_quality_latency: int
 
 
 def calculate_net_score(model_id: str) -> ProjectMetadata:

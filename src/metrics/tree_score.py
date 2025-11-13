@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 '''this file is not finalized, it is a hardcoded placeholder for the more complex treescore calc which will take place
 once models are uploaded to the registry and therefore have recorded score'''
+import os
+import sys
 import time
 from typing import Tuple
 
-import lineage_tree
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+import lineage_tree  # noqa: E402
 
 
 def treescore_calc(model_name: str) -> Tuple[float, float]:

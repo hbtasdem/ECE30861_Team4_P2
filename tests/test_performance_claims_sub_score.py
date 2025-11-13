@@ -1,12 +1,16 @@
+import os
+import sys
 from typing import Any
 from unittest.mock import patch
 
 import pytest
 
-import src.performance_claims_sub_score as performance
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src/metrics"))
+
+import performance_claims_score as performance  # noqa: E402
 
 
-@patch("src.performance_claims_sub_score.get_model_info")
+@patch("performance_claims_score.get_model_info")
 @pytest.mark.parametrize(
     "downloads,likes,expected_min_score",
     [

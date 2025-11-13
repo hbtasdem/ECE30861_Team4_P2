@@ -18,7 +18,8 @@ import pytest  # noqa: E402
 from sqlalchemy import create_engine  # noqa: E402
 from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
 
-from src.models import Base, User  # noqa: E402
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+from artifact_definitions import Base, User  # noqa: E402
 
 
 @pytest.fixture(scope="function")
@@ -64,8 +65,8 @@ def client(test_db: Session) -> Generator[TestClient, None, None]:
 
     from crud.app import app
     from crud.upload.auth import get_current_user
+    from ECE30861_Team4_P2.src.artifact_definitions import User
     from src.database import get_db
-    from src.models import User
 
     test_user = User(id=1, username="testuser", email="test@example.com", is_admin=False)
 

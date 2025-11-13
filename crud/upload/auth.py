@@ -18,7 +18,7 @@ import jwt  # NEW: JWT library for token generation and validation
 from fastapi import HTTPException, status
 from passlib.context import CryptContext  # NEW: Password hashing
 
-from src.models import User
+from src.artifact_definitions import User
 
 # JWT Configuration
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")  # NEW: JWT secret
