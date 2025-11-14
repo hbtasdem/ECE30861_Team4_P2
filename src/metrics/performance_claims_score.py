@@ -1,12 +1,11 @@
 import math
+import os
+import sys
 import time
 from typing import Tuple
-import sys, os
-
-import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
-from src.hugging_face_api import get_model_info
+from src.hugging_face_api import get_model_info  # noqa: E402
 
 
 def normalize_sigmoid(value: int, mid: int, steepness: float) -> float:

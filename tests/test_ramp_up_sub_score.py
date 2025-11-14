@@ -1,11 +1,12 @@
+import os
+import sys
 from typing import Any
 from unittest.mock import patch
-import sys, os
 
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src/metrics"))
-import ramp_up_time_score
+import ramp_up_time_score  # noqa: E402
 
 README_WITH_CODE = """
 # Example Model

@@ -2,8 +2,9 @@ import math
 import time
 from typing import Tuple
 
-from hugging_face_api import get_model_info
 from license_score import fetch_readme
+
+from hugging_face_api import get_model_info
 
 
 def normalize_sigmoid(value: int, mid: int, steepness: float) -> float:
