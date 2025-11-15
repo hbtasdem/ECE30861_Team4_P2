@@ -10,7 +10,6 @@ from net_score_calculator import calculate_net_score  # noqa: E402
 from net_score_calculator import print_score_summary  # noqa: E402
 
 
-
 class TestNetScoreCalculator(unittest.TestCase):
     """Test cases for NetScore calculator with different HF models."""
 

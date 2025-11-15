@@ -16,11 +16,6 @@ from botocore.exceptions import ClientError, NoCredentialsError
 GITHUB_API = "https://api.github.com"
 
 
-<<<<<<< HEAD:src/reviewedness_score.py
-def get_pull_requests(
-    owner: str, repo: str, headers: Dict[str, str]
-) -> List[Dict[str, Any]]:
-=======
 def get_github_token() -> Any:
     """
     Get github token for api from ec2 or local env.
@@ -49,7 +44,6 @@ def get_github_token() -> Any:
 
 
 def get_pull_requests(owner: str, repo: str, headers: Dict[str, str]) -> List[Dict[str, Any]]:
->>>>>>> origin:src/metrics/reviewedness_score.py
     """
     Get pull request info from git repo
 
@@ -73,15 +67,7 @@ def get_pull_requests(owner: str, repo: str, headers: Dict[str, str]) -> List[Di
     # github api rate limit is 60 per hour. so we can only check 60...?
     while page <= 1:  # left as while loop in case we want to increase # prs checked easily
         url = f"{GITHUB_API}/repos/{owner}/{repo}/pulls"
-<<<<<<< HEAD:src/reviewedness_score.py
-        params: Mapping[str, Union[str, int]] = {
-            "state": "closed",
-            "per_page": 100,
-            "page": page,
-        }
-=======
         params: Mapping[str, Union[str, int]] = {"state": "closed", "per_page": 60, "page": page}
->>>>>>> origin:src/metrics/reviewedness_score.py
         r = requests.get(url, headers=headers, params=params)
         if r.status_code != 200:
             print(f"Error fetching PRs: {r.status_code}, {r.text}")

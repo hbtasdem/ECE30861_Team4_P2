@@ -11,7 +11,6 @@ from bus_factor_score import bus_factor_score  # noqa: E402
 from bus_factor_score import get_huggingface_contributors  # noqa: E402
 
 
-
 class TestBusFactorScore(unittest.TestCase):
     """Unit tests for bus_factor_score function with timing measurements."""
 

@@ -25,29 +25,27 @@ router = APIRouter()
 
 @router.get("/artifact/model/{artifact_id}/rate")
 async def get_model_rating(
-    artifact_id: str,
-    x_authorization: str = Header(None),
-    db: Session = Depends(get_db)
+    artifact_id: str, x_authorization: str = Header(None), db: Session = Depends(get_db)
 ) -> JSONResponse:
     """Get ratings for this model artifact (BASELINE endpoint)."""
     if not artifact_id:
         raise HTTPException(
             status_code=400,
-            detail="There is missing field(s) in the artifact_id or it is formed improperly, or is invalid."
+            detail="There is missing field(s) in the artifact_id or it is formed improperly, or is invalid.",
         )
-    
+
     if not x_authorization:
         raise HTTPException(
             status_code=403,
-            detail="Authentication failed due to invalid or missing AuthenticationToken."
+            detail="Authentication failed due to invalid or missing AuthenticationToken.",
         )
-    
+
     try:
         get_current_user(x_authorization, db)
     except HTTPException:
         raise HTTPException(
             status_code=403,
-            detail="Authentication failed due to invalid or missing AuthenticationToken."
+            detail="Authentication failed due to invalid or missing AuthenticationToken.",
         )
 
     artifact = artifacts_db.get(artifact_id)
@@ -60,7 +58,7 @@ async def get_model_rating(
     if not rating:
         raise HTTPException(
             status_code=500,
-            detail="The artifact rating system encountered an error while computing at least one metric."
+            detail="The artifact rating system encountered an error while computing at least one metric.",
         )
 
     return JSONResponse(content=rating)

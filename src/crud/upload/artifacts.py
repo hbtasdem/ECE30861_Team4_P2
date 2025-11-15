@@ -115,21 +115,21 @@ class ArtifactMetadata(BaseModel):
         ...,
         description="Artifact name - human readable identifier",
         min_length=1,
-        max_length=255
+        max_length=255,
     )
     id: str = Field(
         ...,
         description="String UUID artifact ID (NOT integer!) - "
-                    "Per spec must match pattern ^[a-zA-Z0-9\\-]+$",
+        "Per spec must match pattern ^[a-zA-Z0-9\\-]+$",
         min_length=1,
-        max_length=255
+        max_length=255,
     )
     type: str = Field(
         ...,
         description="Artifact type per spec - "
-                    "MUST be one of: 'model', 'dataset', 'code'. "
-                    "No other types allowed.",
-        json_schema_extra={"enum": ["model", "dataset", "code"]}
+        "MUST be one of: 'model', 'dataset', 'code'. "
+        "No other types allowed.",
+        json_schema_extra={"enum": ["model", "dataset", "code"]},
     )
 
 
@@ -171,17 +171,17 @@ class ArtifactData(BaseModel):
     url: str = Field(
         ...,
         description="Source URL where artifact originated "
-                    "(e.g., https://huggingface.co/bert-base-uncased) - "
-                    "Per spec: Used to verify provenance",
+        "(e.g., https://huggingface.co/bert-base-uncased) - "
+        "Per spec: Used to verify provenance",
         min_length=1,
-        max_length=2048
+        max_length=2048,
     )
     download_url: Optional[str] = Field(
         None,
         description="Server download URL for artifact retrieval - "
-                    "Per spec: Read-only in responses (set by server), "
-                    "optional in requests",
-        max_length=2048
+        "Per spec: Read-only in responses (set by server), "
+        "optional in requests",
+        max_length=2048,
     )
 
 
@@ -227,16 +227,17 @@ class Artifact(BaseModel):
     metadata: ArtifactMetadata = Field(
         ...,
         description="Artifact metadata - identifies what it is "
-                    "(name, id, type) per spec Section 3.2.1"
+        "(name, id, type) per spec Section 3.2.1",
     )
     data: ArtifactData = Field(
         ...,
         description="Artifact data - where to find it "
-                    "(url, download_url) per spec Section 3.2.1"
+        "(url, download_url) per spec Section 3.2.1",
     )
 
 
 # QUERY SCHEMAS - FOR ARTIFACT ENUMERATION (Per Spec POST /artifacts)
+
 
 class ArtifactQuery(BaseModel):
     """Query filter for artifact enumeration per spec.
@@ -272,21 +273,22 @@ class ArtifactQuery(BaseModel):
     name: str = Field(
         ...,
         description='Artifact name or "*" for all artifacts '
-                    "per spec POST /artifacts endpoint",
+        "per spec POST /artifacts endpoint",
         min_length=1,
-        max_length=255
+        max_length=255,
     )
     types: Optional[List[str]] = Field(
         None,
         description="Optional filter by artifact types "
-                    "(subset of: model, dataset, code) "
-                    "per spec POST /artifacts",
+        "(subset of: model, dataset, code) "
+        "per spec POST /artifacts",
         min_length=1,
-        max_length=3
+        max_length=3,
     )
 
 
 # AUTHENTICATION SCHEMAS (Per Spec Section 3.2.2)
+
 
 class User(BaseModel):
     """User information per OpenAPI spec Section 3.2.2.
@@ -317,12 +319,12 @@ class User(BaseModel):
         ...,
         description="Username or email per spec User object",
         min_length=1,
-        max_length=255
+        max_length=255,
     )
     is_admin: bool = Field(
         False,
         description="Is this user an admin? "
-                    "Determines access to admin endpoints like DELETE /reset"
+        "Determines access to admin endpoints like DELETE /reset",
     )
 
 
@@ -349,9 +351,9 @@ class UserAuthenticationInfo(BaseModel):
     password: str = Field(
         ...,
         description="User password per spec - "
-                    "Per spec: Will be bcrypt hashed before storage",
+        "Per spec: Will be bcrypt hashed before storage",
         min_length=1,
-        max_length=255
+        max_length=255,
     )
 
 
@@ -385,14 +387,11 @@ class AuthenticationRequest(BaseModel):
     """
 
     user: User = Field(
-        ...,
-        description="User object per spec - "
-                    "Contains name and is_admin flag"
+        ..., description="User object per spec - " "Contains name and is_admin flag"
     )
     secret: UserAuthenticationInfo = Field(
         ...,
-        description="Authentication secret per spec - "
-                    "Contains password credential"
+        description="Authentication secret per spec - " "Contains password credential",
     )
 
 
@@ -423,9 +422,10 @@ class AuthenticationToken(BaseModel):
     token: str = Field(
         ...,
         description='JWT Bearer token in format "bearer <jwt>" '
-                    "per spec AuthenticationToken object. "
-                    "Include in X-Authorization header for authenticated requests."
+        "per spec AuthenticationToken object. "
+        "Include in X-Authorization header for authenticated requests.",
     )
+
 
 # AUDIT SCHEMAS (Per Spec GET /artifact/{type}/{id}/audit endpoint)
 
@@ -467,25 +467,22 @@ class AuditEntry(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    user: User = Field(
-        ...,
-        description="User who performed the action"
-    )
+    user: User = Field(..., description="User who performed the action")
     date: datetime = Field(
         ...,
         description="ISO-8601 UTC datetime when action occurred "
-                    "per spec audit trail format"
+        "per spec audit trail format",
     )
     artifact: ArtifactMetadata = Field(
-        ...,
-        description="Artifact that was affected by this action"
+        ..., description="Artifact that was affected by this action"
     )
     action: str = Field(
         ...,
         description="Type of action per spec - "
-                    "Must be one of: CREATE, UPDATE, DOWNLOAD, RATE, AUDIT",
-        json_schema_extra={"enum": ["CREATE", "UPDATE", "DOWNLOAD", "RATE", "AUDIT"]}
+        "Must be one of: CREATE, UPDATE, DOWNLOAD, RATE, AUDIT",
+        json_schema_extra={"enum": ["CREATE", "UPDATE", "DOWNLOAD", "RATE", "AUDIT"]},
     )
+
 
 # LINEAGE SCHEMAS (Per Spec GET /artifact/model/{id}/lineage endpoint)
 
@@ -521,21 +518,13 @@ class ArtifactLineageNode(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    artifact_id: str = Field(
-        ...,
-        description="Artifact ID for this lineage node"
-    )
-    name: str = Field(
-        ...,
-        description="Artifact name (from metadata)"
-    )
+    artifact_id: str = Field(..., description="Artifact ID for this lineage node")
+    name: str = Field(..., description="Artifact name (from metadata)")
     source: str = Field(
-        ...,
-        description="How node was discovered (e.g., config_json, readme, etc.)"
+        ..., description="How node was discovered (e.g., config_json, readme, etc.)"
     )
     metadata: Optional[dict] = Field(
-        None,
-        description="Optional additional metadata about this node"
+        None, description="Optional additional metadata about this node"
     )
 
 
@@ -569,16 +558,13 @@ class ArtifactLineageEdge(BaseModel):
     """
 
     from_node_artifact_id: str = Field(
-        ...,
-        description="Upstream artifact ID (dependency)"
+        ..., description="Upstream artifact ID (dependency)"
     )
     to_node_artifact_id: str = Field(
-        ...,
-        description="Downstream artifact ID (depends on upstream)"
+        ..., description="Downstream artifact ID (depends on upstream)"
     )
     relationship: str = Field(
-        ...,
-        description="Relationship description (e.g., trained_on, depends_on)"
+        ..., description="Relationship description (e.g., trained_on, depends_on)"
     )
 
 
@@ -619,13 +605,12 @@ class ArtifactLineageGraph(BaseModel):
     """
 
     nodes: List[ArtifactLineageNode] = Field(
-        ...,
-        description="Artifacts in lineage graph per spec"
+        ..., description="Artifacts in lineage graph per spec"
     )
     edges: List[ArtifactLineageEdge] = Field(
-        ...,
-        description="Dependencies between artifacts per spec"
+        ..., description="Dependencies between artifacts per spec"
     )
+
 
 # ADDITIONAL REQUEST SCHEMAS
 
@@ -650,7 +635,7 @@ class SimpleLicenseCheckRequest(BaseModel):
     github_url: str = Field(
         ...,
         description="GitHub repository URL for license compatibility check "
-                    "per spec POST /artifact/model/{id}/license-check"
+        "per spec POST /artifact/model/{id}/license-check",
     )
 
 
@@ -674,7 +659,7 @@ class ArtifactRegEx(BaseModel):
     regex: str = Field(
         ...,
         description="Regular expression pattern for artifact search "
-                    "per spec POST /artifact/byRegEx"
+        "per spec POST /artifact/byRegEx",
     )
 
 
@@ -711,8 +696,8 @@ class ModelResponse(BaseModel):
 
     id: str
     name: str
-    url: str = Field(alias='model_url')
-    type: str = Field(alias='artifact_type')
+    url: str = Field(alias="model_url")
+    type: str = Field(alias="artifact_type")
 
 
 class UploadResponse(BaseModel):

@@ -167,7 +167,9 @@ from typing import Any, Generator
 os.environ["TESTING"] = "true"
 
 # Add project root to path
-project_root = Path(__file__).parent.parent.parent.parent  # Go from tests to project root
+project_root = Path(
+    __file__
+).parent.parent.parent.parent  # Go from tests to project root
 sys.path.insert(0, str(project_root))
 
 import pytest  # noqa: E402
@@ -188,8 +190,7 @@ def test_db() -> Generator[Session, None, None]:
 
     # Create file-based engine (more compatible with ThreadPoolExecutor used by TestClient)
     engine = create_engine(
-        f"sqlite:///{temp_db_path}",
-        connect_args={"check_same_thread": False}
+        f"sqlite:///{temp_db_path}", connect_args={"check_same_thread": False}
     )
 
     # Create all tables
@@ -206,7 +207,7 @@ def test_db() -> Generator[Session, None, None]:
         username="testuser",
         email="test@example.com",
         hashed_password="$2b$12$w9wxhMSXjJh/NLXdVJr8se0qR/0XNPq8U3QXzPzW4nH5gKmJsQJri",  # Pre-hashed 'testpassword'
-        is_admin=False
+        is_admin=False,
     )
     db.add(test_user)
     db.commit()
@@ -243,7 +244,7 @@ def client(test_db: Session) -> Generator[Any, None, None]:
         username="testuser",
         email="test@example.com",
         hashed_password="$2b$12$w9wxhMSXjJh/NLXdVJr8se0qR/0XNPq8U3QXzPzW4nH5gKmJsQJri",  # Pre-hashed 'testpassword'
-        is_admin=False
+        is_admin=False,
     )
 
     def override_get_db() -> Generator[Session, None, None]:

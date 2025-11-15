@@ -30,10 +30,16 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from ulid import ULID
 
-from src.crud.upload.artifacts import (Artifact, ArtifactData,
-                                           ArtifactLineageEdge, ArtifactLineageGraph,
-                                           ArtifactLineageNode, ArtifactMetadata,
-                                           ArtifactQuery, ArtifactRegEx)
+from src.crud.upload.artifacts import (
+    Artifact,
+    ArtifactData,
+    ArtifactLineageEdge,
+    ArtifactLineageGraph,
+    ArtifactLineageNode,
+    ArtifactMetadata,
+    ArtifactQuery,
+    ArtifactRegEx,
+)
 from src.crud.upload.auth import get_current_user
 from src.database import get_db
 from src.database_models import Artifact as ArtifactModel
@@ -49,7 +55,7 @@ router = APIRouter(tags=["artifacts"])
 @router.post(
     "/artifact/{artifact_type}",
     response_model=Artifact,
-    status_code=status.HTTP_201_CREATED
+    status_code=status.HTTP_201_CREATED,
 )
 async def create_artifact(
     artifact_type: str,
@@ -82,7 +88,7 @@ async def create_artifact(
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header"
+            detail="Missing X-Authorization header",
         )
 
     try:
@@ -90,7 +96,7 @@ async def create_artifact(
     except HTTPException as _e:  # noqa: F841
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token"
+            detail="Authentication failed: Invalid or expired token",
         )
 
     # ========================================================================
@@ -102,14 +108,14 @@ async def create_artifact(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid artifact type: {artifact_type}. "
-                   f"Must be one of: {', '.join(valid_types)}"
+            f"Must be one of: {', '.join(valid_types)}",
         )
 
     # Validate artifact data
     if not artifact_data.url:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Artifact data must contain 'url' field"
+            detail="Artifact data must contain 'url' field",
         )
 
     # ========================================================================
@@ -121,8 +127,8 @@ async def create_artifact(
         download_url = f"/api/artifacts/{artifact_type}/{artifact_id}/download"
 
         # Extract name from URL if not provided
-        name = artifact_data.url.split('/')[-1]
-        if not name or name.startswith('http'):
+        name = artifact_data.url.split("/")[-1]
+        if not name or name.startswith("http"):
             name = f"{artifact_type}_{artifact_id[:8]}"
 
         # Create artifact record
@@ -140,9 +146,7 @@ async def create_artifact(
 
         # Create audit entry for CREATE action
         audit_entry = AuditEntry(
-            user_id=current_user.id,
-            artifact_id=artifact_id,
-            action="CREATE"
+            user_id=current_user.id, artifact_id=artifact_id, action="CREATE"
         )
         db.add(audit_entry)
         db.commit()
@@ -151,14 +155,11 @@ async def create_artifact(
         # Return artifact in envelope format
         return Artifact(
             metadata=ArtifactMetadata(
-                name=new_artifact.name,
-                id=new_artifact.id,
-                type=new_artifact.type
+                name=new_artifact.name, id=new_artifact.id, type=new_artifact.type
             ),
             data=ArtifactData(
-                url=new_artifact.url,
-                download_url=new_artifact.download_url
-            )
+                url=new_artifact.url, download_url=new_artifact.download_url
+            ),
         )
 
     except HTTPException:
@@ -168,7 +169,7 @@ async def create_artifact(
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to create artifact: {str(e)}"
+            detail=f"Failed to create artifact: {str(e)}",
         )
 
 
@@ -177,10 +178,7 @@ async def create_artifact(
 # ============================================================================
 
 
-@router.get(
-    "/artifacts/{artifact_type}/{artifact_id}",
-    response_model=Artifact
-)
+@router.get("/artifacts/{artifact_type}/{artifact_id}", response_model=Artifact)
 async def get_artifact(
     artifact_type: str,
     artifact_id: str,
@@ -212,7 +210,7 @@ async def get_artifact(
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header"
+            detail="Missing X-Authorization header",
         )
 
     try:
@@ -220,29 +218,28 @@ async def get_artifact(
     except HTTPException:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token"
+            detail="Authentication failed: Invalid or expired token",
         )
 
     # ========================================================================
     # RETRIEVE ARTIFACT
     # ========================================================================
-    artifact = db.query(ArtifactModel).filter(
-        ArtifactModel.id == artifact_id,
-        ArtifactModel.type == artifact_type
-    ).first()
+    artifact = (
+        db.query(ArtifactModel)
+        .filter(ArtifactModel.id == artifact_id, ArtifactModel.type == artifact_type)
+        .first()
+    )
 
     if not artifact:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Artifact not found: {artifact_type}/{artifact_id}"
+            detail=f"Artifact not found: {artifact_type}/{artifact_id}",
         )
 
     # Log DOWNLOAD action
     try:
         audit_entry = AuditEntry(
-            user_id=current_user.id,
-            artifact_id=artifact_id,
-            action="DOWNLOAD"
+            user_id=current_user.id, artifact_id=artifact_id, action="DOWNLOAD"
         )
         db.add(audit_entry)
         db.commit()
@@ -252,14 +249,9 @@ async def get_artifact(
 
     return Artifact(
         metadata=ArtifactMetadata(
-            name=artifact.name,
-            id=artifact.id,
-            type=artifact.type
+            name=artifact.name, id=artifact.id, type=artifact.type
         ),
-        data=ArtifactData(
-            url=artifact.url,
-            download_url=artifact.download_url
-        )
+        data=ArtifactData(url=artifact.url, download_url=artifact.download_url),
     )
 
 
@@ -268,10 +260,7 @@ async def get_artifact(
 # ============================================================================
 
 
-@router.put(
-    "/artifacts/{artifact_type}/{artifact_id}",
-    response_model=Artifact
-)
+@router.put("/artifacts/{artifact_type}/{artifact_id}", response_model=Artifact)
 async def update_artifact(
     artifact_type: str,
     artifact_id: str,
@@ -305,7 +294,7 @@ async def update_artifact(
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header"
+            detail="Missing X-Authorization header",
         )
 
     try:
@@ -313,21 +302,22 @@ async def update_artifact(
     except HTTPException:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token"
+            detail="Authentication failed: Invalid or expired token",
         )
 
     # ========================================================================
     # RETRIEVE AND UPDATE ARTIFACT
     # ========================================================================
-    artifact = db.query(ArtifactModel).filter(
-        ArtifactModel.id == artifact_id,
-        ArtifactModel.type == artifact_type
-    ).first()
+    artifact = (
+        db.query(ArtifactModel)
+        .filter(ArtifactModel.id == artifact_id, ArtifactModel.type == artifact_type)
+        .first()
+    )
 
     if not artifact:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Artifact not found: {artifact_type}/{artifact_id}"
+            detail=f"Artifact not found: {artifact_type}/{artifact_id}",
         )
 
     try:
@@ -337,17 +327,15 @@ async def update_artifact(
 
         # Update name if derived from URL
         if artifact.url:
-            name = artifact.url.split('/')[-1]
-            if name and not name.startswith('http'):
+            name = artifact.url.split("/")[-1]
+            if name and not name.startswith("http"):
                 artifact.name = name
 
         db.flush()
 
         # Log UPDATE action
         audit_entry = AuditEntry(
-            user_id=current_user.id,
-            artifact_id=artifact_id,
-            action="UPDATE"
+            user_id=current_user.id, artifact_id=artifact_id, action="UPDATE"
         )
         db.add(audit_entry)
         db.commit()
@@ -355,14 +343,9 @@ async def update_artifact(
 
         return Artifact(
             metadata=ArtifactMetadata(
-                name=artifact.name,
-                id=artifact.id,
-                type=artifact.type
+                name=artifact.name, id=artifact.id, type=artifact.type
             ),
-            data=ArtifactData(
-                url=artifact.url,
-                download_url=artifact.download_url
-            )
+            data=ArtifactData(url=artifact.url, download_url=artifact.download_url),
         )
 
     except HTTPException:
@@ -372,7 +355,7 @@ async def update_artifact(
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to update artifact: {str(e)}"
+            detail=f"Failed to update artifact: {str(e)}",
         )
 
 
@@ -381,10 +364,7 @@ async def update_artifact(
 # ============================================================================
 
 
-@router.post(
-    "/artifacts",
-    response_model=List[ArtifactMetadata]
-)
+@router.post("/artifacts", response_model=List[ArtifactMetadata])
 async def enumerate_artifacts(
     queries: List[ArtifactQuery],
     offset: Optional[int] = Query(None),
@@ -418,7 +398,7 @@ async def enumerate_artifacts(
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header"
+            detail="Missing X-Authorization header",
         )
 
     try:
@@ -426,7 +406,7 @@ async def enumerate_artifacts(
     except HTTPException:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token"
+            detail="Authentication failed: Invalid or expired token",
         )
 
     # ========================================================================
@@ -435,7 +415,7 @@ async def enumerate_artifacts(
     if not queries:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="At least one query is required"
+            detail="At least one query is required",
         )
 
     # ========================================================================
@@ -473,11 +453,7 @@ async def enumerate_artifacts(
 
         # Convert to metadata
         metadata_list = [
-            ArtifactMetadata(
-                name=artifact.name,
-                id=artifact.id,
-                type=artifact.type
-            )
+            ArtifactMetadata(name=artifact.name, id=artifact.id, type=artifact.type)
             for artifact in results
         ]
 
@@ -485,8 +461,7 @@ async def enumerate_artifacts(
 
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Query failed: {str(e)}"
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Query failed: {str(e)}"
         )
 
 
@@ -520,7 +495,7 @@ async def reset_registry(
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header"
+            detail="Missing X-Authorization header",
         )
 
     try:
@@ -528,14 +503,14 @@ async def reset_registry(
     except HTTPException:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token"
+            detail="Authentication failed: Invalid or expired token",
         )
 
     # Check if user is admin
     if not current_user.is_admin:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You do not have permission to reset the registry"
+            detail="You do not have permission to reset the registry",
         )
 
     try:
@@ -548,7 +523,7 @@ async def reset_registry(
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to reset registry: {str(e)}"
+            detail=f"Failed to reset registry: {str(e)}",
         )
 
 
@@ -588,7 +563,7 @@ async def get_artifact_cost(
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header"
+            detail="Missing X-Authorization header",
         )
 
     try:
@@ -596,27 +571,23 @@ async def get_artifact_cost(
     except HTTPException:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token"
+            detail="Authentication failed: Invalid or expired token",
         )
 
-    artifact = db.query(ArtifactModel).filter(
-        ArtifactModel.id == artifact_id,
-        ArtifactModel.type == artifact_type
-    ).first()
+    artifact = (
+        db.query(ArtifactModel)
+        .filter(ArtifactModel.id == artifact_id, ArtifactModel.type == artifact_type)
+        .first()
+    )
 
     if not artifact:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Artifact does not exist."
+            status_code=status.HTTP_404_NOT_FOUND, detail="Artifact does not exist."
         )
 
     # For now, return placeholder cost
     # In production, would calculate actual download size
-    cost_data = {
-        artifact_id: {
-            "total_cost": 100.0  # Placeholder: 100 MB
-        }
-    }
+    cost_data = {artifact_id: {"total_cost": 100.0}}  # Placeholder: 100 MB
 
     if dependency:
         cost_data[artifact_id]["standalone_cost"] = 100.0
@@ -630,8 +601,7 @@ async def get_artifact_cost(
 
 
 @router.get(
-    "/artifact/model/{artifact_id}/lineage",
-    response_model=ArtifactLineageGraph
+    "/artifact/model/{artifact_id}/lineage", response_model=ArtifactLineageGraph
 )
 async def get_artifact_lineage(
     artifact_id: str,
@@ -659,7 +629,7 @@ async def get_artifact_lineage(
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header"
+            detail="Missing X-Authorization header",
         )
 
     try:
@@ -667,23 +637,22 @@ async def get_artifact_lineage(
     except HTTPException:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token"
+            detail="Authentication failed: Invalid or expired token",
         )
 
-    artifact = db.query(ArtifactModel).filter(
-        ArtifactModel.id == artifact_id
-    ).first()
+    artifact = db.query(ArtifactModel).filter(ArtifactModel.id == artifact_id).first()
 
     if not artifact:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Artifact does not exist."
+            status_code=status.HTTP_404_NOT_FOUND, detail="Artifact does not exist."
         )
 
     # For now, return self as a single node with no edges
     # In production, would parse metadata for actual lineage
     from src.crud.upload.artifacts import (
-        ArtifactLineageEdge, ArtifactLineageNode, ArtifactLineageGraph
+        ArtifactLineageEdge,
+        ArtifactLineageNode,
+        ArtifactLineageGraph,
     )
 
     nodes = [
@@ -691,7 +660,7 @@ async def get_artifact_lineage(
             artifact_id=artifact_id,
             name=artifact.name,
             source="metadata",
-            metadata={"type": artifact.type}
+            metadata={"type": artifact.type},
         )
     ]
 
@@ -732,7 +701,7 @@ async def check_license_compatibility(
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header"
+            detail="Missing X-Authorization header",
         )
 
     try:
@@ -740,23 +709,21 @@ async def check_license_compatibility(
     except HTTPException:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token"
+            detail="Authentication failed: Invalid or expired token",
         )
 
     if "github_url" not in request:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="The license check request is malformed or references an unsupported usage context."
+            detail="The license check request is malformed or references an unsupported usage context.",
         )
 
-    artifact = db.query(ArtifactModel).filter(
-        ArtifactModel.id == artifact_id
-    ).first()
+    artifact = db.query(ArtifactModel).filter(ArtifactModel.id == artifact_id).first()
 
     if not artifact:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="The artifact or GitHub project could not be found."
+            detail="The artifact or GitHub project could not be found.",
         )
 
     # For now, return True (compatible)
@@ -769,10 +736,7 @@ async def check_license_compatibility(
 # ============================================================================
 
 
-@router.post(
-    "/artifact/byRegEx",
-    response_model=List[ArtifactMetadata]
-)
+@router.post("/artifact/byRegEx", response_model=List[ArtifactMetadata])
 async def get_artifacts_by_regex(
     request: Dict[str, str],
     x_authorization: Optional[str] = Header(None),
@@ -799,7 +763,7 @@ async def get_artifacts_by_regex(
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header"
+            detail="Missing X-Authorization header",
         )
 
     try:
@@ -807,13 +771,13 @@ async def get_artifacts_by_regex(
     except HTTPException:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token"
+            detail="Authentication failed: Invalid or expired token",
         )
 
     if "regex" not in request:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid"
+            detail="There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid",
         )
 
     import re
@@ -823,27 +787,17 @@ async def get_artifacts_by_regex(
     except re.error as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid: {str(e)}"
+            detail=f"There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid: {str(e)}",
         )
 
     # Search artifacts by name regex
     artifacts = db.query(ArtifactModel).all()
-    matching = [
-        a for a in artifacts
-        if regex.search(a.name) or regex.search(a.type)
-    ]
+    matching = [a for a in artifacts if regex.search(a.name) or regex.search(a.type)]
 
     if not matching:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="No artifact found under this regex."
+            detail="No artifact found under this regex.",
         )
 
-    return [
-        ArtifactMetadata(
-            name=a.name,
-            id=a.id,
-            type=a.type
-        )
-        for a in matching
-    ]
+    return [ArtifactMetadata(name=a.name, id=a.id, type=a.type) for a in matching]

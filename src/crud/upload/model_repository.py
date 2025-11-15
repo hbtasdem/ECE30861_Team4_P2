@@ -77,11 +77,7 @@ class ModelRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create_model(
-        self,
-        model_data: ModelCreate,
-        uploader_id: int
-    ) -> Artifact:
+    def create_model(self, model_data: ModelCreate, uploader_id: int) -> Artifact:
         """Create a new model record in database with URL reference.
 
         Args:
@@ -96,8 +92,8 @@ class ModelRepository:
             name=model_data.name,
             url=model_data.url,
             download_url=f"/api/artifacts/download/{str(ULID())}",  # Per spec: download endpoint
-            type='model',  # Per spec: type constraint
-            uploader_id=uploader_id
+            type="model",  # Per spec: type constraint
+            uploader_id=uploader_id,
         )
 
         self.db.add(db_model)

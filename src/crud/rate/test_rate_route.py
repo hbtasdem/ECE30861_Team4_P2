@@ -66,11 +66,13 @@ def mock_s3_bucket() -> Generator[tuple[boto3.client, Dict[str, Any]], None, Non
         incomplete_rating = {
             "name": "bert-base-uncased",
             "category": "model",
-            "net_score": 0.95
+            "net_score": 0.95,
         }
         artifact_id = "02"
         key = f"rating/{artifact_id}.rate.json"
-        s3.put_object(Bucket="phase2-s3-bucket", Key=key, Body=json.dumps(incomplete_rating))
+        s3.put_object(
+            Bucket="phase2-s3-bucket", Key=key, Body=json.dumps(incomplete_rating)
+        )
 
         # run test
         yield s3, valid_rating
@@ -93,7 +95,9 @@ def test_get_rating_success(client: TestClient, mock_s3_bucket: boto3.client) ->
         assert returned_rating[key] == value
 
 
-def test_get_rating_invalidartifactid(client: TestClient, mock_s3_bucket: boto3.client) -> None:
+def test_get_rating_invalidartifactid(
+    client: TestClient, mock_s3_bucket: boto3.client
+) -> None:
     """Test that GET /artifact/model/{id}/rate returns the expected error
     given a non-integer artifact id."""
     # rate endpoint
@@ -104,7 +108,9 @@ def test_get_rating_invalidartifactid(client: TestClient, mock_s3_bucket: boto3.
     assert response.status_code == 400
 
 
-def test_get_rating_noartifact(client: TestClient, mock_s3_bucket: boto3.client) -> None:
+def test_get_rating_noartifact(
+    client: TestClient, mock_s3_bucket: boto3.client
+) -> None:
     """Test that GET /artifact/model/{id}/rate returns the expected error
     given artifact id that doesn't exist."""
     # mock s3 and stored rating from fixture
@@ -118,7 +124,9 @@ def test_get_rating_noartifact(client: TestClient, mock_s3_bucket: boto3.client)
     assert response.status_code == 404
 
 
-def test_get_rating_incomplete(client: TestClient, mock_s3_bucket: boto3.client) -> None:
+def test_get_rating_incomplete(
+    client: TestClient, mock_s3_bucket: boto3.client
+) -> None:
     """Test that GET /artifact/model/{id}/rate returns the expected error
     for a stored incomplete ModelRating."""
     # mock s3 and stored rating from fixture

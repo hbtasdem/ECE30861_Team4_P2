@@ -194,8 +194,15 @@ FUTURE EXTENSIONS (Phase 5+):
 
 from datetime import datetime
 
-from sqlalchemy import (Boolean, CheckConstraint, Column, DateTime, ForeignKey,
-                        Integer, String)
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    Column,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+)
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -213,7 +220,7 @@ class User(Base):  # type: ignore
     Primary Key: id (Integer)
     """
 
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     # ========================================================================
     # PRIMARY KEY & UNIQUE IDENTIFIERS
@@ -248,11 +255,11 @@ class User(Base):  # type: ignore
     # ========================================================================
     # artifacts: One-to-many relationship with Artifact table
     # Represents artifacts uploaded by this user (uploader_id foreign key)
-    artifacts = relationship('Artifact', back_populates='uploader')
+    artifacts = relationship("Artifact", back_populates="uploader")
 
     # audit_entries: One-to-many relationship with AuditEntry table
     # Tracks all mutations performed by this user
-    audit_entries = relationship('AuditEntry', back_populates='user')
+    audit_entries = relationship("AuditEntry", back_populates="user")
 
 
 class Artifact(Base):  # type: ignore
@@ -280,7 +287,7 @@ class Artifact(Base):  # type: ignore
     Constraints: type must be one of {model, dataset, code}
     """
 
-    __tablename__ = 'artifacts'
+    __tablename__ = "artifacts"
 
     # ========================================================================
     # METADATA SECTION (Per Spec Section 3.2.1)
@@ -326,7 +333,7 @@ class Artifact(Base):  # type: ignore
     # uploader_id: Foreign key to User who uploaded this artifact
     #   - Per spec: Artifacts are uploaded by authenticated users
     #   - Used to track artifact ownership and access control
-    uploader_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    uploader_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     # created_at: ISO-8601 creation timestamp
     #   - Set automatically to UTC now() on insert
@@ -344,15 +351,13 @@ class Artifact(Base):  # type: ignore
     # ========================================================================
     # uploader: Relationship to User object
     #   - Allows accessing user info from artifact: artifact.uploader.username
-    uploader = relationship('User', back_populates='artifacts')
+    uploader = relationship("User", back_populates="artifacts")
 
     # audit_entries: One-to-many relationship with AuditEntry
     #   - Per spec: GET /artifact/{type}/{id}/audit returns these entries
     #   - cascade='all, delete-orphan' ensures cleanup on artifact deletion
     audit_entries = relationship(
-        'AuditEntry',
-        back_populates='artifact',
-        cascade='all, delete-orphan'
+        "AuditEntry", back_populates="artifact", cascade="all, delete-orphan"
     )
 
     # ========================================================================
@@ -362,9 +367,7 @@ class Artifact(Base):  # type: ignore
     #   - Spec allows ONLY: 'model', 'dataset', 'code'
     #   - Database-level constraint prevents invalid data entry
     #   - Per spec: "type must be one of model, dataset, or code"
-    __table_args__ = (
-        CheckConstraint("type IN ('model', 'dataset', 'code')"),
-    )
+    __table_args__ = (CheckConstraint("type IN ('model', 'dataset', 'code')"),)
 
 
 class AuditEntry(Base):  # type: ignore
@@ -393,7 +396,7 @@ class AuditEntry(Base):  # type: ignore
     Indexes: (artifact_id, timestamp) for efficient audit queries
     """
 
-    __tablename__ = 'audit_entries'
+    __tablename__ = "audit_entries"
 
     # ========================================================================
     # PRIMARY KEY
@@ -410,13 +413,13 @@ class AuditEntry(Base):  # type: ignore
     #   - Must match an id in artifacts table
     #   - Per spec: Audit entries are tied to specific artifacts
     #   - String type to match Artifact.id (see above)
-    artifact_id = Column(String(255), ForeignKey('artifacts.id'), nullable=False)
+    artifact_id = Column(String(255), ForeignKey("artifacts.id"), nullable=False)
 
     # user_id: Reference to the User who performed action
     #   - Must match an id in users table
     #   - Per spec: Track WHO performed each action
     #   - Enables access control and usage tracking
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     # ========================================================================
     # ACTION & TIMESTAMP
@@ -438,8 +441,8 @@ class AuditEntry(Base):  # type: ignore
     # ========================================================================
     # artifact: Reference to the Artifact object being audited
     #   - Allows: audit_entry.artifact.name, audit_entry.artifact.type, etc.
-    artifact = relationship('Artifact', back_populates='audit_entries')
+    artifact = relationship("Artifact", back_populates="audit_entries")
 
     # user: Reference to the User who performed the action
     #   - Allows: audit_entry.user.username, audit_entry.user.is_admin, etc.
-    user = relationship('User', back_populates='audit_entries')
+    user = relationship("User", back_populates="audit_entries")

@@ -119,16 +119,9 @@ def calculate_all_scores(
         print(error_msg, file=sys.stderr)
     # Performance Claims Score
     try:
-<<<<<<< HEAD
-        (
-            perf_score,
-            perf_latency,
-        ) = performance_claims_sub_score.performance_claims_sub_score(model_name)
-=======
         perf_score, perf_latency = (
             performance_claims_score.performance_claims_sub_score(model_name)
         )
->>>>>>> origin
         result["performance_claims"] = perf_score
         result["performance_claims_latency"] = int(perf_latency * 1000)
     except Exception as e:
@@ -136,56 +129,21 @@ def calculate_all_scores(
         print(error_msg, file=sys.stderr)
     # License Score
     try:
-<<<<<<< HEAD
-        license_score, license_latency = license_sub_score.license_sub_score(model_name)
-        result["license"] = license_score
-=======
         license_score, license_latency = (
             license_score.license_sub_score(model_name)  # noqa: F823
         )
         result["license"] = lic_score
->>>>>>> origin
         result["license_latency"] = int(license_latency * 1000)
     except Exception as e:
         error_msg = f"Error calculating license score for {model_name}: {e}"
         print(error_msg, file=sys.stderr)
     # Size Scores
-<<<<<<< HEAD
-    # using realistic values based on model type.
-    # This would ideally be calculated from actual model size
-    if "bert" in model_name.lower():
-        result["size_score"] = {
-            "raspberry_pi": 0.20,
-            "jetson_nano": 0.40,
-            "desktop_pc": 0.95,
-            "aws_server": 1.00,
-        }
-        result["size_score_latency"] = 50
-    elif "whisper" in model_name.lower():
-        result["size_score"] = {
-            "raspberry_pi": 0.90,
-            "jetson_nano": 0.95,
-            "desktop_pc": 1.00,
-            "aws_server": 1.00,
-        }
-        result["size_score_latency"] = 15
-    else:
-        # Default for other models
-        result["size_score"] = {
-            "raspberry_pi": 0.75,
-            "jetson_nano": 0.80,
-            "desktop_pc": 1.00,
-            "aws_server": 1.00,
-        }
-        result["size_score_latency"] = 40
-=======
     try:
         size_scores, net_size_score, size_score_latency = size_score.size_score(model_link)
         result["size_score"] = size_scores
         result["size_score_latency"] = size_score_latency
     except Exception as e:
         print(f"Error calculating size scores for {model_name}: {e}", file=sys.stderr)
->>>>>>> origin
     # Available Dataset Code Score
     try:
         (
@@ -200,17 +158,8 @@ def calculate_all_scores(
         print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
     # Dataset Quality Score
     try:
-<<<<<<< HEAD
-        (
-            dataset_score,
-            dataset_latency,
-        ) = dataset_quality_sub_score.dataset_quality_sub_score(
-            model_name, dataset_link, encountered_datasets
-        )
-=======
         dataset_score, dataset_latency = (dataset_quality_score.dataset_quality_sub_score(
             model_name, dataset_link, encountered_datasets))
->>>>>>> origin
         result["dataset_quality"] = dataset_score
         result["dataset_quality_latency"] = int(dataset_latency * 1000)
     except Exception as e:
