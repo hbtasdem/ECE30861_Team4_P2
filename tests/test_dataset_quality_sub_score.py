@@ -1,10 +1,13 @@
 # NOTE FROM GEORGIA: this doesn't test anything. Test isn't in the function names so pytest doesn't see them.
 # There's errors with them, so phase1 team probably just took out "test" to ignore it?
+import os
 import re
+import sys
 import time
 from typing import Optional, Set, Tuple
 
-from src.license_sub_score import fetch_readme
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src/metrics"))
+from license_score import fetch_readme  # noqa: E402
 
 
 def _get_ai_score(readme_text: str, model_id: str, aspect: str) -> float:

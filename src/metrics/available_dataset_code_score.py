@@ -3,7 +3,7 @@ import re
 import time
 from typing import Optional, Set, Tuple
 
-from license_sub_score import fetch_readme
+from license_score import fetch_readme
 
 
 def detect_dataset_links(readme_text: str) -> bool:

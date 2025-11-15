@@ -1,24 +1,48 @@
 """Test script for URL validation and upload testing.
 
-Usage:
-    python test_url_upload.py <url> [--no-test] [--timeout SECONDS]
+Per OpenAPI v3.4.4 Section 3.2 - URL-Based Model Upload Testing
 
-Example:
-    python test_url_upload.py https://huggingface.co/google-bert/bert-base-uncased
-    python test_url_upload.py https://github.com/openai/whisper --no-test
-    python test_url_upload.py https://example.com --timeout 5
+PURPOSE:
+Tests URL validation and model registration before upload.
+Verifies URL accessibility and format validity.
+
+USAGE:
+    python tests/test_url_upload.py <url> [--no-test] [--timeout SECONDS]
+
+EXAMPLES:
+    python tests/test_url_upload.py https://huggingface.co/google-bert/bert-base-uncased
+    python tests/test_url_upload.py https://github.com/openai/whisper --no-test
+    python tests/test_url_upload.py https://example.com --timeout 5
+
+OPTIONS:
+    url: URL to test (required)
+    --no-test: Skip accessibility testing (format only)
+    --timeout: Request timeout in seconds (default: 10)
+
+VALIDATION STEPS:
+1. URL Format Check: Must have http:// or https:// scheme
+2. Accessibility Test: Makes HTTP HEAD request, follows redirects
+3. Storage: Saves metadata to uploads/url_storage/metadata/
+
+ERROR HANDLING:
+    Timeout: "Request timeout (>10s)"
+    Connection refused: "Connection error - URL unreachable"
+    Invalid format: "Invalid URL format"
+
+SPEC SECTIONS REFERENCED:
+    Section 3.2: Model registration endpoint
+    Section 3.1: Authentication requirements
 """
 import argparse
 import sys
 from pathlib import Path
 from typing import Optional
 
-# Add parent directories to path
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))  # Project root
+from src.crud.upload.url_storage_service import URLStorageService
+from src.crud.upload.url_validator import validate_model_url
 
-# Import from sibling modules in crud/upload/
-from ..url_storage_service import URLStorageService  # noqa: E402
-from ..url_validator import validate_model_url  # noqa: E402
+# Add parent directories to path
+sys.path.insert(0, str(Path(__file__).parent.parent))  # Add src directory
 
 
 def validate_url_cli(

@@ -1,26 +1,12 @@
-"""Pytest configuration and fixtures for the entire test suite."""
+"""Pytest configuration - imports fixtures from test_setup module."""
 
-import os
-import sys
-import tempfile
-from pathlib import Path
-from typing import Generator
+import pytest
 
-from fastapi.testclient import TestClient
-
-# Set testing mode BEFORE any imports
-os.environ["TESTING"] = "true"
-
-# Add src to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-import pytest  # noqa: E402
-from sqlalchemy import create_engine  # noqa: E402
-from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
-
-from src.models import Base, User  # noqa: E402
+# Import all fixtures from test_setup module so pytest can discover them
+from tests.test_setup import client, db, test_db, test_token  # noqa: F401
 
 
+<<<<<<< HEAD
 @pytest.fixture(scope="function")
 def test_db() -> Session:
     """Create a temporary file-based SQLite database for each test."""
@@ -89,3 +75,9 @@ def client(test_db: Session) -> Generator[TestClient, None, None]:
 
     # Cleanup
     app.dependency_overrides.clear()
+=======
+@pytest.fixture
+def auth_token(test_token: str) -> str:
+    """Alias for test_token to use in tests."""
+    return test_token
+>>>>>>> origin

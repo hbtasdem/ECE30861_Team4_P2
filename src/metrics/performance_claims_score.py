@@ -1,9 +1,11 @@
 import math
+import os
+import sys
 import time
 from typing import Tuple
 
-from hugging_face_api import get_model_info
-from license_sub_score import fetch_readme
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
+from src.hugging_face_api import get_model_info
 
 
 def normalize_sigmoid(value: int, mid: int, steepness: float) -> float:
@@ -18,13 +20,11 @@ def normalize_sigmoid(value: int, mid: int, steepness: float) -> float:
     return min(1.0, score)
 
 
-def ramp_up_time_score(model_id: str) -> Tuple[float, float]:
+def performance_claims_sub_score(model_id: str) -> Tuple[float, float]:
     """
     Scores ramp up time based on:
     - Downloads > 0
     - Likes > 0
-    - README exists
-    - Coding example in README (looks for '```' or 'example' keyword)
     Returns (score, elapsed_time)
     """
     start = time.time()
@@ -43,22 +43,12 @@ def ramp_up_time_score(model_id: str) -> Tuple[float, float]:
     # 2. Likes
     score += normalize_sigmoid(value=info.get("likes", 0), mid=50, steepness=0.01)
 
-    # 3. README exists
-    readme = fetch_readme(model_id)
-    if readme:
-        score += 1
-
-        # 4. Coding example in README
-        if "```" in readme or "example" in readme.lower():
-            score += 1
-
-    # Normalize (max score is 4)
-    normalized = score / 4
-    normalized = round(normalized, 2)
+    # Normalize (max score is 2)
+    normalized = round(score / 2, 2)
     return normalized, time.time() - start
 
 
 if __name__ == "__main__":
     model_id = "google/gemma-2b"
-    score, elapsed = ramp_up_time_score(model_id)
-    print(f"Ramp up time score: {score:.2f} (elapsed: {elapsed:.2f}s)")
+    score, elapsed = performance_claims_sub_score(model_id)
+    print(f"Performance Claim score: {score:.2f} (elapsed: {elapsed:.2f}s)")

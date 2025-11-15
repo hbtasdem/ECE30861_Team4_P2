@@ -3,21 +3,27 @@
 
 import csv
 import json
+import os
 import sys
 import time
 from io import StringIO
 from typing import Any, Dict
 
-# Import scoring modules
-import available_dataset_code_score
-import bus_factor
-import code_quality
-import dataset_quality_sub_score
-import license_sub_score
 import net_score_calculator
-import performance_claims_sub_score
-import ramp_up_sub_score
-import treescore
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "metrics"))
+
+# Import scoring modules
+import available_dataset_code_score  # noqa: E402
+import bus_factor_score as bus_factor_score  # noqa: E402
+import code_quality_score as code_quality_score  # noqa: E402
+import dataset_quality_score as dataset_quality_score  # noqa: E402
+import license_score as license_score  # noqa: E402
+import performance_claims_score as performance_claims_score  # noqa: E402
+import ramp_up_time_score as ramp_up_time_score  # noqa: E402
+import reviewedness_score  # noqa: E402
+import size_score  # noqa: E402
+import tree_score as tree_score  # noqa: E402
 
 
 def extract_model_name(model_url: str) -> str:
@@ -73,6 +79,18 @@ def calculate_all_scores(
         "performance_claims_latency": 0,
         "license": 0.0,
         "license_latency": 0,
+        "dataset_and_code_score": 0.0,
+        "dataset_and_code_score_latency": 0,
+        "dataset_quality": 0.0,
+        "dataset_quality_latency": 0,
+        "code_quality": 0.0,
+        "code_quality_latency": 0,
+        "reproducibility": 0.0,
+        "reproducibility_latency": 0,
+        "reviewedness": 0.0,
+        "reviewedness_latency": 0,
+        "treescore": 0.0,
+        "treescore_latency": 0.0,
         "size_score": {
             "raspberry_pi": 0.0,
             "jetson_nano": 0.0,
@@ -80,26 +98,18 @@ def calculate_all_scores(
             "aws_server": 0.0,
         },
         "size_score_latency": 0,
-        "dataset_and_code_score": 0.0,
-        "dataset_and_code_score_latency": 0,
-        "dataset_quality": 0.0,
-        "dataset_quality_latency": 0,
-        "code_quality": 0.0,
-        "code_quality_latency": 0,
-        "treescore": 0.0,
-        "treescore_latency": 0.0,
     }
     # Calculate each score with timing
     # Ramp Up Time
     try:
-        ramp_score, ramp_latency = ramp_up_sub_score.ramp_up_time_score(model_name)
+        ramp_score, ramp_latency = ramp_up_time_score.ramp_up_time_score(model_name)
         result["ramp_up_time"] = ramp_score
         result["ramp_up_time_latency"] = int(ramp_latency * 1000)
     except Exception as e:
         print(f"Error calculating ramp up score for {model_name}: {e}", file=sys.stderr)
     # Bus Factor
     try:
-        bus_score_raw, bus_latency = bus_factor.bus_factor_score(model_name)
+        bus_score_raw, bus_latency = bus_factor_score.bus_factor_score(model_name)
         # Normalize bus factor: cap at 20 contributors, then scale to 0-1
         bus_score_normalized = min(bus_score_raw / 20.0, 1.0)
         result["bus_factor"] = bus_score_normalized
@@ -109,10 +119,16 @@ def calculate_all_scores(
         print(error_msg, file=sys.stderr)
     # Performance Claims Score
     try:
+<<<<<<< HEAD
         (
             perf_score,
             perf_latency,
         ) = performance_claims_sub_score.performance_claims_sub_score(model_name)
+=======
+        perf_score, perf_latency = (
+            performance_claims_score.performance_claims_sub_score(model_name)
+        )
+>>>>>>> origin
         result["performance_claims"] = perf_score
         result["performance_claims_latency"] = int(perf_latency * 1000)
     except Exception as e:
@@ -120,13 +136,21 @@ def calculate_all_scores(
         print(error_msg, file=sys.stderr)
     # License Score
     try:
+<<<<<<< HEAD
         license_score, license_latency = license_sub_score.license_sub_score(model_name)
         result["license"] = license_score
+=======
+        license_score, license_latency = (
+            license_score.license_sub_score(model_name)  # noqa: F823
+        )
+        result["license"] = lic_score
+>>>>>>> origin
         result["license_latency"] = int(license_latency * 1000)
     except Exception as e:
         error_msg = f"Error calculating license score for {model_name}: {e}"
         print(error_msg, file=sys.stderr)
     # Size Scores
+<<<<<<< HEAD
     # using realistic values based on model type.
     # This would ideally be calculated from actual model size
     if "bert" in model_name.lower():
@@ -154,8 +178,15 @@ def calculate_all_scores(
             "aws_server": 1.00,
         }
         result["size_score_latency"] = 40
+=======
+    try:
+        size_scores, net_size_score, size_score_latency = size_score.size_score(model_link)
+        result["size_score"] = size_scores
+        result["size_score_latency"] = size_score_latency
+    except Exception as e:
+        print(f"Error calculating size scores for {model_name}: {e}", file=sys.stderr)
+>>>>>>> origin
     # Available Dataset Code Score
-
     try:
         (
             code_score,
@@ -169,12 +200,17 @@ def calculate_all_scores(
         print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
     # Dataset Quality Score
     try:
+<<<<<<< HEAD
         (
             dataset_score,
             dataset_latency,
         ) = dataset_quality_sub_score.dataset_quality_sub_score(
             model_name, dataset_link, encountered_datasets
         )
+=======
+        dataset_score, dataset_latency = (dataset_quality_score.dataset_quality_sub_score(
+            model_name, dataset_link, encountered_datasets))
+>>>>>>> origin
         result["dataset_quality"] = dataset_score
         result["dataset_quality_latency"] = int(dataset_latency * 1000)
     except Exception as e:
@@ -182,26 +218,35 @@ def calculate_all_scores(
             f"Error calculating dataset quality for {model_name}: {e}", file=sys.stderr
         )
     # Code Quality
-
     try:
+<<<<<<< HEAD
         code_quality_score, code_quality_latency = code_quality.code_quality_score(
             model_name
         )
+=======
+        code_quality_score, code_quality_latency = code_quality_score.code_quality_score(model_name)  # noqa: F823
+>>>>>>> origin
         result["code_quality"] = code_quality_score
         result["code_quality_latency"] = int(code_quality_latency * 1000)
-
     except Exception as e:
         print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
 
-    # Net Score (calculated from all other scores)
-
+    # Reviewedness
     try:
-        treescore_val, treescore_latency = treescore.treescore_calc(model_name)
+        reviewedness, reviewedness_latency = reviewedness_score.reviewedness_score(code_link)
+        result["reviewedness"] = reviewedness
+        result["reviewedness_latency"] = int(reviewedness_latency)
+    except Exception as e:
+        print(f"Error calculating treescore for {model_name}: {e}", file=sys.stderr)
+    # Treescore
+    try:
+        treescore_val, treescore_latency = tree_score.treescore_calc(model_name)
         result["treescore"] = treescore_val
         result["treescore_latency"] = int(treescore_latency * 1000)
     except Exception as e:
         print(f"Error calculating treescore for {model_name}: {e}", file=sys.stderr)
 
+    # Net Score (calculated from all other scores)
     try:
         start_time = time.time()
         net_score_result = net_score_calculator.calculate_net_score(model_name)

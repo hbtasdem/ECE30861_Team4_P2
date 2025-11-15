@@ -1,19 +1,55 @@
 # Metric calculation: reviewedness
 
+# TO RUN LOCAL: ADD ENVIRONMENT VARIABLE
+# GITHUB_TOKEN = "yourgithubtoken"
+
 import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Dict, List, Mapping, Union
 from urllib.parse import urlparse
 
+import boto3
 import requests
+from botocore.exceptions import ClientError, NoCredentialsError
 
 GITHUB_API = "https://api.github.com"
 
 
+<<<<<<< HEAD:src/reviewedness_score.py
 def get_pull_requests(
     owner: str, repo: str, headers: Dict[str, str]
 ) -> List[Dict[str, Any]]:
+=======
+def get_github_token() -> Any:
+    """
+    Get github token for api from ec2 or local env.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    ----------
+    str
+        The github token
+    """
+    try:
+        ssm = boto3.client('ssm', region_name='us-east-1')
+        response = ssm.get_parameter(Name='/ece30861/GITHUB_TOKEN', WithDecryption=True)
+        token = response['Parameter']['Value']
+        if token:
+            return token
+    except (ClientError, NoCredentialsError):
+        pass
+    # no parameter found or no ec2 attahched or running locally w/o credentials
+    # look for local env variable
+    token = os.getenv("GITHUB_TOKEN")
+    return token
+
+
+def get_pull_requests(owner: str, repo: str, headers: Dict[str, str]) -> List[Dict[str, Any]]:
+>>>>>>> origin:src/metrics/reviewedness_score.py
     """
     Get pull request info from git repo
 
@@ -34,13 +70,18 @@ def get_pull_requests(
     prs = []
     page = 1
     # limit the number of prs, some repos have thousands of PRs and take too long to check all
-    while page <= 2:
+    # github api rate limit is 60 per hour. so we can only check 60...?
+    while page <= 1:  # left as while loop in case we want to increase # prs checked easily
         url = f"{GITHUB_API}/repos/{owner}/{repo}/pulls"
+<<<<<<< HEAD:src/reviewedness_score.py
         params: Mapping[str, Union[str, int]] = {
             "state": "closed",
             "per_page": 100,
             "page": page,
         }
+=======
+        params: Mapping[str, Union[str, int]] = {"state": "closed", "per_page": 60, "page": page}
+>>>>>>> origin:src/metrics/reviewedness_score.py
         r = requests.get(url, headers=headers, params=params)
         if r.status_code != 200:
             print(f"Error fetching PRs: {r.status_code}, {r.text}")
@@ -122,10 +163,11 @@ def reviewedness_score(code_url: str) -> tuple[float, float]:
     owner = path_parts[0]
     repo = path_parts[1]
 
-    # Look at pull requests
-    token = os.getenv("GITHUB_TOKEN")
+    # Need github token to use github api
+    token = get_github_token()
     headers = {"Authorization": f"token {token}"} if token else {}
 
+    # Look at pull requests
     prs = get_pull_requests(owner, repo, headers)
     if not prs:
         end = time.time()
@@ -152,12 +194,12 @@ def reviewedness_score(code_url: str) -> tuple[float, float]:
     end = time.time()
     latency = (end - start) * 1000
     reviewedness = round(reviewed_lines / total_lines, 2)
-    return (reviewedness, latency)
+    return (reviewedness, int(latency))
 
 
 if __name__ == "__main__":
     # code_url = "https://github.com/google-research/bert"  # example with 0
     code_url = "https://github.com/psf/requests"  # example with 1
     reviewedness, latency = reviewedness_score(code_url)
-    print("Reviewedness score:", reviewedness)
+    print("Reviewedness score: ", reviewedness)
     print("Reviewedness latency: ", latency)
