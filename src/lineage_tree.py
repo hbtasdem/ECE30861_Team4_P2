@@ -18,7 +18,7 @@ def get_model_config(model_identifier: str) -> Dict[str, Any] | None:
     if "huggingface.co/" in model_identifier:
         # Extract path from URL
         model_path = model_identifier.split("huggingface.co/")[1]
-        model_path = model_path.split("/tree")[0].split("/blob")[0].strip('/')
+        model_path = model_path.split("/tree")[0].split("/blob")[0].strip("/")
     else:
         model_path = model_identifier.strip()
 
@@ -49,7 +49,7 @@ def check_lineage(model_identifier: str) -> Tuple[Optional[Dict[str, Any]], floa
         "model": model_identifier,
         "base_model": None,
         "has_lineage": False,
-        "lineage_depth": 0
+        "lineage_depth": 0,
     }
 
     # Check for base_model in metadata
@@ -83,6 +83,7 @@ def check_lineage(model_identifier: str) -> Tuple[Optional[Dict[str, Any]], floa
 
 if __name__ == "__main__":
     import sys
+
     if len(sys.argv) < 2:
         print("Usage: lineage_tree.py <model_identifier>")
         print("Example: lineage_tree.py microsoft/DialoGPT-medium")

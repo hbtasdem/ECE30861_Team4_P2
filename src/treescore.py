@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-'''this file is not finalized, it is a hardcoded placeholder for the more complex treescore calc which will take place
-once models are uploaded to the registry and therefore have recorded score'''
+"""this file is not finalized, it is a hardcoded placeholder for the more complex treescore calc which will take place
+once models are uploaded to the registry and therefore have recorded score"""
 import time
 from typing import Tuple
 
@@ -33,9 +33,24 @@ def treescore_calc(model_name: str) -> Tuple[float, float]:
 
     # Additional points for well-known/reputable base models (0.5 points)
     reputable_bases = [
-        "bert", "gpt2", "roberta", "t5", "bart", "distilbert",
-        "llama", "mistral", "falcon", "bloom", "opt", "pythia",
-        "gpt-neo", "gpt-j", "whisper", "wav2vec", "clip", "vit"
+        "bert",
+        "gpt2",
+        "roberta",
+        "t5",
+        "bart",
+        "distilbert",
+        "llama",
+        "mistral",
+        "falcon",
+        "bloom",
+        "opt",
+        "pythia",
+        "gpt-neo",
+        "gpt-j",
+        "whisper",
+        "wav2vec",
+        "clip",
+        "vit",
     ]
 
     if base_model and any(base in base_model.lower() for base in reputable_bases):
@@ -56,6 +71,7 @@ def treescore_calc(model_name: str) -> Tuple[float, float]:
 
 if __name__ == "__main__":
     import sys
+
     if len(sys.argv) < 2:
         print("Usage: treescore.py <model_identifier>")
         print("Example: treescore.py microsoft/DialoGPT-medium")
@@ -66,8 +82,8 @@ if __name__ == "__main__":
         print(f"\nTreescore for {model_id}: {score:.4f}")
         print(f"Latency: {latency:.3f}s")
 
-'''this part can be used for complex calcs once registry is uploaded and metric scores are calculated for models
-That way, this set up will be able to pull the already calculates model scores for parents of the lineage graph'''
+"""this part can be used for complex calcs once registry is uploaded and metric scores are calculated for models
+That way, this set up will be able to pull the already calculates model scores for parents of the lineage graph"""
 # !/usr/bin/env python3
 
 # import time

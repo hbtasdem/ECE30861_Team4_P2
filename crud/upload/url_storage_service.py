@@ -70,7 +70,7 @@ class URLStorageService:
         version: str = "1.0.0",
         artifact_type: str = "model",
         is_sensitive: bool = False,
-        uploader_id: Optional[int] = None
+        uploader_id: Optional[int] = None,
     ) -> bool:
         """Save URL metadata for a model.
 
@@ -89,20 +89,20 @@ class URLStorageService:
         """
         try:
             metadata: Dict[str, Any] = {
-                'model_id': model_id,
-                'name': name,
-                'url': url,
-                'description': description,
-                'version': version,
-                'artifact_type': artifact_type,
-                'is_sensitive': is_sensitive,
-                'uploader_id': uploader_id,
-                'registered_at': datetime.utcnow().isoformat(),
-                'last_accessed': None
+                "model_id": model_id,
+                "name": name,
+                "url": url,
+                "description": description,
+                "version": version,
+                "artifact_type": artifact_type,
+                "is_sensitive": is_sensitive,
+                "uploader_id": uploader_id,
+                "registered_at": datetime.utcnow().isoformat(),
+                "last_accessed": None,
             }
 
             metadata_path = self._get_metadata_path(model_id)
-            with open(metadata_path, 'w') as f:
+            with open(metadata_path, "w") as f:
                 json.dump(metadata, f, indent=2)
 
             logger.info(f"Saved metadata for model {model_id} at {metadata_path}")
@@ -124,18 +124,14 @@ class URLStorageService:
         try:
             metadata_path = self._get_metadata_path(model_id)
             if os.path.exists(metadata_path):
-                with open(metadata_path, 'r') as f:
+                with open(metadata_path, "r") as f:
                     return json.load(f)  # type: ignore[no-any-return]
             return None
         except Exception as e:
             logger.error(f"Failed to read metadata for model {model_id}: {e}")
             return None
 
-    def cache_url_response(
-        self,
-        model_id: int,
-        response_data: Dict[str, Any]
-    ) -> bool:
+    def cache_url_response(self, model_id: int, response_data: Dict[str, Any]) -> bool:
         """Cache response data from accessing a model URL.
 
         Args:
@@ -147,13 +143,13 @@ class URLStorageService:
         """
         try:
             cache: Dict[str, Any] = {
-                'model_id': model_id,
-                'cached_at': datetime.utcnow().isoformat(),
-                'data': response_data
+                "model_id": model_id,
+                "cached_at": datetime.utcnow().isoformat(),
+                "data": response_data,
             }
 
             cache_path = self._get_cache_path(model_id)
-            with open(cache_path, 'w') as f:
+            with open(cache_path, "w") as f:
                 json.dump(cache, f, indent=2)
 
             logger.info(f"Cached response for model {model_id}")
@@ -175,7 +171,7 @@ class URLStorageService:
         try:
             cache_path = self._get_cache_path(model_id)
             if os.path.exists(cache_path):
-                with open(cache_path, 'r') as f:
+                with open(cache_path, "r") as f:
                     return json.load(f)  # type: ignore[no-any-return]
             return None
         except Exception as e:
@@ -221,8 +217,12 @@ class URLStorageService:
         try:
             model_ids = []
             for filename in os.listdir(self.metadata_dir):
-                if filename.startswith('model_') and filename.endswith('_metadata.json'):
-                    model_id_str = filename.replace('model_', '').replace('_metadata.json', '')
+                if filename.startswith("model_") and filename.endswith(
+                    "_metadata.json"
+                ):
+                    model_id_str = filename.replace("model_", "").replace(
+                        "_metadata.json", ""
+                    )
                     try:
                         model_ids.append(int(model_id_str))
                     except ValueError:
@@ -240,10 +240,14 @@ class URLStorageService:
         """
         try:
             metadata_count = len(
-                [f for f in os.listdir(self.metadata_dir) if f.endswith('_metadata.json')]
+                [
+                    f
+                    for f in os.listdir(self.metadata_dir)
+                    if f.endswith("_metadata.json")
+                ]
             )
             cache_count = len(
-                [f for f in os.listdir(self.cache_dir) if f.endswith('_cache.json')]
+                [f for f in os.listdir(self.cache_dir) if f.endswith("_cache.json")]
             )
 
             metadata_size = sum(
@@ -256,11 +260,11 @@ class URLStorageService:
             )
 
             return {
-                'metadata_files': metadata_count,
-                'cache_files': cache_count,
-                'metadata_size_bytes': metadata_size,
-                'cache_size_bytes': cache_size,
-                'total_size_bytes': metadata_size + cache_size
+                "metadata_files": metadata_count,
+                "cache_files": cache_count,
+                "metadata_size_bytes": metadata_size,
+                "cache_size_bytes": cache_size,
+                "total_size_bytes": metadata_size + cache_size,
             }
         except Exception as e:
             logger.error(f"Failed to get storage stats: {e}")

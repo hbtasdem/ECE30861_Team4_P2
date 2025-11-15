@@ -29,9 +29,9 @@ SIZE_WEIGHTS = {
 
 # Hardware thresholds in GB (used for linear decay scoring)
 SIZE_THRESHOLDS = {
-    'raspberry_pi': 2.0,    # Models >2GB struggle with loading times
-    'jetson_nano': 4.0,     # Specifically designed for AI with 4GB RAM
-    'desktop_pc': 16.0,     # Standard development workstation with 16GB+ RAM
+    "raspberry_pi": 2.0,  # Models >2GB struggle with loading times
+    "jetson_nano": 4.0,  # Specifically designed for AI with 4GB RAM
+    "desktop_pc": 16.0,  # Standard development workstation with 16GB+ RAM
 }
 
 
@@ -52,7 +52,7 @@ def extract_model_id_from_url(url: str) -> str:
             return match.group(1)
 
     # If it looks like 'namespace/model_name'
-    if '/' in url and ' ' not in url and '://' not in url:
+    if "/" in url and " " not in url and "://" not in url:
         return url
 
     return url
@@ -86,8 +86,8 @@ def estimate_model_memory(model_id: str, file_size_gb: Optional[float] = None) -
         else:
             return 1.2  # Generic BERT assumption
 
-    elif 'whisper' in model_lower:
-        if 'tiny' in model_lower:
+    elif "whisper" in model_lower:
+        if "tiny" in model_lower:
             return 0.2  # Whisper-tiny ~39M parameters
         elif "base" in model_lower:
             return 0.75  # Whisper-base ~74M parameters
@@ -100,29 +100,29 @@ def estimate_model_memory(model_id: str, file_size_gb: Optional[float] = None) -
         else:
             return 0.5  # Generic whisper
 
-    elif 'gpt2' in model_lower:
+    elif "gpt2" in model_lower:
         return 0.5  # GPT2 ~124M parameters
 
-    elif 'distilbert' in model_lower:
+    elif "distilbert" in model_lower:
         return 0.3  # DistilBERT ~66M parameters
 
-    elif 'roberta' in model_lower:
-        if 'large' in model_lower:
+    elif "roberta" in model_lower:
+        if "large" in model_lower:
             return 2.4
         else:
             return 1.6
 
-    elif 'classifier' in model_lower or 'audience' in model_lower:
+    elif "classifier" in model_lower or "audience" in model_lower:
         return 0.52  # Smaller specialized models
 
-    elif 't5' in model_lower:
-        if 'large' in model_lower:
+    elif "t5" in model_lower:
+        if "large" in model_lower:
             return 2.8  # T5-large ~770M parameters
         else:
             return 1.5  # T5-base ~220M parameters
 
-    elif 'llama' in model_lower or 'alpaca' in model_lower:
-        if '7b' in model_lower or '7B' in model_lower:
+    elif "llama" in model_lower or "alpaca" in model_lower:
+        if "7b" in model_lower or "7B" in model_lower:
             return 14.0
         elif "13b" in model_lower or "13B" in model_lower:
             return 28.0
@@ -180,7 +180,7 @@ def calculate_device_scores(size_gb: float) -> Dict[str, float]:
         size_scores[device] = round(score, 2)
 
     # AWS server always gets 1.0 (unlimited capacity)
-    size_scores['aws_server'] = 1.0
+    size_scores["aws_server"] = 1.0
 
     return size_scores
 

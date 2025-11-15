@@ -10,7 +10,9 @@ from typing import Any, Generator
 os.environ["TESTING"] = "true"
 
 # Add project root to path
-project_root = Path(__file__).parent.parent.parent.parent  # Go from crud/upload/tests to project root
+project_root = Path(
+    __file__
+).parent.parent.parent.parent  # Go from crud/upload/tests to project root
 sys.path.insert(0, str(project_root))
 
 import pytest  # noqa: E402
@@ -30,8 +32,7 @@ def test_db() -> Generator[Session, None, None]:
 
     # Create file-based engine (more compatible with ThreadPoolExecutor used by TestClient)
     engine = create_engine(
-        f"sqlite:///{temp_db_path}",
-        connect_args={"check_same_thread": False}
+        f"sqlite:///{temp_db_path}", connect_args={"check_same_thread": False}
     )
 
     # Create all tables
@@ -42,7 +43,9 @@ def test_db() -> Generator[Session, None, None]:
     db = TestingSessionLocal()
 
     # Create test user
-    test_user = User(id=1, username="testuser", email="test@example.com", is_admin=False)
+    test_user = User(
+        id=1, username="testuser", email="test@example.com", is_admin=False
+    )
     db.add(test_user)
     db.commit()
 
@@ -66,7 +69,9 @@ def client(test_db: Session) -> Generator[Any, None, None]:
     from src.database import get_db
     from src.models import User
 
-    test_user = User(id=1, username="testuser", email="test@example.com", is_admin=False)
+    test_user = User(
+        id=1, username="testuser", email="test@example.com", is_admin=False
+    )
 
     def override_get_db() -> Generator[Session, None, None]:
         yield test_db

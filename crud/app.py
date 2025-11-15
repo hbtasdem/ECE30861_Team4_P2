@@ -24,7 +24,7 @@ from src.database import init_db
 app = FastAPI(
     title="Model Registry API",
     description="Upload and manage ML models in ZIP format",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # Initialize database only if not in test mode
@@ -45,8 +45,8 @@ def root() -> Dict[str, Any]:
             "health": "/health",
             "upload": "/api/models/upload",
             "docs": "/docs",
-            "redoc": "/redoc"
-        }
+            "redoc": "/redoc",
+        },
     }
 
 
@@ -61,4 +61,5 @@ def health_check() -> Dict[str, str]:
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="127.0.0.1", port=8000)

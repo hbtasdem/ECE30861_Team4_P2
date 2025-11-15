@@ -36,20 +36,19 @@ async def upload_model(
     is_sensitive: bool = Form(False),
     metadata: Optional[str] = Form(None),
     current_user: Any = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ) -> UploadResponse:
     """Register a model via URL"""
     # Validate URL
     if model_url == "":
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="model_url cannot be empty"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="model_url cannot be empty"
         )
 
     if not model_url.startswith(("https://", "http://")):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="model_url must start with https:// or http://"
+            detail="model_url must start with https:// or http://",
         )
 
     model_data = ModelCreate(
@@ -58,14 +57,13 @@ async def upload_model(
         version=version,
         is_sensitive=is_sensitive,
         model_url=model_url,
-        artifact_type=artifact_type
+        artifact_type=artifact_type,
     )
 
     model_repo = ModelRepository(db)
     try:
         db_model = model_repo.create_model(
-            model_data=model_data,
-            uploader_id=current_user.id
+            model_data=model_data, uploader_id=current_user.id
         )
 
         if metadata:
@@ -79,21 +77,21 @@ async def upload_model(
             message="Model registered successfully",
             model_id=int(db_model.id),
             model_url=model_data.model_url,
-            artifact_type=artifact_type
+            artifact_type=artifact_type,
         )
     except Exception as e:
         import traceback
+
         traceback.print_exc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to register model: {str(e)}"
+            detail=f"Failed to register model: {str(e)}",
         )
 
 
 @router.get("/models/{model_id}/download-redirect")
 async def get_download_url(
-    model_id: int,
-    db: Session = Depends(get_db)
+    model_id: int, db: Session = Depends(get_db)
 ) -> Dict[str, str]:
     """Get download redirect URL for a model."""
     model_repo = ModelRepository(db)
@@ -102,13 +100,13 @@ async def get_download_url(
     if not model:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Model with id {model_id} not found"
+            detail=f"Model with id {model_id} not found",
         )
 
     if not model.model_url:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Model does not have a download URL"
+            detail="Model does not have a download URL",
         )
 
     return {"download_url": str(model.model_url)}
@@ -116,9 +114,7 @@ async def get_download_url(
 
 @router.get("/enumerate", response_model=List[ModelResponse])
 async def enumerate_models(
-    skip: int = 0,
-    limit: int = 100,
-    db: Session = Depends(get_db)
+    skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
 ) -> List[ModelResponse]:
     """Enumerate all registered models with pagination.
 

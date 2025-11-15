@@ -31,8 +31,7 @@ def test_db() -> Session:
 
     # Create file-based engine (more compatible with ThreadPoolExecutor used by TestClient)
     engine = create_engine(
-        f"sqlite:///{temp_db_path}",
-        connect_args={"check_same_thread": False}
+        f"sqlite:///{temp_db_path}", connect_args={"check_same_thread": False}
     )
 
     # Create all tables
@@ -43,7 +42,9 @@ def test_db() -> Session:
     db = TestingSessionLocal()
 
     # Create test user
-    test_user = User(id=1, username="testuser", email="test@example.com", is_admin=False)
+    test_user = User(
+        id=1, username="testuser", email="test@example.com", is_admin=False
+    )
     db.add(test_user)
     db.commit()
 
@@ -67,7 +68,9 @@ def client(test_db: Session) -> Generator[TestClient, None, None]:
     from src.database import get_db
     from src.models import User
 
-    test_user = User(id=1, username="testuser", email="test@example.com", is_admin=False)
+    test_user = User(
+        id=1, username="testuser", email="test@example.com", is_admin=False
+    )
 
     def override_get_db() -> Generator[Session, None, None]:
         yield test_db

@@ -72,7 +72,9 @@ class TestMain(unittest.TestCase):
         mock_code_quality.return_value = (0.5, 0.1)
         mock_net_score.return_value = {"net_score": 0.75}
         # Test with a sample model URL
-        result = calculate_all_scores("", "", "https://huggingface.co/test/model", set(), set())
+        result = calculate_all_scores(
+            "", "", "https://huggingface.co/test/model", set(), set()
+        )
         # Verify the result structure
         self.assertIsInstance(result, dict)
         self.assertIn("name", result)
@@ -125,8 +127,11 @@ class TestMain(unittest.TestCase):
             mock_net.return_value = {"net_score": 0.75}
             # Test with BERT model
             result = calculate_all_scores(
-                "", "", "https://huggingface.co/google-bert/bert-base-uncased",
-                set(), set()
+                "",
+                "",
+                "https://huggingface.co/google-bert/bert-base-uncased",
+                set(),
+                set(),
             )
             # Verify BERT-specific size scores
             self.assertEqual(result["size_score"]["raspberry_pi"], 0.2)
@@ -165,8 +170,11 @@ class TestMain(unittest.TestCase):
             mock_net.return_value = {"net_score": 0.75}
             # Test with Whisper model
             result = calculate_all_scores(
-                "", "", "https://huggingface.co/openai/whisper-tiny/tree/main",
-                set(), set()
+                "",
+                "",
+                "https://huggingface.co/openai/whisper-tiny/tree/main",
+                set(),
+                set(),
             )
             # Verify Whisper-specific size scores
             self.assertEqual(result["size_score"]["raspberry_pi"], 0.9)

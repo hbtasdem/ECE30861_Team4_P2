@@ -11,17 +11,20 @@ from pathlib import Path
 
 def print_banner() -> None:
     """Print welcome banner."""
-    print("""
+    print(
+        """
     ╔════════════════════════════════════════════════════════════════╗
     ║                   Upload Testing - Quick Start                 ║
     ╚════════════════════════════════════════════════════════════════╝
-    """)
+    """
+    )
 
 
 def check_api_running() -> bool:
     """Check if API is running."""
     try:
         import requests
+
         response = requests.get("http://127.0.0.1:8000/health", timeout=2)
         return response.status_code == 200
     except Exception:
@@ -30,7 +33,8 @@ def check_api_running() -> bool:
 
 def show_menu() -> str:
     """Show menu and get user choice."""
-    print("""
+    print(
+        """
     What would you like to do?
 
     1. Start the API server
@@ -39,7 +43,8 @@ def show_menu() -> str:
     4. Run specific test type
     5. Exit
 
-    """)
+    """
+    )
     return input("Enter choice (1-5): ").strip()
 
 
@@ -65,7 +70,9 @@ def run_manual_tests() -> None:
     print("\n🧪 Running manual tests...")
     print("   This will run all upload tests with clear results\n")
     try:
-        subprocess.run([sys.executable, "test_upload_manual.py"], cwd=str(Path(__file__).parent))
+        subprocess.run(
+            [sys.executable, "test_upload_manual.py"], cwd=str(Path(__file__).parent)
+        )
     except KeyboardInterrupt:
         print("\n\n✋ Tests stopped")
 
@@ -105,7 +112,14 @@ def run_specific_test() -> None:
 
     test_type = input("\nEnter test type: ").strip().lower()
 
-    if test_type not in ["all", "basic", "metadata", "validation", "sequential", "special"]:
+    if test_type not in [
+        "all",
+        "basic",
+        "metadata",
+        "validation",
+        "sequential",
+        "special",
+    ]:
         print(f"❌ Unknown test type: {test_type}")
         return
 

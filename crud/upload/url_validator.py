@@ -32,16 +32,14 @@ def is_valid_url_format(url: str) -> bool:
     try:
         result = urlparse(url)
         # Must have scheme (http/https) and netloc (domain)
-        return all([result.scheme in ['http', 'https'], result.netloc])
+        return all([result.scheme in ["http", "https"], result.netloc])
     except Exception as e:
         logger.warning(f"URL format validation failed: {e}")
         return False
 
 
 def test_url_accessibility(
-    url: str,
-    timeout: int = 10,
-    follow_redirects: bool = True
+    url: str, timeout: int = 10, follow_redirects: bool = True
 ) -> Tuple[bool, str]:
     """Test if a URL is accessible and returns a successful response.
 
@@ -61,7 +59,7 @@ def test_url_accessibility(
             url,
             timeout=timeout,
             allow_redirects=follow_redirects,
-            headers={'User-Agent': 'Mozilla/5.0'}
+            headers={"User-Agent": "Mozilla/5.0"},
         )
 
         if response.status_code < 400:
@@ -102,41 +100,41 @@ def validate_model_url(url: str, test_accessibility: bool = True) -> Dict[str, A
         }
     """
     result = {
-        'url': url,
-        'is_valid': False,
-        'format_valid': False,
-        'accessible': None,
-        'message': ''
+        "url": url,
+        "is_valid": False,
+        "format_valid": False,
+        "accessible": None,
+        "message": "",
     }
 
     # Check format
     format_valid = is_valid_url_format(url)
-    result['format_valid'] = format_valid
+    result["format_valid"] = format_valid
 
     if not format_valid:
-        result['message'] = 'Invalid URL format'
+        result["message"] = "Invalid URL format"
         return result
 
     # Check accessibility if requested
     if test_accessibility:
         accessible, access_message = test_url_accessibility(url)
-        result['accessible'] = accessible
-        result['message'] = access_message
-        result['is_valid'] = accessible
+        result["accessible"] = accessible
+        result["message"] = access_message
+        result["is_valid"] = accessible
     else:
-        result['message'] = 'Format valid'
-        result['is_valid'] = True
+        result["message"] = "Format valid"
+        result["is_valid"] = True
 
     return result
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Example usage for testing
     test_urls = [
-        'https://huggingface.co/google-bert/bert-base-uncased',
-        'https://github.com/openai/whisper',
-        'http://invalid-url-that-does-not-exist-12345.com',
-        'not-a-url',
+        "https://huggingface.co/google-bert/bert-base-uncased",
+        "https://github.com/openai/whisper",
+        "http://invalid-url-that-does-not-exist-12345.com",
+        "not-a-url",
     ]
 
     print("URL Validator Test\n" + "=" * 50)

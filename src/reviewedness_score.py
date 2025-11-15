@@ -11,7 +11,9 @@ import requests
 GITHUB_API = "https://api.github.com"
 
 
-def get_pull_requests(owner: str, repo: str, headers: Dict[str, str]) -> List[Dict[str, Any]]:
+def get_pull_requests(
+    owner: str, repo: str, headers: Dict[str, str]
+) -> List[Dict[str, Any]]:
     """
     Get pull request info from git repo
 
@@ -34,7 +36,11 @@ def get_pull_requests(owner: str, repo: str, headers: Dict[str, str]) -> List[Di
     # limit the number of prs, some repos have thousands of PRs and take too long to check all
     while page <= 2:
         url = f"{GITHUB_API}/repos/{owner}/{repo}/pulls"
-        params: Mapping[str, Union[str, int]] = {"state": "closed", "per_page": 100, "page": page}
+        params: Mapping[str, Union[str, int]] = {
+            "state": "closed",
+            "per_page": 100,
+            "page": page,
+        }
         r = requests.get(url, headers=headers, params=params)
         if r.status_code != 200:
             print(f"Error fetching PRs: {r.status_code}, {r.text}")
@@ -48,7 +54,9 @@ def get_pull_requests(owner: str, repo: str, headers: Dict[str, str]) -> List[Di
     return prs
 
 
-def pr_info(pr: Dict[str, Any], owner: str, repo: str, headers: Dict[str, str]) -> tuple[int, int]:
+def pr_info(
+    pr: Dict[str, Any], owner: str, repo: str, headers: Dict[str, str]
+) -> tuple[int, int]:
     """
     Get pull request info from git repo.
 
@@ -81,7 +89,7 @@ def pr_info(pr: Dict[str, Any], owner: str, repo: str, headers: Dict[str, str]) 
     rev_r = requests.get(review_url, headers=headers)
     if rev_r.status_code != 200:
         reviewed = False
-    reviewed = (len(rev_r.json()) > 0)
+    reviewed = len(rev_r.json()) > 0
 
     return pr_lines, reviewed
 

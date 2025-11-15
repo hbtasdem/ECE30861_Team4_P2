@@ -116,7 +116,9 @@ class TestUploadEndpointValidation:
         )
         assert response.status_code == 400
         data = response.json()
-        assert "http://" in data["detail"].lower() or "https://" in data["detail"].lower()
+        assert (
+            "http://" in data["detail"].lower() or "https://" in data["detail"].lower()
+        )
 
     def test_upload_invalid_url_no_scheme(self, client: TestClient) -> None:
         """Test upload rejects URLs with no scheme."""
@@ -364,7 +366,9 @@ class TestDownloadRedirectEndpoint:
         model_id = upload_response.json()["model_id"]
 
         # Then retrieve its download URL
-        download_response = client.get(f"/api/models/models/{model_id}/download-redirect")
+        download_response = client.get(
+            f"/api/models/models/{model_id}/download-redirect"
+        )
         assert download_response.status_code == 200
 
     def test_get_download_url_invalid_id(self, client: TestClient) -> None:

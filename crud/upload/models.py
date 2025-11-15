@@ -21,10 +21,10 @@ class ModelCreate(BaseModel):  # type: ignore[misc]
 
     name: str
     description: Optional[str] = None
-    version: str = '1.0.0'
+    version: str = "1.0.0"
     is_sensitive: bool = False
     model_url: str  # URL to the model artifact
-    artifact_type: str = 'model'  # Type: 'model', 'checkpoint', 'weights', etc.
+    artifact_type: str = "model"  # Type: 'model', 'checkpoint', 'weights', etc.
 
 
 class ModelUpdate(BaseModel):  # type: ignore[misc]

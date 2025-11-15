@@ -24,7 +24,7 @@ async def get_model_rating(artifact_id: str) -> JSONResponse:
     if not artifact_id or not artifact_id.isdigit():
         raise HTTPException(
             status_code=400,
-            detail="There is missing field(s) in the artifact_id or it is formed improperly, or is invalid."
+            detail="There is missing field(s) in the artifact_id or it is formed improperly, or is invalid.",
         )
     # TODO add authentication check
     # if not valid authentication token
@@ -41,7 +41,7 @@ async def get_model_rating(artifact_id: str) -> JSONResponse:
     if not rating:
         raise HTTPException(
             status_code=500,
-            detail="The artifact rating system encountered an error while computing at least one metric."
+            detail="The artifact rating system encountered an error while computing at least one metric.",
         )
 
     return JSONResponse(content=rating)
