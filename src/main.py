@@ -59,7 +59,7 @@ def calculate_all_scores(
     dataset_link: str,
     model_link: str,
     encountered_datasets: set[str],
-    encountered_code: set[str]
+    encountered_code: set[str],
 ) -> Dict[str, Any]:
     """Calculate all scores for a given set of links."""
     model_name = extract_model_name(model_link)
@@ -119,9 +119,10 @@ def calculate_all_scores(
         print(error_msg, file=sys.stderr)
     # Performance Claims Score
     try:
-        perf_score, perf_latency = (
-            performance_claims_score.performance_claims_sub_score(model_name)
-        )
+        (
+            perf_score,
+            perf_latency,
+        ) = performance_claims_score.performance_claims_sub_score(model_name)
         result["performance_claims"] = perf_score
         result["performance_claims_latency"] = int(perf_latency * 1000)
     except Exception as e:
@@ -129,8 +130,8 @@ def calculate_all_scores(
         print(error_msg, file=sys.stderr)
     # License Score
     try:
-        license_score, license_latency = (
-            license_score.license_sub_score(model_name)  # noqa: F823
+        lic_score, license_latency = (
+            license_score.license_sub_score(model_name)
         )
         result["license"] = lic_score
         result["license_latency"] = int(license_latency * 1000)
@@ -139,38 +140,57 @@ def calculate_all_scores(
         print(error_msg, file=sys.stderr)
     # Size Scores
     try:
-        size_scores, net_size_score, size_score_latency = size_score.size_score(model_link)
+        size_scores, net_size_score, size_score_latency = size_score.size_score(
+            model_link
+        )
         result["size_score"] = size_scores
         result["size_score_latency"] = size_score_latency
     except Exception as e:
         print(f"Error calculating size scores for {model_name}: {e}", file=sys.stderr)
     # Available Dataset Code Score
     try:
-        code_score, code_latency = (available_dataset_code_score.available_dataset_code_score(
-            model_name, code_link, dataset_link, encountered_datasets, encountered_code))
+        (
+            code_score,
+            code_latency,
+        ) = available_dataset_code_score.available_dataset_code_score(
+            model_name, code_link, dataset_link, encountered_datasets, encountered_code
+        )
         result["dataset_and_code_score"] = code_score
         result["dataset_and_code_score_latency"] = int(code_latency * 1000)
     except Exception as e:
         print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
     # Dataset Quality Score
     try:
-        dataset_score, dataset_latency = (dataset_quality_score.dataset_quality_sub_score(
-            model_name, dataset_link, encountered_datasets))
+        (
+            dataset_score,
+            dataset_latency,
+        ) = dataset_quality_score.dataset_quality_sub_score(
+            model_name, dataset_link, encountered_datasets
+        )
         result["dataset_quality"] = dataset_score
         result["dataset_quality_latency"] = int(dataset_latency * 1000)
     except Exception as e:
-        print(f"Error calculating dataset quality for {model_name}: {e}", file=sys.stderr)
+        print(
+            f"Error calculating dataset quality for {model_name}: {e}", file=sys.stderr
+        )
     # Code Quality
     try:
-        code_quality_score, code_quality_latency = code_quality_score.code_quality_score(model_name)  # noqa: F823
-        result["code_quality"] = code_quality_score
-        result["code_quality_latency"] = int(code_quality_latency * 1000)
+        (
+            code_q_score,
+            code_q_latency,
+        ) = code_quality_score.code_quality_score(
+            model_name
+        )  # noqa: F823
+        result["code_quality"] = code_q_score
+        result["code_quality_latency"] = int(code_q_latency * 1000)
     except Exception as e:
         print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
 
     # Reviewedness
     try:
-        reviewedness, reviewedness_latency = reviewedness_score.reviewedness_score(code_link)
+        reviewedness, reviewedness_latency = reviewedness_score.reviewedness_score(
+            code_link
+        )
         result["reviewedness"] = reviewedness
         result["reviewedness_latency"] = int(reviewedness_latency)
     except Exception as e:
@@ -188,10 +208,10 @@ def calculate_all_scores(
         start_time = time.time()
         net_score_result = net_score_calculator.calculate_net_score(model_name)
         # Extract just the numeric score from the result
-        if (isinstance(net_score_result, dict) and "net_score" in net_score_result):
+        if isinstance(net_score_result, dict) and "net_score" in net_score_result:
             result["net_score"] = net_score_result["net_score"]
         else:
-            result["net_score"] = (float(net_score_result) if net_score_result else 0.0)
+            result["net_score"] = float(net_score_result) if net_score_result else 0.0
         result["net_score_latency"] = int((time.time() - start_time) * 1000)
     except Exception as e:
         print(f"Error calculating net score for {model_name}: {e}", file=sys.stderr)

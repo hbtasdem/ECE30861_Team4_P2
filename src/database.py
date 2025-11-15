@@ -49,10 +49,7 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
 #   - This is safe because FastAPI creates new session per request
 if DATABASE_URL.startswith("sqlite"):
     # SQLite-specific configuration for development
-    engine = create_engine(
-        DATABASE_URL,
-        connect_args={"check_same_thread": False}
-    )
+    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 else:
     # PostgreSQL/MySQL (production-ready)
     engine = create_engine(DATABASE_URL)
@@ -101,6 +98,7 @@ def get_db() -> Generator[Session, None, None]:
         # This prevents connection leaks and ensures clean state
         db.close()
 
+
 # DATABASE INITIALIZATION
 
 
@@ -141,11 +139,10 @@ def init_db() -> None:
     """
     # Import models to register them with SQLAlchemy Base
     # IMPORTANT: This must import Artifact (not Model!) for spec compliance
-    from src.database_models import (Artifact, AuditEntry, Base,  # noqa: F401
-                                     User)
-    from src.phase3_models import (DownloadEvent, FileStorage,  # noqa: F401
-                                   ModelVersion, UploadSession)
+    from src.database_models import Artifact, AuditEntry, Base, User  # noqa: F401
+    from src.phase3_models import FileStorage  # noqa: F401
 
+    # from src.phase3_models import DownloadEvent, ModelVersion, UploadSession
     # Create all tables defined in src.models
     # Per spec: All tables must exist before API can be used
     # Includes Phase 2 tables (User, Artifact, AuditEntry)

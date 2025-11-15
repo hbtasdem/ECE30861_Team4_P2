@@ -46,9 +46,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))  # Add src directory
 
 
 def validate_url_cli(
-    url: str,
-    test_accessibility: bool = True,
-    timeout: Optional[int] = None
+    url: str, test_accessibility: bool = True, timeout: Optional[int] = None
 ) -> None:
     """Test if a URL can be uploaded.
 
@@ -79,7 +77,7 @@ def validate_url_cli(
     print(f"  Message: {result['message']}")
     print()
 
-    if result['is_valid']:
+    if result["is_valid"]:
         print("Storage Information:")
         storage = URLStorageService()
         stats = storage.get_storage_stats()
@@ -98,58 +96,53 @@ def validate_huggingface_url() -> None:
     """Validate URL validation with HuggingFace model URL."""
     url = "https://huggingface.co/google-bert/bert-base-uncased"
     result = validate_model_url(url, test_accessibility=False)
-    assert result['format_valid'] is True
-    assert result['is_valid'] is True
+    assert result["format_valid"] is True
+    assert result["is_valid"] is True
 
 
 def validate_github_url() -> None:
     """Validate URL validation with GitHub URL."""
     url = "https://github.com/openai/whisper"
     result = validate_model_url(url, test_accessibility=False)
-    assert result['format_valid'] is True
-    assert result['is_valid'] is True
+    assert result["format_valid"] is True
+    assert result["is_valid"] is True
 
 
 def validate_invalid_url() -> None:
     """Validate URL validation with invalid URL."""
     url = "not-a-valid-url"
     result = validate_model_url(url, test_accessibility=False)
-    assert result['format_valid'] is False
-    assert result['is_valid'] is False
+    assert result["format_valid"] is False
+    assert result["is_valid"] is False
 
 
 def main() -> None:
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description='Test if a model URL can be uploaded to the registry'
+        description="Test if a model URL can be uploaded to the registry"
+    )
+    parser.add_argument("url", help="Model URL to test")
+    parser.add_argument(
+        "--no-test",
+        action="store_true",
+        help="Skip accessibility testing (only check format)",
     )
     parser.add_argument(
-        'url',
-        help='Model URL to test'
-    )
-    parser.add_argument(
-        '--no-test',
-        action='store_true',
-        help='Skip accessibility testing (only check format)'
-    )
-    parser.add_argument(
-        '--timeout',
+        "--timeout",
         type=int,
         default=10,
-        help='Request timeout in seconds (default: 10)'
+        help="Request timeout in seconds (default: 10)",
     )
 
     args = parser.parse_args()
 
     # Validate URL
     validate_url_cli(
-        url=args.url,
-        test_accessibility=not args.no_test,
-        timeout=args.timeout
+        url=args.url, test_accessibility=not args.no_test, timeout=args.timeout
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:

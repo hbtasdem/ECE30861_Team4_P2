@@ -90,7 +90,9 @@ from fastapi import HTTPException, status
 from src.database_models import User
 
 # JWT Configuration
-SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key-change-in-production")  # NEW: JWT secret
+SECRET_KEY = os.getenv(
+    "SECRET_KEY", "dev-secret-key-change-in-production"
+)  # NEW: JWT secret
 ALGORITHM = "HS256"  # NEW: JWT algorithm
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # NEW: Token expiration time
 
@@ -109,14 +111,18 @@ def hash_password(password: str) -> str:  # NEW: Hash password for storage
     """
     # Bcrypt has a 72-byte limit on passwords
     # Truncate to 72 bytes to prevent errors
-    password_bytes = password.encode('utf-8')[:72]
-    password_truncated = password_bytes.decode('utf-8', errors='ignore')
+    password_bytes = password.encode("utf-8")[:72]
+    password_truncated = password_bytes.decode("utf-8", errors="ignore")
     # Hash using bcrypt with salt cost of 12
-    hashed = bcrypt.hashpw(password_truncated.encode('utf-8'), bcrypt.gensalt(rounds=12))
-    return hashed.decode('utf-8')
+    hashed = bcrypt.hashpw(
+        password_truncated.encode("utf-8"), bcrypt.gensalt(rounds=12)
+    )
+    return hashed.decode("utf-8")
 
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:  # NEW: Verify password during login
+def verify_password(
+    plain_password: str, hashed_password: str
+) -> bool:  # NEW: Verify password during login
     """Verify a plain text password against a hashed password.
 
     Per bcrypt specification: bcrypt truncates passwords to 72 bytes.
@@ -130,10 +136,12 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:  # NEW: 
         True if passwords match, False otherwise
     """
     # Bcrypt has a 72-byte limit on passwords - truncate to match hash
-    password_bytes = plain_password.encode('utf-8')[:72]
-    password_truncated = password_bytes.decode('utf-8', errors='ignore')
+    password_bytes = plain_password.encode("utf-8")[:72]
+    password_truncated = password_bytes.decode("utf-8", errors="ignore")
     try:
-        return bcrypt.checkpw(password_truncated.encode('utf-8'), hashed_password.encode('utf-8'))
+        return bcrypt.checkpw(
+            password_truncated.encode("utf-8"), hashed_password.encode("utf-8")
+        )
     except Exception:
         return False
 
@@ -154,9 +162,7 @@ def create_access_token(
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(
-            minutes=ACCESS_TOKEN_EXPIRE_MINUTES
-        )
+        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -179,13 +185,11 @@ def decode_access_token(token: str) -> dict[str, Any]:  # NEW: JWT token validat
         return payload
     except jwt.ExpiredSignatureError:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token has expired"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired"
         )
     except jwt.InvalidTokenError:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
         )
 
 
@@ -195,8 +199,7 @@ _current_user: Optional[Any] = None
 
 # db is a placeholder for a database session dependency
 def get_current_user(  # UPDATED: Now validates JWT from X-Authorization header
-    authorization: Optional[str] = None,
-    db: Any = None
+    authorization: Optional[str] = None, db: Any = None
 ) -> User:
     """Get current authenticated user from X-Authorization header token.
 
@@ -221,13 +224,19 @@ def get_current_user(  # UPDATED: Now validates JWT from X-Authorization header
             if user:
                 return user
         # Fall back to minimal user object
-        user = User(id=int(user_id_str), is_admin=False, username="test", email="test@test.com", hashed_password="")
+        user = User(
+            id=int(user_id_str),
+            is_admin=False,
+            username="test",
+            email="test@test.com",
+            hashed_password="",
+        )
         return user
 
     if not authorization:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing X-Authorization header"
+            detail="Missing X-Authorization header",
         )
 
     try:
@@ -235,7 +244,7 @@ def get_current_user(  # UPDATED: Now validates JWT from X-Authorization header
         if not authorization.lower().startswith("bearer "):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authorization header format"
+                detail="Invalid authorization header format",
             )
 
         token = authorization[7:]  # Remove "bearer " prefix
@@ -244,8 +253,7 @@ def get_current_user(  # UPDATED: Now validates JWT from X-Authorization header
 
         if token_user_id is None:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token payload"
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload"
             )
 
         # Fetch user from database
@@ -257,7 +265,7 @@ def get_current_user(  # UPDATED: Now validates JWT from X-Authorization header
         # If database not available or user not found, raise error
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found or session expired"
+            detail="User not found or session expired",
         )
 
     except HTTPException:
@@ -265,7 +273,7 @@ def get_current_user(  # UPDATED: Now validates JWT from X-Authorization header
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Authentication failed: {str(e)}"
+            detail=f"Authentication failed: {str(e)}",
         )
 
 
