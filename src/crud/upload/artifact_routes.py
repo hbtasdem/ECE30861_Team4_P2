@@ -1,7 +1,9 @@
 """Artifact management and registry endpoints - OpenAPI v3.4.4 BASELINE spec only.
 
 FILE PURPOSE:
-Implements all 11 BASELINE artifact management endpoints that accept artifacts from URLs and manage them in the registry. All requests require URL-based artifact sources with no file uploads accepted.
+Implements all 11 BASELINE artifact management endpoints that accept artifacts from URLs
+and manage them in the registry. All requests require URL-based artifact sources with no file
+uploads accepted.
 
 ENDPOINTS IMPLEMENTED (11/11 BASELINE):
 1. POST /artifact/{type} - Register new artifact from URL
@@ -30,16 +32,8 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from ulid import ULID
 
-from src.crud.upload.artifacts import (
-    Artifact,
-    ArtifactData,
-    ArtifactLineageEdge,
-    ArtifactLineageGraph,
-    ArtifactLineageNode,
-    ArtifactMetadata,
-    ArtifactQuery,
-    ArtifactRegEx,
-)
+from src.crud.upload.artifacts import (Artifact, ArtifactData, ArtifactLineageGraph, ArtifactLineageNode,
+                                       ArtifactMetadata, ArtifactQuery)
 from src.crud.upload.auth import get_current_user
 from src.database import get_db
 from src.database_models import Artifact as ArtifactModel
@@ -649,12 +643,6 @@ async def get_artifact_lineage(
 
     # For now, return self as a single node with no edges
     # In production, would parse metadata for actual lineage
-    from src.crud.upload.artifacts import (
-        ArtifactLineageEdge,
-        ArtifactLineageNode,
-        ArtifactLineageGraph,
-    )
-
     nodes = [
         ArtifactLineageNode(
             artifact_id=artifact_id,

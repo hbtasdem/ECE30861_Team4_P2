@@ -1,7 +1,9 @@
 """FastAPI application for Model Registry API - OpenAPI v3.4.4 BASELINE endpoints only.
 
 FILE PURPOSE:
-Creates and configures the main FastAPI application with all 11 BASELINE endpoints for managing artifacts from URLs. Initializes the database connection and includes all BASELINE route handlers.
+Creates and configures the main FastAPI application with all 11 BASELINE endpoints for
+managing artifacts from URLs. Initializes the database connection and includes
+all BASELINE route handlers.
 
 ENDPOINTS PROVIDED (11/11 BASELINE):
 1-4. POST /artifact, GET/PUT /artifacts (in artifact_routes.py)

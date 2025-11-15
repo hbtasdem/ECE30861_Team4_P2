@@ -4,7 +4,6 @@ Tests for OpenAPI v3.4.4 BASELINE artifact registration from URLs.
 Run with: pytest tests/test_baseline_upload.py -v
 """
 
-import pytest
 from fastapi.testclient import TestClient
 
 

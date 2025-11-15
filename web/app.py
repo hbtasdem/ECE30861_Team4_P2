@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """Flask web application for model scoring."""
 
-from flask import Flask, render_template, request, jsonify
-import subprocess
 import json
-import tempfile
 import os
+import subprocess
 import sys
+import tempfile
+from typing import Any, Tuple
+
+from flask import Flask, jsonify, render_template, request
+from flask.wrappers import Response
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
@@ -18,13 +21,13 @@ SCORER_PATH = os.path.join(SRC_DIR, "main.py")
 
 
 @app.route("/")
-def index():
+def index() -> Any:
     """Serve the main page."""
     return render_template("index.html")
 
 
 @app.route("/api/score-model", methods=["POST"])
-def score_model():
+def score_model() -> Tuple[Response, int]:
     """Score a model from a HuggingFace URL."""
     data = request.json
     model_url = data.get("model_url", "").strip()
@@ -89,7 +92,7 @@ def score_model():
 
 
 @app.route("/api/health", methods=["GET"])
-def health():
+def health() -> Tuple[Response, int]:
     """Health check endpoint."""
     return (
         jsonify(
@@ -116,18 +119,18 @@ if __name__ == "__main__":
         print("\n WARNING: model_scorer.py not found!")
         print("\nExpected structure:")
         print(f"   {os.path.basename(PROJECT_ROOT)}/")
-        print(f"   ├── src/")
-        print(f"   │   ├── main.py")
-        print(f"   │   └── ... (other metrics)")
-        print(f"   └── web/")
-        print(f"       ├── app.py")
-        print(f"       └── templates/")
-        print(f"           └── index.html")
+        print("   ├── src/")
+        print("   │   ├── main.py")
+        print("   │   └── ... (other metrics)")
+        print("   └── web/")
+        print("       ├── app.py")
+        print("       └── templates/")
+        print("           └── index.html")
         print("\nCannot start server without main.py\n")
         sys.exit(1)
     else:
         print("\nFound main.py")
-        print(f"\nStarting server on http://localhost:5000")
+        print("\nStarting server on http://localhost:5000")
         print("=" * 60 + "\n")
 
     app.run(debug=True, host="0.0.0.0", port=5000)

@@ -130,9 +130,9 @@ def calculate_all_scores(
         print(error_msg, file=sys.stderr)
     # License Score
     try:
-        license_score, license_latency = license_score.license_sub_score(
-            model_name
-        )  # noqa: F823
+        lic_score, license_latency = (
+            license_score.license_sub_score(model_name)
+        )
         result["license"] = lic_score
         result["license_latency"] = int(license_latency * 1000)
     except Exception as e:
@@ -176,13 +176,13 @@ def calculate_all_scores(
     # Code Quality
     try:
         (
-            code_quality_score,
-            code_quality_latency,
+            code_q_score,
+            code_q_latency,
         ) = code_quality_score.code_quality_score(
             model_name
         )  # noqa: F823
-        result["code_quality"] = code_quality_score
-        result["code_quality_latency"] = int(code_quality_latency * 1000)
+        result["code_quality"] = code_q_score
+        result["code_quality_latency"] = int(code_q_latency * 1000)
     except Exception as e:
         print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
 

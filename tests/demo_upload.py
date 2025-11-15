@@ -8,17 +8,19 @@ Run with: python tests/demo_upload.py
 """
 
 import json
+from typing import Generator
+
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session, sessionmaker
 
 # Setup
 from src.crud.app import app
-from src.database_models import Base, User
 from src.crud.upload.auth import create_access_token
+from src.database_models import Base, User
 
 
-def demo_url_upload():
+def demo_url_upload() -> None:
     """Demonstrate URL upload workflow."""
 
     # Create in-memory test database
@@ -45,7 +47,7 @@ def demo_url_upload():
     client = TestClient(app)
 
     # Override dependencies
-    def override_get_db():
+    def override_get_db() -> Generator[Session, None, None]:
         yield db
 
     from src.database import get_db
@@ -72,13 +74,14 @@ def demo_url_upload():
     )
 
     print(f"Status: {response.status_code}")
-    print(f"Response:")
+    # print(f"Response:")
+    print("Response:")
     result = response.json()
     print(json.dumps(result, indent=2))
 
     if response.status_code == 201:
         artifact_id = result["metadata"]["id"]
-        print(f"\n✓ Model uploaded successfully!")
+        print("\n✓ Model uploaded successfully!")
         print(f"  Artifact ID: {artifact_id}")
         print(f"  Type: {result['metadata']['type']}")
         print(f"  Name: {result['metadata']['name']}")
@@ -103,12 +106,12 @@ def demo_url_upload():
 
     print(f"Status: {response.status_code}")
     result = response.json()
-    print(f"Response:")
+    print("Response:")
     print(json.dumps(result, indent=2))
 
     if response.status_code == 201:
         dataset_id = result["metadata"]["id"]
-        print(f"\n✓ Dataset uploaded successfully!")
+        print("\n✓ Dataset uploaded successfully!")
         print(f"  Artifact ID: {dataset_id}")
         print(f"  Type: {result['metadata']['type']}")
 
@@ -127,12 +130,12 @@ def demo_url_upload():
 
     print(f"Status: {response.status_code}")
     result = response.json()
-    print(f"Response:")
+    print("Response:")
     print(json.dumps(result, indent=2))
 
     if response.status_code == 201:
         code_id = result["metadata"]["id"]
-        print(f"\n✓ Code uploaded successfully!")
+        print("\n✓ Code uploaded successfully!")
         print(f"  Artifact ID: {code_id}")
         print(f"  Type: {result['metadata']['type']}")
 

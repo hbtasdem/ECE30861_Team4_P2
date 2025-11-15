@@ -1,7 +1,10 @@
 """Model rating endpoint - OpenAPI v3.4.4 BASELINE spec.
 
 FILE PURPOSE:
-Provides the GET /artifact/model/{id}/rate endpoint to retrieve model ratings and evaluation scores from the registry. All ratings are stored in the registry database based on artifact metadata and evaluation results.
+Provides the GET /artifact/model/{id}/rate endpoint to retrieve
+model ratings and evaluation scores from the registry.
+All ratings are stored in the registry database based
+on artifact metadata and evaluation results.
 
 ENDPOINTS IMPLEMENTED (1/11 BASELINE):
 1. GET /artifact/model/{id}/rate - Get model rating and metrics
@@ -13,12 +16,12 @@ from fastapi import APIRouter, Depends, Header, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
-from src.crud.upload.auth import get_current_user
-from src.database import get_db
-from src.database_models import Artifact as ArtifactModel
-
 # Use example python dict for database for now
 from src.crud.rate.dict_artifacts_db import artifacts_db
+from src.crud.upload.auth import get_current_user
+from src.database import get_db
+
+# from src.database_models import Artifact as ArtifactModel
 
 router = APIRouter()
 

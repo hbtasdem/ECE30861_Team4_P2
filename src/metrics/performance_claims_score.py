@@ -4,8 +4,9 @@ import sys
 import time
 from typing import Tuple
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
 from src.hugging_face_api import get_model_info
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
 
 
 def normalize_sigmoid(value: int, mid: int, steepness: float) -> float:
