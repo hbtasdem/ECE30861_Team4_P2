@@ -5,9 +5,32 @@ requests>=2.25.0
 fastapi>=0.95.0
 uvicorn>=0.21.0
 python-multipart>=0.0.6
+aiofiles>=23.0.0
 
 # Database and ORM
 sqlalchemy>=2.0.0
+
+# AUTHENTICATION & SECURITY (OpenAPI v3.4.4 Spec Compliance)
+
+# PyJWT: For generating and validating JWT bearer tokens per spec
+#   - Used in auth.py to create/decode "bearer <token>" format
+#   - Per spec: AuthenticationToken must have token field with bearer prefix
+# bcrypt: For secure password hashing (via passlib)
+#   - Used in auth.py hash_password() and verify_password() functions
+#   - Per spec: User passwords must be hashed before storage
+# passlib: Password hashing utilities wrapper around bcrypt
+#   - Provides context() for consistent password operations
+#   - Per spec: Required for user registration/authentication endpoints
+PyJWT>=2.6.0
+bcrypt>=4.0.0
+passlib>=1.7.4
+
+# ID GENERATION (OpenAPI v3.4.4 Spec Compliance)
+# python-ulid: Generate string-based unique IDs for artifacts
+#   - Artifact IDs must be STRING per spec (not INTEGER)
+#   - Replaces previous integer primary keys with spec-compliant UUIDs
+#   - Used in routes.py when creating new artifacts
+python-ulid>=1.0.0
 
 # AWS stuff
 boto3
@@ -33,3 +56,4 @@ moto
 # Standard library modules (built-in, listed for reference)
 # math, time, re, os, sys, typing, logging, pathlib, enum, 
 # functools, argparse, multiprocessing, datetime
+
