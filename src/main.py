@@ -219,13 +219,7 @@ def calculate_all_scores(
         )
     # Code Quality
     try:
-<<<<<<< HEAD
-        code_quality_score, code_quality_latency = code_quality.code_quality_score(
-            model_name
-        )
-=======
         code_quality_score, code_quality_latency = code_quality_score.code_quality_score(model_name)  # noqa: F823
->>>>>>> origin
         result["code_quality"] = code_quality_score
         result["code_quality_latency"] = int(code_quality_latency * 1000)
     except Exception as e:
