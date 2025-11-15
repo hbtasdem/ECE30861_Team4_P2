@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-'''this file is not finalized, it is a hardcoded placeholder for the more complex treescore calc which will take place
-once models are uploaded to the registry and therefore have recorded score'''
+"""this file is not finalized, it is a hardcoded placeholder for the more complex treescore calc which will take place
+once models are uploaded to the registry and therefore have recorded score"""
 import os
 import sys
 import time

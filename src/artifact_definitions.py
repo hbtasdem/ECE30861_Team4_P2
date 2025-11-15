@@ -1,8 +1,7 @@
 # models.py
 from datetime import datetime
 
-from sqlalchemy import (Boolean, Column, DateTime, ForeignKey, Integer, String,
-                        Text)
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -15,12 +14,8 @@ class User(Base):  # type: ignore
     email = Column(String(255), unique=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
     is_admin = Column(Boolean, default=False)
-<<<<<<< HEAD:src/models.py
-    models = relationship("Model", back_populates="uploader")
-=======
     created_at = Column(DateTime, default=datetime.utcnow)
-    models = relationship('Model', back_populates='uploader')
->>>>>>> origin:src/artifact_definitions.py
+    models = relationship("Model", back_populates="uploader")
 
 
 class Model(Base):  # type: ignore

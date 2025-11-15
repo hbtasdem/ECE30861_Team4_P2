@@ -119,9 +119,10 @@ def calculate_all_scores(
         print(error_msg, file=sys.stderr)
     # Performance Claims Score
     try:
-        perf_score, perf_latency = (
-            performance_claims_score.performance_claims_sub_score(model_name)
-        )
+        (
+            perf_score,
+            perf_latency,
+        ) = performance_claims_score.performance_claims_sub_score(model_name)
         result["performance_claims"] = perf_score
         result["performance_claims_latency"] = int(perf_latency * 1000)
     except Exception as e:
@@ -129,9 +130,9 @@ def calculate_all_scores(
         print(error_msg, file=sys.stderr)
     # License Score
     try:
-        license_score, license_latency = (
-            license_score.license_sub_score(model_name)  # noqa: F823
-        )
+        license_score, license_latency = license_score.license_sub_score(
+            model_name
+        )  # noqa: F823
         result["license"] = lic_score
         result["license_latency"] = int(license_latency * 1000)
     except Exception as e:
@@ -139,7 +140,9 @@ def calculate_all_scores(
         print(error_msg, file=sys.stderr)
     # Size Scores
     try:
-        size_scores, net_size_score, size_score_latency = size_score.size_score(model_link)
+        size_scores, net_size_score, size_score_latency = size_score.size_score(
+            model_link
+        )
         result["size_score"] = size_scores
         result["size_score_latency"] = size_score_latency
     except Exception as e:
@@ -158,8 +161,12 @@ def calculate_all_scores(
         print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
     # Dataset Quality Score
     try:
-        dataset_score, dataset_latency = (dataset_quality_score.dataset_quality_sub_score(
-            model_name, dataset_link, encountered_datasets))
+        (
+            dataset_score,
+            dataset_latency,
+        ) = dataset_quality_score.dataset_quality_sub_score(
+            model_name, dataset_link, encountered_datasets
+        )
         result["dataset_quality"] = dataset_score
         result["dataset_quality_latency"] = int(dataset_latency * 1000)
     except Exception as e:
@@ -168,7 +175,12 @@ def calculate_all_scores(
         )
     # Code Quality
     try:
-        code_quality_score, code_quality_latency = code_quality_score.code_quality_score(model_name)  # noqa: F823
+        (
+            code_quality_score,
+            code_quality_latency,
+        ) = code_quality_score.code_quality_score(
+            model_name
+        )  # noqa: F823
         result["code_quality"] = code_quality_score
         result["code_quality_latency"] = int(code_quality_latency * 1000)
     except Exception as e:
@@ -176,7 +188,9 @@ def calculate_all_scores(
 
     # Reviewedness
     try:
-        reviewedness, reviewedness_latency = reviewedness_score.reviewedness_score(code_link)
+        reviewedness, reviewedness_latency = reviewedness_score.reviewedness_score(
+            code_link
+        )
         result["reviewedness"] = reviewedness
         result["reviewedness_latency"] = int(reviewedness_latency)
     except Exception as e:

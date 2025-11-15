@@ -30,9 +30,9 @@ def get_github_token() -> Any:
         The github token
     """
     try:
-        ssm = boto3.client('ssm', region_name='us-east-1')
-        response = ssm.get_parameter(Name='/ece30861/GITHUB_TOKEN', WithDecryption=True)
-        token = response['Parameter']['Value']
+        ssm = boto3.client("ssm", region_name="us-east-1")
+        response = ssm.get_parameter(Name="/ece30861/GITHUB_TOKEN", WithDecryption=True)
+        token = response["Parameter"]["Value"]
         if token:
             return token
     except (ClientError, NoCredentialsError):
@@ -43,7 +43,9 @@ def get_github_token() -> Any:
     return token
 
 
-def get_pull_requests(owner: str, repo: str, headers: Dict[str, str]) -> List[Dict[str, Any]]:
+def get_pull_requests(
+    owner: str, repo: str, headers: Dict[str, str]
+) -> List[Dict[str, Any]]:
     """
     Get pull request info from git repo
 
@@ -65,9 +67,15 @@ def get_pull_requests(owner: str, repo: str, headers: Dict[str, str]) -> List[Di
     page = 1
     # limit the number of prs, some repos have thousands of PRs and take too long to check all
     # github api rate limit is 60 per hour. so we can only check 60...?
-    while page <= 1:  # left as while loop in case we want to increase # prs checked easily
+    while (
+        page <= 1
+    ):  # left as while loop in case we want to increase # prs checked easily
         url = f"{GITHUB_API}/repos/{owner}/{repo}/pulls"
-        params: Mapping[str, Union[str, int]] = {"state": "closed", "per_page": 60, "page": page}
+        params: Mapping[str, Union[str, int]] = {
+            "state": "closed",
+            "per_page": 60,
+            "page": page,
+        }
         r = requests.get(url, headers=headers, params=params)
         if r.status_code != 200:
             print(f"Error fetching PRs: {r.status_code}, {r.text}")
