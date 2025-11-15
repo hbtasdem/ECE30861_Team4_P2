@@ -176,7 +176,6 @@ from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
 
 from src.crud.upload.auth import create_access_token  # noqa: E402
 from src.database_models import Base, User  # noqa: E402
-from src.upload_manage import FileStorage, ModelVersion, DownloadEvent  # noqa: E402, F401
 
 
 @pytest.fixture(scope="function")

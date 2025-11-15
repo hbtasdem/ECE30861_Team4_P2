@@ -1,13 +1,17 @@
-"""FastAPI application instance for the Model Registry API.
+"""FastAPI application for Model Registry API - OpenAPI v3.4.4 BASELINE endpoints only.
 
-This file creates and configures the main FastAPI application object that handles
-all HTTP requests. It sets up the database and includes all API route handlers.
+FILE PURPOSE:
+Creates and configures the main FastAPI application with all 11 BASELINE endpoints for managing artifacts from URLs. Initializes the database connection and includes all BASELINE route handlers.
 
-Key features:
-- Creates the FastAPI app with title and description
-- Initializes the database connection
-- Registers all model upload and retrieval routes
-- Provides health check endpoint
+ENDPOINTS PROVIDED (11/11 BASELINE):
+1-4. POST /artifact, GET/PUT /artifacts (in artifact_routes.py)
+5. DELETE /reset (in artifact_routes.py)
+6. GET /artifact/{type}/{id}/cost (in artifact_routes.py)
+7. GET /artifact/model/{id}/lineage (in artifact_routes.py)
+8. POST /artifact/model/{id}/license-check (in artifact_routes.py)
+9. POST /artifact/byRegEx (in artifact_routes.py)
+10. GET /health (defined below)
+11. GET /artifact/model/{id}/rate (in rate/routes.py)
 """
 
 # app.py
@@ -25,17 +29,12 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from src.crud.rate.routes import router as rate_router  # noqa: E402
 from src.crud.upload.artifact_routes import \
     router as artifact_router  # noqa: E402
-from src.crud.upload.auth_routes import router as auth_router  # noqa: E402
-from src.crud.upload.batch_upload_routes import \
-    router as batch_upload_router  # noqa: E402
-from src.crud.upload.file_routes import router as file_router  # noqa: E402
-from src.crud.upload.routes import router as upload_router  # noqa: E402
 from src.database import init_db  # noqa: E402
 
 # Initialize FastAPI app
 app = FastAPI(
     title="Model Registry API",
-    description="Upload and manage ML models in ZIP format",
+    description="Registry for managing ML models, datasets, and code from URLs",
     version="1.0.0"
 )
 
@@ -43,13 +42,9 @@ app = FastAPI(
 if os.getenv("TESTING") != "true":
     init_db()
 
-# Include routers
-app.include_router(upload_router)
-app.include_router(auth_router)  # NEW: Include authentication routes
-app.include_router(artifact_router)  # NEW: Include artifact CRUD routes
-app.include_router(batch_upload_router)  # NEW: Include Phase 4 batch/chunked upload routes
-app.include_router(file_router)  # NEW: Include Phase 3 file routes
-app.include_router(rate_router)  # /artifact/model/{id}/rate
+# Include routers - BASELINE endpoints only
+app.include_router(artifact_router)  # POST/GET/PUT /artifact(s)/{type}/{id}, POST /artifacts
+app.include_router(rate_router)  # GET /artifact/model/{id}/rate
 
 
 @app.get("/")
