@@ -235,7 +235,6 @@ def client(test_db: Session) -> Generator[Any, None, None]:
 
     from src.crud.app import app
     from src.crud.upload.auth import get_current_user
-    from src.crud.upload.routes import get_current_user_with_auth
     from src.database import get_db
 
     # Create test user with hashed_password to match database schema
@@ -253,13 +252,9 @@ def client(test_db: Session) -> Generator[Any, None, None]:
     def override_get_current_user() -> User:
         return test_user
 
-    def override_get_current_user_with_auth() -> User:
-        return test_user
-
     # Apply overrides
     app.dependency_overrides[get_db] = override_get_db
     app.dependency_overrides[get_current_user] = override_get_current_user
-    app.dependency_overrides[get_current_user_with_auth] = override_get_current_user_with_auth
 
     # Create client
     client = TestClient(app)

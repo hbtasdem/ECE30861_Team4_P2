@@ -24,14 +24,16 @@ All responses follow:
 }
 """
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from ulid import ULID
 
 from src.crud.upload.artifacts import (Artifact, ArtifactData,
-                                       ArtifactMetadata, ArtifactQuery)
+                                           ArtifactLineageEdge, ArtifactLineageGraph,
+                                           ArtifactLineageNode, ArtifactMetadata,
+                                           ArtifactQuery, ArtifactRegEx)
 from src.crud.upload.auth import get_current_user
 from src.database import get_db
 from src.database_models import Artifact as ArtifactModel
