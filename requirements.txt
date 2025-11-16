@@ -42,7 +42,6 @@ flake8
 isort
 mypy
 types-requests
-jwt
 passlib
 
 # Testing dependencies (optional)

@@ -703,31 +703,33 @@ async def get_artifact_lineage(
 @router.post("/artifact/model/{artifact_id}/license-check")
 async def check_license_compatibility(
     artifact_id: str,
-    request: Dict[str, str],
+    request_body: Dict[str, Any],
     x_authorization: Optional[str] = Header(None),
-) -> bool:
+) -> Dict[str, bool]:
     """Assess license compatibility for fine-tune and inference usage.
 
     Per OpenAPI v3.4.4 spec:
+    - Takes github_url in request body
     - Evaluates GitHub project license
-    - Returns boolean compatibility status
+    - Returns JSON with boolean compatibility status
     - Returns 404 if artifact/GitHub project not found
+    - Returns 502 if external license info unavailable
 
     Args:
-        artifact_id: Unique artifact identifier
-        request: Request body with github_url
+        artifact_id: Unique model artifact identifier
+        request_body: Request body with github_url
         x_authorization: Bearer token for authentication
 
     Returns:
-        bool: True if license compatible, False otherwise
+        Dict with boolean license compatibility result
 
     Raises:
-        HTTPException: 400 if malformed, 403 if auth fails, 404 if not found
+        HTTPException: 400 if malformed, 403 if auth fails, 404 if not found, 502 if external error
     """
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header",
+            detail="Authentication failed due to invalid or missing AuthenticationToken.",
         )
 
     try:
@@ -735,15 +737,24 @@ async def check_license_compatibility(
     except HTTPException:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token",
+            detail="Authentication failed due to invalid or missing AuthenticationToken.",
         )
 
-    if "github_url" not in request:
+    # Validate request body
+    if "github_url" not in request_body:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="The license check request is malformed or references an unsupported usage context.",
         )
 
+    github_url = request_body.get("github_url")
+    if not github_url or not isinstance(github_url, str):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="The license check request is malformed or references an unsupported usage context.",
+        )
+
+    # Verify artifact exists
     try:
         key = _get_artifact_key("model", artifact_id)
         s3_client.head_object(Bucket=BUCKET_NAME, Key=key)
@@ -754,11 +765,16 @@ async def check_license_compatibility(
                 detail="The artifact or GitHub project could not be found.",
             )
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to retrieve artifact: {str(e)}",
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="External license information could not be retrieved.",
         )
 
-    # For now, return True (compatible)
+    # TODO: Implement actual license checking from GitHub
+    # For now, return True (compatible license)
+    # In production, this would:
+    # 1. Fetch repository from github_url
+    # 2. Check LICENSE file or GitHub API license field
+    # 3. Evaluate compatibility for fine-tuning and inference
     return True
 
 
