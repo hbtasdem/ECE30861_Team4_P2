@@ -28,7 +28,7 @@ from fastapi import FastAPI
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.crud.rate.routes import router as rate_router  # noqa: E402
+from src.crud.rate.rate_route import router as rate_router  # noqa: E402
 from src.crud.upload.artifact_routes import router as artifact_router  # noqa: E402
 from src.database import init_db  # noqa: E402
 
@@ -70,7 +70,7 @@ def health_check() -> Dict[str, str]:
     return {"status": "ok"}
 
 
-# uvicorn crud.app:app --host 127.0.0.1 --port 8000 --reload
+# uvicorn src.crud.app:app --host 127.0.0.1 --port 8000 --reload
 # go to local host website in browser
 
 if __name__ == "__main__":

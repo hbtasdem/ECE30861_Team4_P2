@@ -1,22 +1,20 @@
 """Artifact management and registry endpoints - OpenAPI v3.4.4 BASELINE spec only.
 
 FILE PURPOSE:
-Implements all 11 BASELINE artifact management endpoints that accept artifacts from URLs
+Implements 9 BASELINE artifact management endpoints that accept artifacts from URLs
 and manage them in the registry. All requests require URL-based artifact sources with no file
 uploads accepted.
 
-ENDPOINTS IMPLEMENTED (11/11 BASELINE):
-1. POST /artifact/{type} - Register new artifact from URL
-2. GET /artifacts/{type}/{id} - Retrieve artifact by type and ID
-3. PUT /artifacts/{type}/{id} - Update artifact source and metadata
+ENDPOINTS IMPLEMENTED:
+1. POST /artifact/{artifact_type} - Register new artifact from URL
+2. GET /artifacts/{artifact_type}/{artifact_id} - Retrieve artifact by type and ID
+3. PUT /artifacts/{artifact_type}/{artifact_id} - Update artifact source and metadata
 4. POST /artifacts - Query/enumerate artifacts with filters
 5. DELETE /reset - Reset registry (admin only)
-6. GET /artifact/{type}/{id}/cost - Get artifact cost in MB
-7. GET /artifact/model/{id}/lineage - Get artifact lineage graph
-8. POST /artifact/model/{id}/license-check - Check license compatibility
+6. GET /artifact/{artifact_type}/{artifact_id}/cost - Get artifact cost in MB
+7. GET /artifact/model/{artifact_id}/lineage - Get artifact lineage graph
+8. POST /artifact/model/{artifact_id}/license-check - Check license compatibility
 9. POST /artifact/byRegEx - Query artifacts by regular expression
-10. GET /health - Heartbeat check (in app.py)
-11. GET /artifact/model/{id}/rate - Get model rating (in rate/routes.py)
 
 ENVELOPE STRUCTURE (Per Spec Section 3.2.1):
 All responses follow:
@@ -46,11 +44,7 @@ router = APIRouter(tags=["artifacts"])
 # ============================================================================
 
 
-@router.post(
-    "/artifact/{artifact_type}",
-    response_model=Artifact,
-    status_code=status.HTTP_201_CREATED,
-)
+@router.post("/artifact/{artifact_type}", response_model=Artifact, status_code=status.HTTP_201_CREATED)
 async def create_artifact(
     artifact_type: str,
     artifact_data: ArtifactData,
@@ -139,21 +133,15 @@ async def create_artifact(
         db.flush()  # Flush to ensure ID is set before creating audit entry
 
         # Create audit entry for CREATE action
-        audit_entry = AuditEntry(
-            user_id=current_user.id, artifact_id=artifact_id, action="CREATE"
-        )
+        audit_entry = AuditEntry(user_id=current_user.id, artifact_id=artifact_id, action="CREATE")
         db.add(audit_entry)
         db.commit()
         db.refresh(new_artifact)
 
         # Return artifact in envelope format
         return Artifact(
-            metadata=ArtifactMetadata(
-                name=new_artifact.name, id=new_artifact.id, type=new_artifact.type
-            ),
-            data=ArtifactData(
-                url=new_artifact.url, download_url=new_artifact.download_url
-            ),
+            metadata=ArtifactMetadata(name=new_artifact.name, id=new_artifact.id, type=new_artifact.type),
+            data=ArtifactData(url=new_artifact.url, download_url=new_artifact.download_url),
         )
 
     except HTTPException:

@@ -112,7 +112,7 @@ async def upload_model_rating(
 
 """
 Commands to test
-curl -X POST "http://13.59.87.120:8000/artifact/model/01/rate/upload" \
+curl -X POST "http://3.140.239.181:8000/artifact/model/01/rate/upload" \
 -H "Content-Type: application/json" \
 -d '{
   "name": "bert-base-uncased",
@@ -149,5 +149,5 @@ curl -X POST "http://13.59.87.120:8000/artifact/model/01/rate/upload" \
 }'
 
 
-curl -X GET "http://13.59.87.120:8000/artifact/model/01/rate"
+curl -X GET "http://3.140.239.181:8000/artifact/model/01/rate"
 """
