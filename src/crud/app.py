@@ -30,7 +30,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.crud.rate.rate_route import router as rate_router  # noqa: E402
 from src.crud.upload.artifact_routes import router as artifact_router  # noqa: E402
-from src.database import init_db  # noqa: E402
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -39,9 +38,8 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Initialize database only if not in test mode
-if os.getenv("TESTING") != "true":
-    init_db()
+# Per spec Section 3.2.1: S3-based artifact storage (no database initialization needed)
+# Database tables are only used by test files, not production code
 
 # Include routers - BASELINE endpoints only
 app.include_router(
