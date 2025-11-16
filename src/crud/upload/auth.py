@@ -264,7 +264,7 @@ def get_current_user(  # UPDATED: Now validates JWT from X-Authorization header
 
         token = authorization[7:]  # Remove "bearer " prefix
         payload = decode_access_token(token)
-        
+
         # For production: JWT validation is sufficient
         # Token has been validated by decode_access_token (signature + expiration)
         # No database lookup needed for stateless S3-based system

@@ -17,7 +17,6 @@ ENDPOINTS PROVIDED (11/11 BASELINE):
 """
 
 # app.py
-import os
 import sys
 from pathlib import Path
 from typing import Any, Dict
@@ -29,7 +28,8 @@ sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.crud.rate.rate_route import router as rate_router  # noqa: E402
-from src.crud.upload.artifact_routes import router as artifact_router  # noqa: E402
+from src.crud.upload.artifact_routes import \
+    router as artifact_router  # noqa: E402
 
 # Initialize FastAPI app
 app = FastAPI(

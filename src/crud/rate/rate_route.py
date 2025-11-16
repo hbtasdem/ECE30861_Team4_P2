@@ -65,14 +65,14 @@ async def get_model_rating(
             status_code=400,
             detail="There is missing field(s) in the artifact_id or it is formed improperly, or is invalid.",
         )
-    
+
     # Validate authentication token
     if not x_authorization:
         raise HTTPException(
             status_code=403,
             detail="Authentication failed due to invalid or missing AuthenticationToken.",
         )
-    
+
     try:
         get_current_user(x_authorization, db=None)
     except HTTPException:

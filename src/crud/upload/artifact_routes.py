@@ -2,7 +2,7 @@
 
 FILE PURPOSE:
 Implements 9 BASELINE artifact management endpoints that accept artifacts from URLs
-and manage them in the registry using S3 storage. All requests require URL-based 
+and manage them in the registry using S3 storage. All requests require URL-based
 artifact sources with no file uploads accepted.
 
 S3 STORAGE STRUCTURE (Per Team Design):
@@ -41,15 +41,10 @@ from botocore.exceptions import ClientError
 from fastapi import APIRouter, Header, HTTPException, Query, status
 from ulid import ULID
 
-from src.crud.upload.artifacts import (
-    Artifact,
-    ArtifactData,
-    ArtifactLineageEdge,
-    ArtifactLineageGraph,
-    ArtifactLineageNode,
-    ArtifactMetadata,
-    ArtifactQuery,
-)
+from src.crud.upload.artifacts import (Artifact, ArtifactData,
+                                       ArtifactLineageGraph,
+                                       ArtifactLineageNode, ArtifactMetadata,
+                                       ArtifactQuery)
 from src.crud.upload.auth import get_current_user
 
 router = APIRouter(tags=["artifacts"])
@@ -70,7 +65,7 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
     try:
         paginator = s3_client.get_paginator("list_objects_v2")
         pages = paginator.paginate(Bucket=BUCKET_NAME, Prefix=f"{artifact_type}/")
-        
+
         for page in pages:
             if "Contents" not in page:
                 continue
@@ -85,14 +80,13 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
                         pass
     except ClientError:
         pass
-    
+
     return artifacts
 
 
 # ============================================================================
 # POST /artifact/{artifact_type} - CREATE ARTIFACT (BASELINE)
 # ============================================================================
-
 
 @router.post(
     "/artifact/{artifact_type}",
@@ -132,7 +126,7 @@ async def create_artifact(
         )
 
     try:
-        current_user = get_current_user(x_authorization, None)
+        get_current_user(x_authorization, None)
     except HTTPException:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -236,7 +230,7 @@ async def get_artifact(
         )
 
     try:
-        current_user = get_current_user(x_authorization, None)
+        get_current_user(x_authorization, None)
     except HTTPException:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -322,7 +316,7 @@ async def update_artifact(
         )
 
     try:
-        current_user = get_current_user(x_authorization, None)
+        get_current_user(x_authorization, None)
     except HTTPException:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -334,7 +328,7 @@ async def update_artifact(
     # ========================================================================
     try:
         key = _get_artifact_key(artifact_type, artifact_id)
-        
+
         # Get existing artifact
         response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)
         artifact_envelope = json.loads(response["Body"].read().decode("utf-8"))
@@ -474,7 +468,7 @@ async def enumerate_artifacts(
                         results.append(artifact)
 
         # Apply pagination
-        paginated_results = results[offset_int : offset_int + page_size]
+        paginated_results = results[offset_int:offset_int + page_size]
 
         # Convert to metadata
         metadata_list = [
