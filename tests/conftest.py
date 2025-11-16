@@ -1,5 +1,6 @@
 """Pytest configuration - imports fixtures from test_setup module."""
 
+from typing import Generator
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -9,13 +10,13 @@ from tests.test_setup import client, db, test_db, test_token  # noqa: F401
 
 
 @pytest.fixture
-def auth_token(test_token: str) -> str:
+def auth_token(test_token_fixture: str) -> str:
     """Alias for test_token to use in tests."""
-    return test_token
+    return test_token_fixture
 
 
 @pytest.fixture(autouse=True)
-def mock_s3_operations():
+def mock_s3_operations() -> Generator[None, None, None]:
     """Mock boto3 S3 operations to avoid AWS calls during tests."""
     # Mock the s3_client to succeed without actual S3 calls
     mock_s3 = MagicMock()
