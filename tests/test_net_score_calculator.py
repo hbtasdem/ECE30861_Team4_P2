@@ -6,7 +6,8 @@ from unittest.mock import patch
 # Add the src directory to the path so we can import the module
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from net_score_calculator import calculate_net_score, print_score_summary  # noqa: E402
+from net_score_calculator import calculate_net_score  # noqa: E402
+from net_score_calculator import print_score_summary  # noqa: E402
 
 
 class TestNetScoreCalculator(unittest.TestCase):
@@ -82,13 +83,19 @@ class TestNetScoreCalculator(unittest.TestCase):
         """Test that NetScore calculation follows the correct formula."""
         model_id = "test-model"
 
-        with patch("net_score_calculator.license_sub_score") as mock_license, \
-             patch("net_score_calculator.ramp_up_time_score") as mock_ramp_up, \
-             patch("net_score_calculator.bus_factor_score") as mock_bus_factor, \
-             patch("net_score_calculator.available_dataset_code_score") as mock_dataset_code, \
-             patch("net_score_calculator.dataset_quality_sub_score") as mock_dataset_quality, \
-             patch("net_score_calculator.performance_claims_sub_score") as mock_performance, \
-             patch("net_score_calculator.size_score") as mock_size:
+        with patch("net_score_calculator.license_sub_score") as mock_license, patch(
+            "net_score_calculator.ramp_up_time_score"
+        ) as mock_ramp_up, patch(
+            "net_score_calculator.bus_factor_score"
+        ) as mock_bus_factor, patch(
+            "net_score_calculator.available_dataset_code_score"
+        ) as mock_dataset_code, patch(
+            "net_score_calculator.dataset_quality_sub_score"
+        ) as mock_dataset_quality, patch(
+            "net_score_calculator.performance_claims_sub_score"
+        ) as mock_performance, patch(
+            "net_score_calculator.size_score"
+        ) as mock_size:
             # Set known values for calculation verification
             mock_size.return_value = ({}, 0.5, 50)
             mock_license.return_value = (1.0, 0.1)  # 0.2 weight

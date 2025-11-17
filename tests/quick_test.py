@@ -1,7 +1,91 @@
 # #!/usr/bin/env python
 # """
-# Quick start script for testing the upload endpoint.
-# This script helps you run the API and tests easily.
+# Quick start testing script for upload and download endpoints.
+#
+# Per OpenAPI v3.4.4 - Interactive Testing Tool
+#
+# PURPOSE:
+# Provides interactive menu-driven testing interface for FastAPI upload endpoints.
+# Allows users to start API server, run manual tests, and execute automated tests.
+#
+# USAGE:
+#     python tests/quick_test.py
+#
+# FEATURES:
+# 1. Start API Server
+#    - Launches uvicorn on http://127.0.0.1:8000
+#    - Enables auto-reload for development
+#    - Shows access points (API, docs, redoc)
+#
+# 2. Manual Testing
+#    - Interactive test suite for upload endpoints
+#    - Easy walkthrough of registration and upload flows
+#    - Clear result reporting with pass/fail indicators
+#
+# 3. Automated Testing
+#    - Runs pytest test suite
+#    - Generates detailed test reports
+#    - Suitable for CI/CD pipelines
+#
+# 4. Specific Test Types
+#    - all: Run complete test suite
+#    - basic: Basic upload tests
+#    - metadata: Metadata handling tests
+#    - validation: Input validation tests
+#    - sequential: Multiple sequential uploads
+#    - special: Special characters handling
+#
+# MENU OPTIONS:
+#     1. Start the API server
+#     2. Run manual tests (easy, interactive)
+#     3. Run automated tests (pytest)
+#     4. Run specific test type
+#     5. Exit
+#
+# ENDPOINTS TESTED:
+#     Phase 2 (Baseline):
+#     - POST /auth/register: User registration
+#     - PUT /authenticate: User login
+#     - POST /api/models/upload: Register model from URL
+#     - GET /api/models/enumerate: List models
+#
+#     Phase 3 (File Upload):
+#     - POST /api/models/upload-file: Single file upload
+#     - POST /api/models/check-duplicate: Duplicate detection
+#     - POST /api/models/validate: File validation
+#     - GET /api/models/{id}/download: File download
+#
+#     Phase 4 (Batch & Chunked):
+#     - POST /api/models/upload-batch: Batch upload
+#     - POST /api/models/chunked-upload/init: Start chunked upload
+#     - POST /api/models/chunked-upload/{id}/chunk: Upload chunk
+#     - GET /api/models/chunked-upload/{id}/progress: Track progress
+#
+# REQUIREMENTS:
+#     - Python 3.8+
+#     - FastAPI installed
+#     - Pytest installed
+#     - All dependencies from requirements.txt
+#
+# TROUBLESHOOTING:
+#     Port 8000 already in use:
+#     - Edit run_app.py and change port number
+#     - Or: kill existing process and retry
+#
+#     Tests fail:
+#     - Check API is running (option 1)
+#     - Check logs for error messages
+#     - Verify database is accessible
+#
+#     Connection refused:
+#     - Ensure API server is running
+#     - Check http://127.0.0.1:8000/docs is accessible
+#
+# SPEC REFERENCES:
+#     Section 3.1: Authentication endpoints
+#     Section 3.2: Model registration endpoints
+#     Section 3.3: File upload endpoints
+#     Section 3.4: Batch and chunked uploads
 # """
 
 # import subprocess

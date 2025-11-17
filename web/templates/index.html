@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Model Quality Scorer</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        color: white;
+        margin-bottom: 3rem;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+      }
+
+      .header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+      }
+
+      .card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .input-section {
+        margin-bottom: 1.5rem;
+      }
+
+      .input-section label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #333;
+      }
+
+      .input-group {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .input-group input {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+      }
+
+      .input-group input:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .btn {
+        padding: 0.75rem 2rem;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn:hover:not(:disabled) {
+        background: #5568d3;
+      }
+
+      .btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+
+      .examples {
+        margin-top: 1rem;
+      }
+
+      .examples p {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+      }
+
+      .example-btns {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .example-btn {
+        padding: 0.5rem 1rem;
+        background: #f5f5f5;
+        border: 1px solid #e0e0e0;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      .example-btn:hover {
+        background: #e0e0e0;
+      }
+
+      .error {
+        background: #fee;
+        border: 1px solid #fcc;
+        color: #c33;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-top: 1rem;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 2rem;
+        color: #667eea;
+      }
+
+      .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .results {
+        display: none;
+      }
+
+      .results.show {
+        display: block;
+      }
+
+      .score-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 2rem;
+      }
+
+      .score-header h2 {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: #667eea;
+        color: white;
+        border-radius: 2rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .link-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .link-btn:hover {
+        color: #5568d3;
+      }
+
+      .net-score {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 1rem;
+        color: white;
+      }
+
+      .score-number {
+        font-size: 4rem;
+        font-weight: 700;
+      }
+
+      .score-bar {
+        flex: 1;
+      }
+
+      .progress-bar {
+        height: 1rem;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 0.5rem;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: white;
+        transition: width 1s ease-out;
+      }
+
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .metric-card {
+        padding: 1.5rem;
+        background: #f9f9f9;
+        border-radius: 0.75rem;
+        border: 1px solid #e0e0e0;
+      }
+
+      .metric-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .metric-title {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .metric-score {
+        font-size: 1.5rem;
+        font-weight: 700;
+      }
+
+      .score-green {
+        color: #22c55e;
+      }
+      .score-yellow {
+        color: #eab308;
+      }
+      .score-red {
+        color: #ef4444;
+      }
+
+      .metric-bar {
+        height: 0.5rem;
+        background: #e0e0e0;
+        border-radius: 0.25rem;
+        overflow: hidden;
+        margin-bottom: 0.75rem;
+      }
+
+      .metric-bar-fill {
+        height: 100%;
+        transition: width 0.5s ease-out;
+      }
+
+      .bar-green {
+        background: #22c55e;
+      }
+      .bar-yellow {
+        background: #eab308;
+      }
+      .bar-red {
+        background: #ef4444;
+      }
+
+      .metric-description {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+      }
+
+      .metric-latency {
+        font-size: 0.8rem;
+        color: #999;
+      }
+
+      .size-scores {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+      }
+
+      .size-card {
+        text-align: center;
+        padding: 1.5rem;
+        background: #f9f9f9;
+        border-radius: 0.75rem;
+      }
+
+      .size-score {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .size-platform {
+        font-size: 0.9rem;
+        color: #666;
+        text-transform: capitalize;
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🤖 Model Quality Scorer</h1>
+        <p>Analyze HuggingFace models with comprehensive quality metrics</p>
+      </div>
+
+      <div class="card">
+        <div class="input-section">
+          <label for="modelUrl">Model URL</label>
+          <div class="input-group">
+            <input
+              type="text"
+              id="modelUrl"
+              placeholder="https://huggingface.co/microsoft/DialoGPT-medium"
+            />
+            <button class="btn" id="analyzeBtn" onclick="analyzeModel()">
+              <span>🔍</span>
+              Analyze
+            </button>
+          </div>
+          <div class="examples">
+            <p>Try these examples:</p>
+            <div class="example-btns">
+              <button
+                class="example-btn"
+                onclick="setModelUrl('https://huggingface.co/microsoft/DialoGPT-medium')"
+              >
+                DialoGPT-medium
+              </button>
+              <button
+                class="example-btn"
+                onclick="setModelUrl('https://huggingface.co/bert-base-uncased')"
+              >
+                bert-base-uncased
+              </button>
+              <button
+                class="example-btn"
+                onclick="setModelUrl('https://huggingface.co/openai/whisper-small')"
+              >
+                whisper-small
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="errorMsg" class="error hidden"></div>
+
+        <div id="loading" class="loading hidden">
+          <div class="spinner"></div>
+          <p>Analyzing model... This may take a minute.</p>
+        </div>
+      </div>
+
+      <div id="results" class="results">
+        <div class="card">
+          <div class="score-header">
+            <div>
+              <h2 id="modelName">Model Name</h2>
+              <span class="badge" id="modelCategory">MODEL</span>
+            </div>
+            <a href="#" id="modelLink" target="_blank" class="link-btn">
+              <span>🔗</span>
+              View on HuggingFace
+            </a>
+          </div>
+
+          <div class="net-score">
+            <div>
+              <div class="score-number" id="netScore">85</div>
+              <div>Overall Score</div>
+            </div>
+            <div class="score-bar">
+              <div class="progress-bar">
+                <div class="progress-fill" id="netScoreBar"></div>
+              </div>
+              <p style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.9">
+                Computed in <span id="netScoreLatency">0</span>ms
+              </p>
+            </div>
+          </div>
+
+          <div class="metrics-grid" id="metricsGrid">
+            <!-- Metric cards will be inserted here -->
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-bottom: 1.5rem; color: #333">
+            Deployment Compatibility
+          </h3>
+          <div class="size-scores" id="sizeScores">
+            <!-- Size scores will be inserted here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function setModelUrl(url) {
+        document.getElementById("modelUrl").value = url;
+      }
+
+      function showError(message) {
+        const errorMsg = document.getElementById("errorMsg");
+        errorMsg.textContent = message;
+        errorMsg.classList.remove("hidden");
+      }
+
+      function hideError() {
+        document.getElementById("errorMsg").classList.add("hidden");
+      }
+
+      function getScoreClass(score) {
+        if (score >= 0.8) return "green";
+        if (score >= 0.6) return "yellow";
+        return "red";
+      }
+
+      function createMetricCard(title, score, latency, description) {
+        const scoreClass = getScoreClass(score);
+        return `
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-title">${title}</span>
+                        <span class="metric-score score-${scoreClass}">${Math.round(
+          score * 100
+        )}</span>
+                    </div>
+                    <div class="metric-bar">
+                        <div class="metric-bar-fill bar-${scoreClass}" style="width: ${
+          score * 100
+        }%"></div>
+                    </div>
+                    <p class="metric-description">${description}</p>
+                    <p class="metric-latency">Latency: ${latency}ms</p>
+                </div>
+            `;
+      }
+
+      async function analyzeModel() {
+        const modelUrl = document.getElementById("modelUrl").value.trim();
+
+        if (!modelUrl) {
+          showError("Please enter a model URL");
+          return;
+        }
+
+        hideError();
+        document.getElementById("analyzeBtn").disabled = true;
+        document.getElementById("loading").classList.remove("hidden");
+        document.getElementById("results").classList.remove("show");
+
+        try {
+          const response = await fetch("/api/score-model", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ model_url: modelUrl }),
+          });
+
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Failed to score model");
+          }
+
+          const data = await response.json();
+          displayResults(data, modelUrl);
+        } catch (error) {
+          showError(error.message);
+        } finally {
+          document.getElementById("analyzeBtn").disabled = false;
+          document.getElementById("loading").classList.add("hidden");
+        }
+      }
+
+      function displayResults(data, modelUrl) {
+        // Update header
+        document.getElementById("modelName").textContent = data.name;
+        document.getElementById("modelCategory").textContent = data.category;
+        document.getElementById("modelLink").href = modelUrl;
+
+        // Update net score
+        const netScorePercent = Math.round(data.net_score * 100);
+        document.getElementById("netScore").textContent = netScorePercent;
+        document.getElementById("netScoreBar").style.width =
+          netScorePercent + "%";
+        document.getElementById("netScoreLatency").textContent =
+          data.net_score_latency;
+
+        // Create metric cards
+        const metricsGrid = document.getElementById("metricsGrid");
+        metricsGrid.innerHTML = [
+          createMetricCard(
+            "Ramp Up Time",
+            data.ramp_up_time,
+            data.ramp_up_time_latency,
+            "How quickly developers can start using the model"
+          ),
+          createMetricCard(
+            "Bus Factor",
+            data.bus_factor,
+            data.bus_factor_latency,
+            "Number of contributors maintaining the model"
+          ),
+          createMetricCard(
+            "Performance Claims",
+            data.performance_claims,
+            data.performance_claims_latency,
+            "Documentation quality of performance metrics"
+          ),
+          createMetricCard(
+            "License",
+            data.license,
+            data.license_latency,
+            "License clarity and permissiveness"
+          ),
+          createMetricCard(
+            "Dataset Quality",
+            data.dataset_quality,
+            data.dataset_quality_latency,
+            "Quality of training datasets"
+          ),
+          createMetricCard(
+            "Code Quality",
+            data.code_quality,
+            data.code_quality_latency,
+            "Implementation code quality"
+          ),
+          createMetricCard(
+            "Lineage Score",
+            data.treescore,
+            data.treescore_latency,
+            "Quality of parent models in lineage"
+          ),
+          createMetricCard(
+            "Dataset & Code",
+            data.dataset_and_code_score,
+            data.dataset_and_code_score_latency,
+            "Availability of datasets and code"
+          ),
+        ].join("");
+
+        // Create size scores
+        const sizeScores = document.getElementById("sizeScores");
+        sizeScores.innerHTML = Object.entries(data.size_score)
+          .map(([platform, score]) => {
+            const scoreClass = getScoreClass(score);
+            return `
+                    <div class="size-card">
+                        <div class="size-score score-${scoreClass}">${Math.round(
+              score * 100
+            )}%</div>
+                        <div class="size-platform">${platform.replace(
+                          /_/g,
+                          " "
+                        )}</div>
+                    </div>
+                `;
+          })
+          .join("");
+
+        // Show results
+        document.getElementById("results").classList.add("show");
+        document
+          .getElementById("results")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+
+      // Allow Enter key to submit
+      document
+        .getElementById("modelUrl")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            analyzeModel();
+          }
+        });
+    </script>
+  </body>
+</html>

@@ -1,7 +1,66 @@
 # """Test suite for the enumerate endpoint.
-
-# Tests the basic enumerate functionality to list all registered models.
-# Run with: pytest tests/test_enumerate.py -v
+#
+# Per OpenAPI v3.4.4 Section 3.2 - Model Enumeration Testing
+#
+# PURPOSE:
+# Tests the GET /api/models/enumerate endpoint for listing registered models.
+# Verifies pagination, filtering, and response structure.
+#
+# ENDPOINTS TESTED:
+#     GET /api/models/enumerate
+#     - Query Parameters: skip (default 0), limit (default 100, max 1000)
+#     - Response: Array of ModelResponse objects
+#     - HTTP Status: 200 OK
+#     - Authentication: No authentication required (public endpoint)
+#
+# TEST CATEGORIES:
+#
+# 1. Empty/Single/Multiple Lists
+#    - test_enumerate_empty_list: No models registered yet
+#    - test_enumerate_single_model: One model after registration
+#    - test_enumerate_multiple_models: Multiple models present
+#
+# 2. Pagination Support
+#    - test_enumerate_with_pagination_skip: Offset parameter
+#    - test_enumerate_with_limit: Limit parameter
+#    - test_enumerate_max_limit_enforced: Limit capped at 1000
+#
+# 3. Response Structure
+#    - test_enumerate_response_structure: All required fields present
+#    - test_enumerate_returns_model_details: Metadata completeness
+#
+# 4. Edge Cases
+#    - test_enumerate_negative_skip: Treats negative as 0
+#    - test_enumerate_zero_limit: Returns empty array
+#    - test_enumerate_no_auth_required: Public access works
+#
+# SCHEMA: ModelResponse
+#     id: Integer (model ID)
+#     name: String (model name)
+#     description: Optional[String]
+#     version: String
+#     model_url: String (source URL)
+#     artifact_type: String (model/dataset/code)
+#     uploader_id: Integer
+#     is_sensitive: Boolean
+#     created_at: DateTime (ISO-8601)
+#     updated_at: DateTime (ISO-8601)
+#
+# PAGINATION BEHAVIOR:
+#     - Default: skip=0, limit=100
+#     - Maximum limit: 1000 (enforced server-side)
+#     - Invalid parameters: Treated as closest valid value
+#
+# ERROR RESPONSES:
+#     - 422: Invalid query parameter types (non-integer skip/limit)
+#     - 500: Server error accessing database
+#
+# SPEC SECTIONS REFERENCED:
+#     Section 3.2: Model enumeration endpoint
+#     Section 3.3: Pagination requirements
+#
+# RUN TESTS:
+#     pytest tests/test_enumerate.py -v
 # """
 
 # from fastapi.testclient import TestClient

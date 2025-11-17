@@ -46,6 +46,8 @@ class ModelRating(BaseModel):  # type: ignore[misc]
     tree_score_latency: float
     size_score: rating_sizescore
     size_score_latency: float
+
+
 # ---------------------------------------------
 
 
@@ -57,7 +59,7 @@ async def get_model_rating(artifact_id: str) -> Any:
     if not artifact_id or not artifact_id.isdigit():
         raise HTTPException(
             status_code=400,
-            detail="There is missing field(s) in the artifact_id or it is formed improperly, or is invalid."
+            detail="There is missing field(s) in the artifact_id or it is formed improperly, or is invalid.",
         )
     # TODO add authentication check
     # if not valid authentication token
@@ -81,7 +83,7 @@ async def get_model_rating(artifact_id: str) -> Any:
     except Exception:
         raise HTTPException(
             status_code=500,
-            detail="The artifact rating system encountered an error while computing at least one metric."
+            detail="The artifact rating system encountered an error while computing at least one metric.",
         )
 
     return model_rating
@@ -89,7 +91,9 @@ async def get_model_rating(artifact_id: str) -> Any:
 
 # -------- Manual test before integration ------------
 @router.post("/artifact/model/{artifact_id}/rate/upload")
-async def upload_model_rating(artifact_id: str, rating: Dict[str, Any] = Body(...)) -> Dict[str, str]:
+async def upload_model_rating(
+    artifact_id: str, rating: Dict[str, Any] = Body(...)
+) -> Dict[str, str]:
     """
     Upload a ModelRating JSON to S3 under rating/{artifact_id}.rate.json
     """
@@ -97,15 +101,12 @@ async def upload_model_rating(artifact_id: str, rating: Dict[str, Any] = Body(..
     try:
         key = f"rating/{artifact_id}.rate.json"
         s3_client.put_object(
-            Bucket="phase2-s3-bucket",
-            Key=key,
-            Body=json.dumps(rating)
+            Bucket="phase2-s3-bucket", Key=key, Body=json.dumps(rating)
         )
         return {"message": f"ModelRating uploaded successfully for {artifact_id}"}
     except Exception as e:
         raise HTTPException(
-            status_code=500,
-            detail=f"Error uploading ModelRating: {str(e)}"
+            status_code=500, detail=f"Error uploading ModelRating: {str(e)}"
         )
 
 

@@ -7,7 +7,6 @@ import time
 from typing import Optional, Set, Tuple
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src/metrics"))
-
 from license_score import fetch_readme  # noqa: E402
 
 
