@@ -7,7 +7,7 @@ from typing import Any, Dict, Optional, Tuple, cast
 import requests
 
 
-def get_model_config(model_identifier: str) -> Dict[str, Any] | None:
+def get_model_config(model_identifier: str) -> Optional[Dict[str, Any]]:
     """
     Return JSON metadata for a Hugging Face model via API.
     model_identifier can be either:

@@ -40,8 +40,8 @@ app = FastAPI(
 )
 
 # Initialize database only if not in test mode
-if os.getenv("TESTING") != "true":
-    init_db()
+# if os.getenv("TESTING") != "true":
+#     init_db()
 
 # Include routers - BASELINE endpoints only
 app.include_router(
