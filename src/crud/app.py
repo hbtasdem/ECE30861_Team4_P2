@@ -31,6 +31,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from src.crud.rate.routes import router as rate_router  # noqa: E402
 from src.crud.upload.artifact_routes import router as artifact_router  # noqa: E402
 from src.database import init_db  # noqa: E402
+from src.lineage_tree import router as lineage_router  # noqa: E402
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -48,6 +49,7 @@ app.include_router(
     artifact_router
 )  # POST/GET/PUT /artifact(s)/{type}/{id}, POST /artifacts
 app.include_router(rate_router)  # GET /artifact/model/{id}/rate
+app.include_router(lineage_router)
 
 
 @app.get("/")
