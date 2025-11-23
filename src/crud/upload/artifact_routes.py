@@ -91,11 +91,7 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
 # POST /artifact/{artifact_type} - CREATE ARTIFACT (BASELINE)
 # ============================================================================
 
-@router.post(
-    "/artifact/{artifact_type}",
-    response_model=Artifact,
-    status_code=status.HTTP_201_CREATED,
-)
+@router.post("/artifact/{artifact_type}", response_model=Artifact, status_code=status.HTTP_201_CREATED)
 async def create_artifact(
     artifact_type: str,
     artifact_data: ArtifactData,
@@ -122,21 +118,21 @@ async def create_artifact(
     # ========================================================================
     # AUTHENTICATION
     # ========================================================================
-
     # georgia: commenting this out until it works, so upload not dependent
+
     # if not x_authorization:
     #     raise HTTPException(
     #         status_code=status.HTTP_403_FORBIDDEN,
     #         detail="Missing X-Authorization header",
     #     )
 
-    try:
-        get_current_user(x_authorization, None)
-    except HTTPException:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token",
-        )
+    # try:
+    #     get_current_user(x_authorization, None)
+    # except HTTPException:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Authentication failed: Invalid or expired token",
+    #     )
 
     # ========================================================================
     # VALIDATION
@@ -177,18 +173,10 @@ async def create_artifact(
         }
 
         # Store in S3
-        key = _get_artifact_key(artifact_type, artifact_id)
-        s3_client.put_object(
-            Bucket=BUCKET_NAME,
-            Key=key,
-            Body=json.dumps(artifact_envelope, indent=2),
-            ContentType="application/json",
-        )
+        key = f"{artifact_type}/{artifact_id}.json"
+        s3_client.put_object(Bucket=BUCKET_NAME, Key=key, Body=json.dumps(artifact_envelope, indent=2), ContentType="application/json")
 
-        return Artifact(
-            metadata=ArtifactMetadata(name=name, id=artifact_id, type=artifact_type),
-            data=ArtifactData(url=artifact_data.url, download_url=download_url),
-        )
+        return artifact_envelope
 
     except Exception as e:
         raise HTTPException(
@@ -228,39 +216,41 @@ async def get_artifact(
     # ========================================================================
     # AUTHENTICATION
     # ========================================================================
-    if not x_authorization:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header",
-        )
+    # georgia commenting out for now
+    # if not x_authorization:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Missing X-Authorization header",
+    #     )
 
-    try:
-        get_current_user(x_authorization, None)
-    except HTTPException:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token",
-        )
+    # try:
+    #     get_current_user(x_authorization, None)
+    # except HTTPException:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Authentication failed: Invalid or expired token",
+    #     )
 
     # ========================================================================
     # RETRIEVE ARTIFACT FROM S3
     # ========================================================================
     try:
-        key = _get_artifact_key(artifact_type, artifact_id)
+        key = f"{artifact_type}/{artifact_id}.json"
         response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)
         artifact_envelope = json.loads(response["Body"].read().decode("utf-8"))
 
-        return Artifact(
-            metadata=ArtifactMetadata(
-                name=artifact_envelope["metadata"]["name"],
-                id=artifact_envelope["metadata"]["id"],
-                type=artifact_envelope["metadata"]["type"],
-            ),
-            data=ArtifactData(
-                url=artifact_envelope["data"]["url"],
-                download_url=artifact_envelope["data"]["download_url"],
-            ),
-        )
+        return artifact_envelope
+        # Artifact(
+        #     metadata=ArtifactMetadata(
+        #         name=artifact_envelope["metadata"]["name"],
+        #         id=artifact_envelope["metadata"]["id"],
+        #         type=artifact_envelope["metadata"]["type"],
+        #     ),
+        #     data=ArtifactData(
+        #         url=artifact_envelope["data"]["url"],
+        #         download_url=artifact_envelope["data"]["download_url"],
+        #     ),
+        # )
 
     except ClientError as e:
         if e.response["Error"]["Code"] == "NoSuchKey":

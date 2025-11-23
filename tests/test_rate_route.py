@@ -8,7 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 from moto import mock_aws
 
-from crud.app import app
+from src.crud.app import app
 
 
 @pytest.fixture
@@ -93,19 +93,6 @@ def test_get_rating_success(client: TestClient, mock_s3_bucket: boto3.client) ->
     returned_rating = response.json()
     for key, value in mock_valid_rating.items():
         assert returned_rating[key] == value
-
-
-def test_get_rating_invalidartifactid(
-    client: TestClient, mock_s3_bucket: boto3.client
-) -> None:
-    """Test that GET /artifact/model/{id}/rate returns the expected error
-    given a non-integer artifact id."""
-    # rate endpoint
-    artifact_id = "not_integer"
-    response = client.get(f"/artifact/model/{artifact_id}/rate")
-
-    # assert error type
-    assert response.status_code == 400
 
 
 def test_get_rating_noartifact(

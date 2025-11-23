@@ -7,7 +7,7 @@ import boto3
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel
 
-from src.crud.upload.auth import get_current_user
+# from src.crud.upload.auth import get_current_user
 
 router = APIRouter()
 
@@ -44,8 +44,8 @@ class ModelRating(BaseModel):  # type: ignore[misc]
     reproducibility_latency: float
     reviewedness: float
     reviewedness_latency: float
-    treescore: float
-    treescore_latency: float
+    tree_score: float
+    tree_score_latency: float
     size_score: rating_sizescore
     size_score_latency: float
 
@@ -67,19 +67,19 @@ async def get_model_rating(
         )
 
     # Validate authentication token
-    if not x_authorization:
-        raise HTTPException(
-            status_code=403,
-            detail="Authentication failed due to invalid or missing AuthenticationToken.",
-        )
+    # if not x_authorization:
+    #     raise HTTPException(
+    #         status_code=403,
+    #         detail="Authentication failed due to invalid or missing AuthenticationToken.",
+    #     )
 
-    try:
-        get_current_user(x_authorization, db=None)
-    except HTTPException:
-        raise HTTPException(
-            status_code=403,
-            detail="Authentication failed due to invalid or missing AuthenticationToken.",
-        )
+    # try:
+    #     get_current_user(x_authorization, db=None)
+    # except HTTPException:
+    #     raise HTTPException(
+    #         status_code=403,
+    #         detail="Authentication failed due to invalid or missing AuthenticationToken.",
+    #     )
 
     key = f"rating/{artifact_id}.rate.json"
     s3_client = boto3.client("s3")
