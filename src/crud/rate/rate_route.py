@@ -1,10 +1,10 @@
 # /artifact/model/{id}/rate
 
 import json
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 import boto3
-from fastapi import APIRouter, Body, Header, HTTPException
+from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel
 
 from src.crud.upload.auth import get_current_user
@@ -44,8 +44,8 @@ class ModelRating(BaseModel):  # type: ignore[misc]
     reproducibility_latency: float
     reviewedness: float
     reviewedness_latency: float
-    tree_score: float
-    tree_score_latency: float
+    treescore: float
+    treescore_latency: float
     size_score: rating_sizescore
     size_score_latency: float
 
@@ -60,7 +60,7 @@ async def get_model_rating(
     """
     Return the stored ModelRating for a given artifact ID.
     """
-    if not artifact_id or not artifact_id.isdigit():
+    if not artifact_id:
         raise HTTPException(
             status_code=400,
             detail="There is missing field(s) in the artifact_id or it is formed improperly, or is invalid.",
@@ -105,24 +105,24 @@ async def get_model_rating(
 
 
 # -------- Manual test before integration ------------
-@router.post("/artifact/model/{artifact_id}/rate/upload")
-async def upload_model_rating(
-    artifact_id: str, rating: Dict[str, Any] = Body(...)
-) -> Dict[str, str]:
-    """
-    Upload a ModelRating JSON to S3 under rating/{artifact_id}.rate.json
-    """
-    s3_client = boto3.client("s3")
-    try:
-        key = f"rating/{artifact_id}.rate.json"
-        s3_client.put_object(
-            Bucket="phase2-s3-bucket", Key=key, Body=json.dumps(rating)
-        )
-        return {"message": f"ModelRating uploaded successfully for {artifact_id}"}
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error uploading ModelRating: {str(e)}"
-        )
+# @router.post("/artifact/model/{artifact_id}/rate/upload")
+# async def upload_model_rating(
+#     artifact_id: str, rating: Dict[str, Any] = Body(...)
+# ) -> Dict[str, str]:
+#     """
+#     Upload a ModelRating JSON to S3 under rating/{artifact_id}.rate.json
+#     """
+#     s3_client = boto3.client("s3")
+#     try:
+#         key = f"rating/{artifact_id}.rate.json"
+#         s3_client.put_object(
+#             Bucket="phase2-s3-bucket", Key=key, Body=json.dumps(rating)
+#         )
+#         return {"message": f"ModelRating uploaded successfully for {artifact_id}"}
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=500, detail=f"Error uploading ModelRating: {str(e)}"
+#         )
 
 
 """
