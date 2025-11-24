@@ -1,4 +1,4 @@
-# /artifact/model/{id}/rate
+# /artifact/model/{artifact_id}/rate
 
 import json
 from typing import Any, Optional
@@ -55,7 +55,8 @@ class ModelRating(BaseModel):  # type: ignore[misc]
 
 @router.get("/artifact/model/{artifact_id}/rate")
 async def get_model_rating(
-    artifact_id: str, x_authorization: Optional[str] = Header(None)
+    artifact_id: str,
+    x_authorization: Optional[str] = Header(None)
 ) -> Any:
     """
     Return the stored ModelRating for a given artifact ID.
@@ -102,67 +103,3 @@ async def get_model_rating(
         )
 
     return model_rating
-
-
-# -------- Manual test before integration ------------
-# @router.post("/artifact/model/{artifact_id}/rate/upload")
-# async def upload_model_rating(
-#     artifact_id: str, rating: Dict[str, Any] = Body(...)
-# ) -> Dict[str, str]:
-#     """
-#     Upload a ModelRating JSON to S3 under rating/{artifact_id}.rate.json
-#     """
-#     s3_client = boto3.client("s3")
-#     try:
-#         key = f"rating/{artifact_id}.rate.json"
-#         s3_client.put_object(
-#             Bucket="phase2-s3-bucket", Key=key, Body=json.dumps(rating)
-#         )
-#         return {"message": f"ModelRating uploaded successfully for {artifact_id}"}
-#     except Exception as e:
-#         raise HTTPException(
-#             status_code=500, detail=f"Error uploading ModelRating: {str(e)}"
-#         )
-
-
-"""
-Commands to test
-curl -X POST "http://3.140.239.181:8000/artifact/model/01/rate/upload" \
--H "Content-Type: application/json" \
--d '{
-  "name": "bert-base-uncased",
-  "category": "model",
-  "net_score": 0.95,
-  "net_score_latency": 0.02,
-  "ramp_up_time": 0.8,
-  "ramp_up_time_latency": 0.01,
-  "bus_factor": 0.9,
-  "bus_factor_latency": 0.01,
-  "performance_claims": 0.92,
-  "performance_claims_latency": 0.02,
-  "license": 1.0,
-  "license_latency": 0.01,
-  "dataset_and_code_score": 0.88,
-  "dataset_and_code_score_latency": 0.01,
-  "dataset_quality": 0.9,
-  "dataset_quality_latency": 0.01,
-  "code_quality": 0.93,
-  "code_quality_latency": 0.01,
-  "reproducibility": 0.94,
-  "reproducibility_latency": 0.01,
-  "reviewedness": 0.85,
-  "reviewedness_latency": 0.01,
-  "tree_score": 0.9,
-  "tree_score_latency": 0.01,
-  "size_score": {
-    "raspberry_pi": 0.8,
-    "jetson_nano": 0.85,
-    "desktop_pc": 0.9,
-    "aws_server": 0.95
-  },
-  "size_score_latency": 0.01
-}'
-
-
-curl -X GET "http://3.140.239.181:8000/artifact/model/01/rate"
-"""

@@ -57,9 +57,12 @@ async def log_requests(request: Request, call_next):
     response = await call_next(request)
 
     logger.info(f"Response status: {response.status_code}")
-    if hasattr(response, "body_iterator"):
-        # Capture response body if possible
-        logger.info(f"Response body: {response.body_iterator}")
+    if hasattr(response, "body") and response.body is not None:
+        try:
+            logger.info(f"Response body: {response.body.decode('utf-8')}")
+        except Exception:
+            logger.info(f"Response body (binary or non-text): {response.body}")
+
     return response
 
 
@@ -71,7 +74,7 @@ async def log_requests(request: Request, call_next):
 app.include_router(
     artifact_router
 )  # POST/GET/PUT /artifact(s)/{type}/{id}, POST /artifacts
-app.include_router(rate_router)  # GET /artifact/model/{id}/rate
+app.include_router(rate_router)  # GET /artifact/model/{artifact)id}/rate
 
 
 @app.get("/")
