@@ -16,12 +16,13 @@ ENDPOINTS PROVIDED (11/11 BASELINE):
 11. GET /artifact/model/{id}/rate (in rate/routes.py)
 """
 
+import logging
 # app.py
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 # Add src and parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
@@ -36,6 +37,31 @@ app = FastAPI(
     description="Registry for managing ML models, datasets, and code from URLs",
     version="1.0.0",
 )
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("uvicorn")
+logging.getLogger("botocore").setLevel(logging.WARNING)
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(f"Incoming request: {request.method} {request.url}")
+
+    try:
+        body = await request.json()
+        logger.info(f"Request body: {body}")
+    except Exception:
+        body = None
+
+    response = await call_next(request)
+
+    logger.info(f"Response status: {response.status_code}")
+    if hasattr(response, "body_iterator"):
+        # Capture response body if possible
+        logger.info(f"Response body: {response.body_iterator}")
+    return response
+
 
 # Initialize database only if not in test mode
 # if os.getenv("TESTING") != "true":
@@ -66,6 +92,11 @@ def root() -> Dict[str, Any]:
 def health_check() -> Dict[str, str]:
     """Health check endpoint"""
     return {"status": "ok"}
+
+
+@app.get("/tracks")
+def extended_track() -> Dict[str, List]:
+    return {"plannedTracks": ["Access control track"]}
 
 
 # uvicorn src.crud.app:app --host 127.0.0.1 --port 8000 --reload

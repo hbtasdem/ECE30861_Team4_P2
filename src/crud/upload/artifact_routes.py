@@ -407,19 +407,19 @@ async def enumerate_artifacts(
     # ========================================================================
     # AUTHENTICATION
     # ========================================================================
-    if not x_authorization:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header",
-        )
+    # if not x_authorization:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Missing X-Authorization header",
+    #     )
 
-    try:
-        get_current_user(x_authorization, None)
-    except HTTPException:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token",
-        )
+    # try:
+    #     get_current_user(x_authorization, None)
+    # except HTTPException:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Authentication failed: Invalid or expired token",
+    #     )
 
     # ========================================================================
     # VALIDATION
@@ -509,30 +509,30 @@ async def reset_registry(
     Raises:
         HTTPException: 401 if not admin, 403 if auth fails
     """
-    if not x_authorization:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header",
-        )
+    # if not x_authorization:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Missing X-Authorization header",
+    #     )
 
-    try:
-        current_user = get_current_user(x_authorization, None)
-    except HTTPException:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token",
-        )
+    # try:
+    #     current_user = get_current_user(x_authorization, None)
+    # except HTTPException:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Authentication failed: Invalid or expired token",
+    #     )
 
     # Check if user is admin
-    if not current_user.is_admin:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You do not have permission to reset the registry",
-        )
+    # if not current_user.is_admin:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_401_UNAUTHORIZED,
+    #         detail="You do not have permission to reset the registry",
+    #     )
 
     try:
         # Delete all artifacts
-        for artifact_type in ["model", "dataset", "code"]:
+        for artifact_type in ["model", "dataset", "code", "rating"]:
             paginator = s3_client.get_paginator("list_objects_v2")
             pages = paginator.paginate(
                 Bucket=BUCKET_NAME, Prefix=f"{artifact_type}/"
