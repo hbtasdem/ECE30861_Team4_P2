@@ -41,15 +41,15 @@ from botocore.exceptions import ClientError
 from fastapi import APIRouter, Header, HTTPException, Query, status
 from ulid import ULID
 
+from src.crud.rate_route import rateOnUpload
+from src.crud.upload import download_model
 from src.crud.upload.artifacts import (Artifact, ArtifactData, ArtifactLineageGraph, ArtifactLineageNode,
                                        ArtifactMetadata, ArtifactQuery)
 from src.crud.upload.auth import get_current_user
-from src.main import calculate_all_scores
 
 # from src.database import get_db
 # from src.database_models import Artifact as ArtifactModel
 # from src.database_models import AuditEntry
-# from src.main import calculate_all_scores
 
 router = APIRouter(tags=["artifacts"])
 
@@ -160,7 +160,14 @@ async def create_artifact(
     try:
         # Generate unique ID
         artifact_id = str(ULID())
-        download_url = f"/api/artifacts/{artifact_type}/{artifact_id}/download"
+
+        # RATE MODEL: if model ingestible will store rating in s3 and return True
+        if artifact_type == "model":
+            if not rateOnUpload(artifact_data.url, artifact_id):
+                raise HTTPException(status_code=424, detail="Artifact is not registered due to the disqualified rating.")
+
+        # Get download_url
+        download_url = download_model(artifact_data.url)
 
         # Extract name from URL
         name = artifact_data.url.split("/")[-1]
@@ -176,20 +183,6 @@ async def create_artifact(
         # Store in S3
         key = f"{artifact_type}/{artifact_id}.json"
         s3_client.put_object(Bucket=BUCKET_NAME, Key=key, Body=json.dumps(artifact_envelope, indent=2), ContentType="application/json")
-
-        # ========================================================================
-        # RATE MODEL
-        # ========================================================================
-        if artifact_type == "model":
-            code_link = ""
-            dataset_link = ""
-            rating = calculate_all_scores(code_link, dataset_link, artifact_data.url, set(), set())
-
-            try:
-                key = f"rating/{artifact_id}.rate.json"
-                s3_client.put_object(Bucket=BUCKET_NAME, Key=key, Body=json.dumps(rating))
-            except Exception as e:
-                raise HTTPException(status_code=424, detail=f"Error rating model: {str(e)}")
 
         return artifact_envelope
 
