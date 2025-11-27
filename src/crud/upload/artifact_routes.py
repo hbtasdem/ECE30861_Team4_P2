@@ -42,10 +42,10 @@ from fastapi import APIRouter, Header, HTTPException, Query, status
 from ulid import ULID
 
 from src.crud.rate_route import rateOnUpload
-from src.crud.upload import download_model
 from src.crud.upload.artifacts import (Artifact, ArtifactData, ArtifactLineageGraph, ArtifactLineageNode,
                                        ArtifactMetadata, ArtifactQuery)
 from src.crud.upload.auth import get_current_user
+from src.crud.upload.download_artifact import download_model
 
 # from src.database import get_db
 # from src.database_models import Artifact as ArtifactModel

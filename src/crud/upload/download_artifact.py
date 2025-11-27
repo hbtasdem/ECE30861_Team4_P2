@@ -1,54 +1,47 @@
-# During upload, upload the artifact into s3 and give a link for users to download it
-import os
-import shutil
-import zipfile
-
 import boto3
-from huggingface_hub import snapshot_download
+from huggingface_hub import HfApi, hf_hub_download
 
-s3 = boto3.client("s3")
 BUCKET_NAME = "phase2-s3-bucket"
 
 
 def download_model(model_url: str) -> str:
-    """
-    download model locally, zip and store in s3, delete locally, return download url
-
-    Parameters
-    ----------
-    model_url: str given in upload endpoint by user
-
-    Returns
-    ----------
-    str download_url for user to download model from s3
-    """
-    # Step 1: Download model locally
     model_id = model_url.split("huggingface.co/")[-1]
-    local_folder = snapshot_download(repo_id=model_id, cache_dir="/tmp/hf_models")
+    api = HfApi()
+    s3 = boto3.client("s3")
 
-    # Step 2: Zip the folder
-    zip_filename = f"/tmp/{model_id.replace('/', '_')}.zip"
-    with zipfile.ZipFile(zip_filename, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        for root, _, files in os.walk(local_folder):
-            for file in files:
-                file_path = os.path.join(root, file)
-                zipf.write(file_path, os.path.relpath(file_path, local_folder))
+    # Download only necessary formats
+    ALLOWED_PATTERNS = [
+        "*.bin",
+        "*.safetensors",
+        "config.json",
+        "tokenizer*",
+        "*.json",
+        "*.txt",
+    ]
 
-    # Step 3: Upload zip to S3
-    s3_key = f"downloads/{model_id}.zip"
+    # List all files in repo and filter manually
+    files = api.list_repo_files(repo_id=model_id)
+    files = [f for f in files if any(f.endswith(p.replace("*", "")) for p in ALLOWED_PATTERNS)]
 
-    s3.upload_file(zip_filename, BUCKET_NAME, s3_key)
+    for file_path in files:
+        # Download small chunks to a temp file
+        tmp_file = hf_hub_download(
+            repo_id=model_id,
+            filename=file_path,
+            local_dir=None,       # keeps it in HF cache, not EC2
+            local_dir_use_symlinks=False,
+        )
 
-    # Step 4: Delete local folder and zip to free disk
-    shutil.rmtree(local_folder)
-    os.remove(zip_filename)
+        # Upload to S3
+        s3_key = f"models/{model_id}/{file_path}"
+        s3.upload_file(tmp_file, BUCKET_NAME, s3_key)
+        print(f"[S3 UPLOAD] {file_path} → s3://{BUCKET_NAME}/{s3_key}")
 
-    # Step 5: Generate pre-signed URL
-    expiration = 7 * 24 * 60 * 60  # 1 week in seconds
+    # Generate folder-style URL
     url = s3.generate_presigned_url(
         "get_object",
-        Params={"Bucket": BUCKET_NAME, "Key": s3_key},
-        ExpiresIn=expiration
+        Params={"Bucket": BUCKET_NAME, "Key": f"downloads/{model_id}/"},
+        ExpiresIn=7*24*3600
     )
     return url
 
