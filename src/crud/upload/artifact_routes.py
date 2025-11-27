@@ -45,7 +45,7 @@ from src.crud.rate_route import rateOnUpload
 from src.crud.upload.artifacts import (Artifact, ArtifactData, ArtifactLineageGraph, ArtifactLineageNode,
                                        ArtifactMetadata, ArtifactQuery)
 from src.crud.upload.auth import get_current_user
-from src.crud.upload.download_artifact import download_model
+from src.crud.upload.download_artifact import get_download_url
 
 # from src.database import get_db
 # from src.database_models import Artifact as ArtifactModel
@@ -167,7 +167,7 @@ async def create_artifact(
                 raise HTTPException(status_code=424, detail="Artifact is not registered due to the disqualified rating.")
 
         # Get download_url
-        download_url = download_model(artifact_data.url)
+        download_url = get_download_url(artifact_data.url, artifact_id, artifact_type)
 
         # Extract name from URL
         name = artifact_data.url.split("/")[-1]
@@ -540,17 +540,14 @@ async def reset_registry(
 
     try:
         # Delete all artifacts
-        for artifact_type in ["model", "dataset", "code", "rating"]:
-            paginator = s3_client.get_paginator("list_objects_v2")
-            pages = paginator.paginate(
-                Bucket=BUCKET_NAME, Prefix=f"{artifact_type}/"
-            )
+        paginator = s3_client.get_paginator("list_objects_v2")
+        pages = paginator.paginate(Bucket=BUCKET_NAME)
 
-            for page in pages:
-                if "Contents" not in page:
-                    continue
-                for obj in page["Contents"]:
-                    s3_client.delete_object(Bucket=BUCKET_NAME, Key=obj["Key"])
+        for page in pages:
+            if "Contents" not in page:
+                continue
+            for obj in page["Contents"]:
+                s3_client.delete_object(Bucket=BUCKET_NAME, Key=obj["Key"])
 
         return {"message": "Registry is reset."}
     except Exception as e:

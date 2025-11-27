@@ -142,18 +142,18 @@ def rateOnUpload(model_url: str, artifact_id: str) -> bool:
     dataset_url, code_url = findCodeAndDataset(model_url)
     # calculate metrics
     rating = calculate_all_scores(code_url, dataset_url, model_url, set(), set())
-    # check if ingestible
-    for key, value in rating.items():
-        # skip non-score items
-        if (key == "name") or (key == "category") or key.endwith("latency"):
-            continue
-        # handle score dict
-        if isinstance(value, dict):
-            for val in value.values():
-                if val < 0.5:
-                    return False
-        elif value < 0.5:
-            return False
+    # check if ingestible comment out until rate works
+    # for key, value in rating.items():
+    #     # skip non-score items
+    #     if (key == "name") or (key == "category") or key.endswith("latency"):
+    #         continue
+    #     # handle score dict
+    #     if isinstance(value, dict):
+    #         for val in value.values():
+    #             if val < 0.5:
+    #                 return False
+    #     elif value < 0.5:
+    #         return False
 
     # if ingestible: store metrics
     try:

@@ -1,6 +1,4 @@
-# tests/test_download.py
-import io
-from typing import Any, Type
+from typing import Any, Iterator, Type
 from unittest.mock import MagicMock, patch
 
 import boto3
@@ -9,45 +7,52 @@ from moto import mock_aws
 from src.crud.upload.download_artifact import BUCKET_NAME, download_model
 
 
+class FakeResponse:
+    # Fake HTTPX response to stream bytes
+    def __init__(self, content: bytes) -> None:
+        self._stream = iter([content])
+
+    def raise_for_status(self) -> None:
+        pass
+
+    def iter_bytes(self, chunk_size: int = 1024*1024) -> Iterator[bytes]:
+        return self._stream
+
+    def __enter__(self) -> "FakeResponse":
+        return self
+
+    def __exit__(self, exc_type: Type[BaseException], exc_val: BaseException, exc_tb: Any) -> None:
+        pass
+
+
 @mock_aws
 @patch("src.crud.upload.download_artifact.HfApi")
-@patch("httpx.stream")
-def test_stream_model_to_s3(mock_httpx_stream: MagicMock, mock_hfapi_class: MagicMock) -> None:
-    # ----- Mock Hugging Face API -----
+@patch("src.crud.upload.download_artifact.httpx.stream")
+def test_download_model(mock_httpx_stream: MagicMock, mock_hfapi_class: MagicMock) -> None:
+    # ----- Mock HF API -----
     mock_hfapi = MagicMock()
     mock_hfapi.list_repo_files.return_value = ["config.json", "pytorch_model.bin"]
     mock_hfapi_class.return_value = mock_hfapi
 
     # ----- Mock httpx.stream -----
-    class FakeResponse:
-        def __init__(self, content: bytes) -> None:
-            self.raw = io.BytesIO(content)
+    mock_httpx_stream.side_effect = lambda *args, **kwargs: FakeResponse(b"fake content")
 
-        def raise_for_status(self) -> None:
-            pass
-
-        def __enter__(self) -> "FakeResponse":
-            return self
-
-        def __exit__(self, exc_type: Type[BaseException], exc_val: Type[BaseException], exc_tb: Type[BaseException]) -> None:
-            pass
-
-    def fake_stream(method: str, url: str, *args: Any, **kwargs: Any) -> "FakeResponse":
-        return FakeResponse(b"fake contents")
-    mock_httpx_stream.side_effect = fake_stream
-
-    # ----- Mock AWS S3 -----
+    # ----- Mock S3 -----
     s3 = boto3.client("s3", region_name="us-east-1")
     s3.create_bucket(Bucket=BUCKET_NAME)
 
-    # ----- Run function -----
-    url = download_model("https://huggingface.co/test/model")
+    artifact_id = "test-artifact"
+    model_url = "https://huggingface.co/test-model"
 
-    # ----- Assert S3 files exist -----
-    objects = s3.list_objects_v2(Bucket=BUCKET_NAME, Prefix="downloads/test/model/")
-    keys = [obj["Key"] for obj in objects.get("Contents", [])]
-    assert "downloads/test/model/config.json" in keys
-    assert "downloads/test/model/pytorch_model.bin" in keys
+    # Run function
+    index_url = download_model(model_url, artifact_id)
 
-    # ----- Assert presigned URL was returned -----
-    assert url.startswith("https://")
+    # ----- Check index.html exists -----
+    response = s3.get_object(Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/index.html")
+    index_content = response["Body"].read().decode()
+    assert "<li><a href=" in index_content
+    assert "config.json" in index_content
+    assert "pytorch_model.bin" in index_content
+
+    # Check returned URL matches S3 object
+    assert index_url == f"https://{BUCKET_NAME}.s3.amazonaws.com/downloads/{artifact_id}/index.html"
