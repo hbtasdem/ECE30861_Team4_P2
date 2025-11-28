@@ -23,7 +23,7 @@ def generate_artifact_id(name: str) -> int:
     return hash_int
 
 
-def get_model_config(model_identifier: str) -> Dict[str, Any] | None:
+def get_model_config(model_identifier: str) -> Optional[Dict[str, Any]]:
     """
     Return JSON metadata for a Hugging Face model via API.
     model_identifier can be either:
