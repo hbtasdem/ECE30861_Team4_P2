@@ -242,56 +242,56 @@ async def get_model_lineage(model_identifier: str) -> Dict[str, Any]:
     return response
 
 
-@router.get("/artifact/models/lineage-batch")
-async def get_batch_lineage(model_identifiers: str) -> Dict[str, Any]:
-    """
-    Get lineage information for multiple models and merge into a single graph.
+# @router.get("/artifact/models/lineage-batch")
+# async def get_batch_lineage(model_identifiers: str) -> Dict[str, Any]:
+#     """
+#     Get lineage information for multiple models and merge into a single graph.
     
-    Args:
-        model_identifiers: Comma-separated list of model identifiers
+#     Args:
+#         model_identifiers: Comma-separated list of model identifiers
     
-    Returns:
-        Combined graph with all models and their relationships
-    """
-    start_time = time.time()
+#     Returns:
+#         Combined graph with all models and their relationships
+#     """
+#     start_time = time.time()
     
-    # Split and clean model identifiers
-    models = [m.strip() for m in model_identifiers.split(",") if m.strip()]
+#     # Split and clean model identifiers
+#     models = [m.strip() for m in model_identifiers.split(",") if m.strip()]
     
-    all_nodes = []
-    all_edges = []
-    seen_artifact_ids = set()
-    errors = []
+#     all_nodes = []
+#     all_edges = []
+#     seen_artifact_ids = set()
+#     errors = []
     
-    for model_id in models:
-        try:
-            metadata = get_model_config(model_id)
-            if metadata:
-                graph = extract_lineage_graph(model_id, metadata)
+#     for model_id in models:
+#         try:
+#             metadata = get_model_config(model_id)
+#             if metadata:
+#                 graph = extract_lineage_graph(model_id, metadata)
                 
-                # Add nodes (avoid duplicates)
-                for node in graph["nodes"]:
-                    if node["artifact_id"] not in seen_artifact_ids:
-                        all_nodes.append(node)
-                        seen_artifact_ids.add(node["artifact_id"])
+#                 # Add nodes (avoid duplicates)
+#                 for node in graph["nodes"]:
+#                     if node["artifact_id"] not in seen_artifact_ids:
+#                         all_nodes.append(node)
+#                         seen_artifact_ids.add(node["artifact_id"])
                 
-                # Add edges
-                all_edges.extend(graph["edges"])
-            else:
-                errors.append(f"Could not fetch metadata for {model_id}")
-        except Exception as e:
-            errors.append(f"Error processing {model_id}: {str(e)}")
+#                 # Add edges
+#                 all_edges.extend(graph["edges"])
+#             else:
+#                 errors.append(f"Could not fetch metadata for {model_id}")
+#         except Exception as e:
+#             errors.append(f"Error processing {model_id}: {str(e)}")
     
-    return {
-        "nodes": all_nodes,
-        "edges": all_edges,
-        "metadata": {
-            "total_models": len(models),
-            "successful": len(models) - len(errors),
-            "errors": errors,
-            "latency": round(time.time() - start_time, 3)
-        }
-    }
+#     return {
+#         "nodes": all_nodes,
+#         "edges": all_edges,
+#         "metadata": {
+#             "total_models": len(models),
+#             "successful": len(models) - len(errors),
+#             "errors": errors,
+#             "latency": round(time.time() - start_time, 3)
+#         }
+#     }
 
 
 # For local testing
