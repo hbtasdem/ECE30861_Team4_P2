@@ -49,6 +49,56 @@ def get_model_config(model_identifier: str) -> Optional[Dict[str, Any]]:
         return None
 
 
+def check_lineage(model_identifier: str) -> Tuple[Optional[Dict[str, Any]], float]:
+    """
+    Synchronous function to check if a model has lineage (parent models).
+    Returns a tuple of (lineage_info, latency).
+    
+    This is a simplified version for use in scoring functions.
+    """
+    start_time = time.time()
+    
+    metadata = get_model_config(model_identifier)
+    
+    if not metadata:
+        return None, time.time() - start_time
+    
+    # Extract parent models
+    parent_models = []
+    
+    # Check tags
+    tags = metadata.get("tags", [])
+    if isinstance(tags, list):
+        for tag in tags:
+            if isinstance(tag, str) and tag.startswith("base_model:"):
+                parent = tag.replace("base_model:", "")
+                parent_models.append(parent)
+    
+    # Check cardData
+    card_data = metadata.get("cardData", {})
+    if isinstance(card_data, dict) and "base_model" in card_data:
+        base = card_data["base_model"]
+        if base and base not in parent_models:
+            parent_models.append(base)
+    
+    # Check direct base_model field
+    if "base_model" in metadata:
+        base = metadata["base_model"]
+        if base and base not in parent_models:
+            parent_models.append(base)
+    
+    lineage_info = {
+        "model": model_identifier,
+        "base_model": parent_models[0] if parent_models else None,
+        "has_lineage": len(parent_models) > 0,
+        "lineage_depth": 1 if parent_models else 0,
+        "all_parents": parent_models
+    }
+    
+    elapsed_time = time.time() - start_time
+    return lineage_info, elapsed_time
+
+
 def extract_lineage_graph(
     model_identifier: str, 
     metadata: Dict[str, Any]
@@ -242,78 +292,24 @@ async def get_model_lineage(model_identifier: str) -> Dict[str, Any]:
     return response
 
 
-# @router.get("/artifact/models/lineage-batch")
-# async def get_batch_lineage(model_identifiers: str) -> Dict[str, Any]:
-#     """
-#     Get lineage information for multiple models and merge into a single graph.
-    
-#     Args:
-#         model_identifiers: Comma-separated list of model identifiers
-    
-#     Returns:
-#         Combined graph with all models and their relationships
-#     """
-#     start_time = time.time()
-    
-#     # Split and clean model identifiers
-#     models = [m.strip() for m in model_identifiers.split(",") if m.strip()]
-    
-#     all_nodes = []
-#     all_edges = []
-#     seen_artifact_ids = set()
-#     errors = []
-    
-#     for model_id in models:
-#         try:
-#             metadata = get_model_config(model_id)
-#             if metadata:
-#                 graph = extract_lineage_graph(model_id, metadata)
-                
-#                 # Add nodes (avoid duplicates)
-#                 for node in graph["nodes"]:
-#                     if node["artifact_id"] not in seen_artifact_ids:
-#                         all_nodes.append(node)
-#                         seen_artifact_ids.add(node["artifact_id"])
-                
-#                 # Add edges
-#                 all_edges.extend(graph["edges"])
-#             else:
-#                 errors.append(f"Could not fetch metadata for {model_id}")
-#         except Exception as e:
-#             errors.append(f"Error processing {model_id}: {str(e)}")
-    
-#     return {
-#         "nodes": all_nodes,
-#         "edges": all_edges,
-#         "metadata": {
-#             "total_models": len(models),
-#             "successful": len(models) - len(errors),
-#             "errors": errors,
-#             "latency": round(time.time() - start_time, 3)
-#         }
-#     }
-
-
 # For local testing
 if __name__ == "__main__":
     import sys
-    import asyncio
+    
+    # Test check_lineage directly
+    if len(sys.argv) < 2:
+        print("Usage: lineage_tree.py <model_identifier>")
+        print("Example: lineage_tree.py google-bert/bert-base-uncased")
+        print("Example: lineage_tree.py parvk11/audience_classifier_model")
+        sys.exit(1)
 
-    async def test_endpoint():
-        if len(sys.argv) < 2:
-            print("Usage: lineage_tree.py <model_identifier>")
-            print("Example: lineage_tree.py google-bert/bert-base-uncased")
-            print("Example: lineage_tree.py parvk11/audience_classifier_model")
-            sys.exit(1)
-
-        for model_id in sys.argv[1:]:
-            try:
-                result = await get_model_lineage(model_id)
-                print(f"\n{'='*60}")
-                print(f"Lineage Graph for {model_id}:")
-                print('='*60)
-                print(json.dumps(result, indent=2))
-            except HTTPException as e:
-                print(f"\nError: {e.detail}")
-
-    asyncio.run(test_endpoint())
+    for model_id in sys.argv[1:]:
+        lineage_info, latency = check_lineage(model_id)
+        if lineage_info:
+            print(f"\n{'='*60}")
+            print(f"Lineage info for {model_id}:")
+            print('='*60)
+            print(json.dumps(lineage_info, indent=2))
+            print(f"Latency: {latency:.3f}s")
+        else:
+            print(f"\nCould not fetch lineage for {model_id}")
