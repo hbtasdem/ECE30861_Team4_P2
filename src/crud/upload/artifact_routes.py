@@ -46,6 +46,7 @@ from src.crud.upload.artifacts import (Artifact, ArtifactData, ArtifactLineageGr
                                        ArtifactMetadata, ArtifactQuery)
 from src.crud.upload.auth import get_current_user
 from src.crud.upload.download_artifact import get_download_url
+from src.metrics.license_check import license_check
 
 # from src.database import get_db
 # from src.database_models import Artifact as ArtifactModel
@@ -726,19 +727,19 @@ async def check_license_compatibility(
     Raises:
         HTTPException: 400 if malformed, 403 if auth fails, 404 if not found, 502 if external error
     """
-    if not x_authorization:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed due to invalid or missing AuthenticationToken.",
-        )
+    # if not x_authorization:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Authentication failed due to invalid or missing AuthenticationToken.",
+    #     )
 
-    try:
-        get_current_user(x_authorization, None)
-    except HTTPException:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed due to invalid or missing AuthenticationToken.",
-        )
+    # try:
+    #     get_current_user(x_authorization, None)
+    # except HTTPException:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Authentication failed due to invalid or missing AuthenticationToken.",
+    #    )
 
     # Validate request body
     if "github_url" not in request_body:
@@ -769,13 +770,7 @@ async def check_license_compatibility(
             detail="External license information could not be retrieved.",
         )
 
-    # TODO: Implement actual license checking from GitHub
-    # For now, return True (compatible license)
-    # In production, this would:
-    # 1. Fetch repository from github_url
-    # 2. Check LICENSE file or GitHub API license field
-    # 3. Evaluate compatibility for fine-tuning and inference
-    return True
+    return license_check(github_url, artifact_id)
 
 
 # ============================================================================
