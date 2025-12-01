@@ -111,15 +111,11 @@ def check_compatibility(github_license: str, model_license: str) -> bool:
 
     # Fail on unknown licenses
     if code_cat == LicenseCategory.UNKNOWN or model_cat == LicenseCategory.UNKNOWN:
-        print(f"Unknown license: Code={github_license}, Model={model_license}")
         return False
 
     # Check compatibility matrix
     compatibility_key = (code_cat, model_cat)
     is_compatible = LICENSE_COMPATIBILITY.get(compatibility_key, False)
-
-    print(f"License check: {github_license} ({code_cat.name}) + {model_license} ({model_cat.name}) = {is_compatible}")
-
     return is_compatible
 
 
@@ -164,8 +160,7 @@ def get_model_license(model_url: str) -> str:
 
             return ""
 
-    except Exception as e:
-        print(f"Error fetching HF model license: {e}")
+    except Exception:
         return ""
 
 
@@ -203,8 +198,7 @@ def get_github_license(github_url: str) -> str:
 
             return ""
 
-    except Exception as e:
-        print(f"Error fetching GitHub license: {e}")
+    except Exception:
         return None
 
 

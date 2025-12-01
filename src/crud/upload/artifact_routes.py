@@ -706,7 +706,7 @@ async def check_license_compatibility(
     artifact_id: str,
     request_body: Dict[str, Any],
     x_authorization: Optional[str] = Header(None),
-) -> Dict[str, bool]:
+) -> bool:
     """Assess license compatibility for fine-tune and inference usage.
 
     Per OpenAPI v3.4.4 spec:
