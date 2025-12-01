@@ -16,21 +16,20 @@ ENDPOINTS PROVIDED (11/11 BASELINE):
 11. GET /artifact/model/{id}/rate (in rate/routes.py)
 """
 
+import logging
 # app.py
-import os
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 # Add src and parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.crud.rate.routes import router as rate_router  # noqa: E402
+from src.crud.rate_route import router as rate_router  # noqa: E402
 from src.crud.upload.artifact_routes import router as artifact_router  # noqa: E402
-from src.database import init_db  # noqa: E402
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -39,15 +38,43 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("uvicorn")
+logging.getLogger("botocore").setLevel(logging.WARNING)
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(f"Incoming request: {request.method} {request.url}")
+
+    try:
+        body = await request.json()
+        logger.info(f"Request body: {body}")
+    except Exception:
+        body = None
+
+    response = await call_next(request)
+
+    logger.info(f"Response status: {response.status_code}")
+    if hasattr(response, "body") and response.body is not None:
+        try:
+            logger.info(f"Response body: {response.body.decode('utf-8')}")
+        except Exception:
+            logger.info(f"Response body (binary or non-text): {response.body}")
+
+    return response
+
+
 # Initialize database only if not in test mode
-if os.getenv("TESTING") != "true":
-    init_db()
+# if os.getenv("TESTING") != "true":
+#     init_db()
 
 # Include routers - BASELINE endpoints only
 app.include_router(
     artifact_router
 )  # POST/GET/PUT /artifact(s)/{type}/{id}, POST /artifacts
-app.include_router(rate_router)  # GET /artifact/model/{id}/rate
+app.include_router(rate_router)  # GET /artifact/model/{artifact)id}/rate
 
 
 @app.get("/")
@@ -70,7 +97,12 @@ def health_check() -> Dict[str, str]:
     return {"status": "ok"}
 
 
-# uvicorn crud.app:app --host 127.0.0.1 --port 8000 --reload
+@app.get("/tracks")
+def extended_track() -> Dict[str, List]:
+    return {"plannedTracks": ["Access control track"]}
+
+
+# uvicorn src.crud.app:app --host 127.0.0.1 --port 8000 --reload
 # go to local host website in browser
 
 if __name__ == "__main__":

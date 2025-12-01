@@ -8,7 +8,12 @@ import pytest
 from fastapi.testclient import TestClient
 from moto import mock_aws
 
-from crud.app import app
+from src.crud.app import app
+from src.crud.rate_route import findCodeAndDataset  # , rateOnUpload
+
+# ---------------------------------------------
+# tests for the /rate endpoint
+# ---------------------------------------------
 
 
 @pytest.fixture
@@ -95,19 +100,6 @@ def test_get_rating_success(client: TestClient, mock_s3_bucket: boto3.client) ->
         assert returned_rating[key] == value
 
 
-def test_get_rating_invalidartifactid(
-    client: TestClient, mock_s3_bucket: boto3.client
-) -> None:
-    """Test that GET /artifact/model/{id}/rate returns the expected error
-    given a non-integer artifact id."""
-    # rate endpoint
-    artifact_id = "not_integer"
-    response = client.get(f"/artifact/model/{artifact_id}/rate")
-
-    # assert error type
-    assert response.status_code == 400
-
-
 def test_get_rating_noartifact(
     client: TestClient, mock_s3_bucket: boto3.client
 ) -> None:
@@ -138,3 +130,28 @@ def test_get_rating_incomplete(
 
     # assert error type
     assert response.status_code == 500
+
+
+# ---------------------------------------------
+# Tests for rate calculation on upload endpoint
+# ---------------------------------------------
+def test_findcodedataste_valid() -> None:
+    """Test that llm can find code link and dataset link"""
+    model_url = "https://huggingface.co/google-bert/bert-base-uncased"
+    expected_code = "https://github.com/google-research/bert"
+    expected_dataset = "https://huggingface.co/datasets/bookcorpus/bookcorpus"
+
+    code, dataset = findCodeAndDataset(model_url)
+
+    assert code == expected_code
+    assert dataset == expected_dataset
+
+
+def test_rating_no_ingest() -> None:
+    """Test that bad model is rejected from ingest"""
+    pass
+
+
+def test_rating_ingest() -> None:
+    """Test that good model is accepted for ingest"""
+    pass

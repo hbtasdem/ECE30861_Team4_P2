@@ -1,5 +1,6 @@
 # Core dependencies for the model scoring tool
 requests>=2.25.0
+huggingface_hub
 
 # FastAPI and web framework
 fastapi>=0.95.0
@@ -42,7 +43,6 @@ flake8
 isort
 mypy
 types-requests
-jwt
 passlib
 
 # Testing dependencies (optional)
@@ -52,6 +52,7 @@ pytest-asyncio>=0.21.0
 httpx>=0.23.0
 pydantic>=2.0.0
 moto
+markupsafe==2.0.1
 
 # Standard library modules (built-in, listed for reference)
 # math, time, re, os, sys, typing, logging, pathlib, enum, 

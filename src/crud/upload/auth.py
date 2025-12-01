@@ -87,7 +87,10 @@ import bcrypt
 import jwt  # NEW: JWT library for token generation and validation
 from fastapi import HTTPException, status
 
-from src.database_models import User
+try:
+    from src.database_models import User
+except ImportError:
+    User = None  # type: ignore
 
 # JWT Configuration
 SECRET_KEY = os.getenv(
@@ -200,17 +203,21 @@ _current_user: Optional[Any] = None
 # db is a placeholder for a database session dependency
 def get_current_user(  # UPDATED: Now validates JWT from X-Authorization header
     authorization: Optional[str] = None, db: Any = None
-) -> User:
+) -> Any:
     """Get current authenticated user from X-Authorization header token.
+
+    For production S3-based systems, validates JWT signature only (no database lookup).
+    For testing with TEST_USER_ID env var, returns a User object if database available.
 
     Expected header format: X-Authorization: bearer <token>
 
     Args:
         authorization: X-Authorization header value
-        db: Database session dependency
+        db: Database session dependency (optional, for testing only)
 
     Returns:
-        Authenticated User object
+        For test mode: User object
+        For production: dict with token payload
 
     Raises:
         HTTPException: If not authenticated or token invalid
@@ -218,20 +225,28 @@ def get_current_user(  # UPDATED: Now validates JWT from X-Authorization header
     # Check for test mode via environment variable
     if os.getenv("TEST_USER_ID"):
         user_id_str = os.getenv("TEST_USER_ID", "0")
-        if db:
+        if db and User is not None:
             # Try to fetch from database first
             user = db.query(User).filter(User.id == int(user_id_str)).first()
             if user:
                 return user
-        # Fall back to minimal user object
-        user = User(
-            id=int(user_id_str),
-            is_admin=False,
-            username="test",
-            email="test@test.com",
-            hashed_password="",
-        )
-        return user
+        # Fall back to minimal user object if User class available
+        if User is not None:
+            user = User(
+                id=int(user_id_str),
+                is_admin=False,
+                username="test",
+                email="test@test.com",
+                hashed_password="",
+            )
+            return user
+        # Return dict for testing if User model unavailable
+        return {
+            "id": int(user_id_str),
+            "is_admin": False,
+            "username": "test",
+            "email": "test@test.com",
+        }
 
     if not authorization:
         raise HTTPException(
@@ -249,24 +264,11 @@ def get_current_user(  # UPDATED: Now validates JWT from X-Authorization header
 
         token = authorization[7:]  # Remove "bearer " prefix
         payload = decode_access_token(token)
-        token_user_id: Optional[str] = payload.get("sub")
 
-        if token_user_id is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload"
-            )
-
-        # Fetch user from database
-        if db:
-            user = db.query(User).filter(User.id == int(token_user_id)).first()
-            if user:
-                return user
-
-        # If database not available or user not found, raise error
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found or session expired",
-        )
+        # For production: JWT validation is sufficient
+        # Token has been validated by decode_access_token (signature + expiration)
+        # No database lookup needed for stateless S3-based system
+        return payload
 
     except HTTPException:
         raise
