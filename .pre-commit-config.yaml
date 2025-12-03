@@ -31,7 +31,7 @@ repos:
   #    if the order you import is important 
   # put ''' isort: skip_file ''' at the top of the file 
   - repo: https://github.com/PyCQA/isort
-    rev: 7.0.0
+    rev: 7.0.0 # if on ec2 use 5.12.0
     hooks:
       - id: isort
         args: [--line-length=120]
