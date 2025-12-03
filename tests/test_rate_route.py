@@ -10,6 +10,7 @@ from moto import mock_aws
 
 from src.crud.app import app
 from src.crud.rate_route import findCodeAndDataset  # , rateOnUpload
+from src.main import calculate_all_scores
 
 # ---------------------------------------------
 # tests for the /rate endpoint
@@ -155,3 +156,16 @@ def test_rating_no_ingest() -> None:
 def test_rating_ingest() -> None:
     """Test that good model is accepted for ingest"""
     pass
+
+
+def manual_test_scoring() -> Dict[str, Any]:
+    code_url = ""
+    dataset_url = ""
+    model_url = "https://huggingface.co/google-bert/bert-base-uncased"
+    rating = calculate_all_scores(code_url, dataset_url, model_url, set(), set())
+    return rating
+
+
+if __name__ == "__main__":
+    rating = manual_test_scoring()
+    print(rating)
