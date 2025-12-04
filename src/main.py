@@ -182,15 +182,15 @@ def calculate_all_scores(
     # latency sucks, ignoring their net_score_calculator and just doing weighted average
     try:
         net_score = (
-            0.05 * net_size_score
-            + 0.2 * lic_score
-            + 0.2 * ramp_score
-            + 0.05 * bus_score_normalized
-            + 0.15 * data_code_score
-            + 0.15 * dataset_score
-            + 0.1 * code_q_score
-            + 0.1 * perf_score
-        )
+            net_size_score
+            + lic_score
+            + ramp_score
+            + bus_score_normalized
+            + data_code_score
+            + dataset_score
+            + code_q_score
+            + perf_score
+        ) / 8
         net_score = round(net_score, 2)
         result["net_score"] = float(net_score)
         total_latency = int((time.time() - start_net_time) * 1000)
