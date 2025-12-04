@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 from moto import mock_aws
 
 from src.crud.app import app
-from src.crud.rate_route import findCodeAndDataset  # , rateOnUpload
+from src.crud.rate_route import findDatasetAndCode  # , rateOnUpload
 from src.main import calculate_all_scores
 
 # ---------------------------------------------
@@ -136,32 +136,24 @@ def test_get_rating_incomplete(
 # ---------------------------------------------
 # Tests for rate calculation on upload endpoint
 # ---------------------------------------------
-def test_findcodedataste_valid() -> None:
+
+def test_find_code_dataset_valid() -> None:
     """Test that llm can find code link and dataset link"""
     model_url = "https://huggingface.co/google-bert/bert-base-uncased"
     expected_code = "https://github.com/google-research/bert"
     expected_dataset = "https://huggingface.co/datasets/bookcorpus/bookcorpus"
 
-    code, dataset = findCodeAndDataset(model_url)
+    dataset, code = findDatasetAndCode(model_url)
 
     assert code == expected_code
     assert dataset == expected_dataset
-
-
-def test_rating_no_ingest() -> None:
-    """Test that bad model is rejected from ingest"""
-    pass
-
-
-def test_rating_ingest() -> None:
-    """Test that good model is accepted for ingest"""
-    pass
 
 
 def manual_test_scoring() -> Dict[str, Any]:
     code_url = ""
     dataset_url = ""
     model_url = "https://huggingface.co/google-bert/bert-base-uncased"
+    dataset_url, code_url = findDatasetAndCode(model_url)
     rating = calculate_all_scores(code_url, dataset_url, model_url, set(), set())
     return rating
 

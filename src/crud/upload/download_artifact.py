@@ -5,7 +5,7 @@ from huggingface_hub import HfApi
 BUCKET_NAME = "phase2-s3-bucket"
 
 
-def get_download_url(model_url: str, artifact_id: str, artifact_type: str) -> str:
+def get_download_url(input_url: str, artifact_id: str, artifact_type: str) -> str:
     """
     call download_url function based on artifact type.
 
@@ -20,11 +20,11 @@ def get_download_url(model_url: str, artifact_id: str, artifact_type: str) -> st
     url: str
     """
     if artifact_type == "model":
-        url = download_model(model_url, artifact_id)
+        url = download_model(input_url, artifact_id)
     elif artifact_type == "dataset":
-        url = "dataset_url"
+        url = download_dataset(input_url, artifact_id)
     else:
-        url = "code_url"
+        url = download_code(input_url, artifact_id)
     return url
 
 
