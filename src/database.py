@@ -141,11 +141,8 @@ def init_db() -> None:
     # IMPORTANT: This must import Artifact (not Model!) for spec compliance
     from src.database_models import (Artifact, AuditEntry, Base,  # noqa: F401
                                      User)
-    from src.phase3_models import FileStorage  # noqa: F401
 
-    # from src.phase3_models import DownloadEvent, ModelVersion, UploadSession
     # Create all tables defined in src.models
     # Per spec: All tables must exist before API can be used
     # Includes Phase 2 tables (User, Artifact, AuditEntry)
-    # and Phase 3 tables (FileStorage, ModelVersion, DownloadEvent, UploadSession)
     Base.metadata.create_all(bind=engine)

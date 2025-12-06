@@ -1,7 +1,7 @@
 """Artifact management and registry endpoints - OpenAPI v3.4.4 BASELINE spec only.
 
 FILE PURPOSE:
-Implements 9 BASELINE artifact management endpoints that accept artifacts from URLs
+Implements 8 BASELINE artifact management endpoints that accept artifacts from URLs
 and manage them in the registry using S3 storage. All requests require URL-based
 artifact sources with no file uploads accepted.
 
@@ -13,7 +13,7 @@ S3 STORAGE STRUCTURE (Per Team Design):
     ├── rating/{id}.rate.json     - ModelRating objects (homemade)
     └── relations.json            - Relations table (homemade)
 
-ENDPOINTS IMPLEMENTED (9 BASELINE):
+ENDPOINTS IMPLEMENTED (8 BASELINE):
 1. POST /artifact/{artifact_type} - Register new artifact from URL
 2. GET /artifacts/{artifact_type}/{artifact_id} - Retrieve artifact by type and ID
 3. PUT /artifacts/{artifact_type}/{artifact_id} - Update artifact source and metadata
@@ -21,8 +21,7 @@ ENDPOINTS IMPLEMENTED (9 BASELINE):
 5. DELETE /reset - Reset registry (admin only)
 6. GET /artifact/{artifact_type}/{artifact_id}/cost - Get artifact cost in MB
 7. GET /artifact/model/{artifact_id}/lineage - Get artifact lineage graph
-8. POST /artifact/model/{artifact_id}/license-check - Check license compatibility
-9. POST /artifact/byRegEx - Query artifacts by regular expression
+8. POST /artifact/byRegEx - Query artifacts by regular expression
 
 ENVELOPE STRUCTURE (Per Spec Section 3.2.1):
 All responses follow:
@@ -44,7 +43,7 @@ from ulid import ULID
 from src.crud.upload.artifacts import (Artifact, ArtifactData,
                                        ArtifactLineageGraph,
                                        ArtifactLineageNode, ArtifactMetadata,
-                                       ArtifactQuery)
+                                       ArtifactQuery, ArtifactRegEx)
 from src.crud.upload.auth import get_current_user
 
 router = APIRouter(tags=["artifacts"])
@@ -82,6 +81,106 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
         pass
 
     return artifacts
+
+# ============================================================================
+# POST /artifact/byRegEx - QUERY BY REGULAR EXPRESSION (BASELINE)
+# ============================================================================
+# NOTE: This route MUST come BEFORE /artifact/{artifact_type} in the file
+# because FastAPI matches routes in order. If this comes after, the parameterized
+# route will match "/artifact/byRegEx" first, treating "byRegEx" as the artifact_type.
+
+@router.post("/artifact/byRegEx", response_model=List[ArtifactMetadata])
+async def get_artifacts_by_regex(
+    request: ArtifactRegEx,
+    x_authorization: Optional[str] = Header(None),
+) -> List[ArtifactMetadata]:
+    """Search for artifacts using regular expression over names.
+
+    Per OpenAPI v3.4.4 spec:
+    - Searches artifact names
+    - Similar to search by name but using regex
+    - Returns 404 if no artifacts found
+
+    Args:
+        request: Request body with regex pattern
+        x_authorization: Bearer token for authentication
+
+    Returns:
+        List[ArtifactMetadata]: Matching artifacts
+
+    Raises:
+        HTTPException: 400 if invalid regex, 403 if auth fails, 404 if no matches
+    """
+    if not x_authorization:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Missing X-Authorization header",
+        )
+
+    try:
+        get_current_user(x_authorization, None)
+    except HTTPException:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Authentication failed: Invalid or expired token",
+        )
+
+    # Validate regex pattern for DoS protection
+    regex_str = request.regex
+    
+    # Check for malicious patterns that could cause ReDoS (Regular Expression Denial of Service)
+    # Detect catastrophic backtracking patterns
+    dangerous_patterns = [
+        r'\(.*\+.*\)\+',  # Nested quantifiers like (a+)+
+        r'\(.*\*.*\)\*',  # Nested quantifiers like (a*)*
+        r'\(.*\+.*\)\*',  # Mixed nested quantifiers
+        r'\(.*\{.*,.*\}.*\)\+',  # Nested bounded quantifiers
+        r'(\(.*\|.*){3,}',  # Excessive alternation
+    ]
+    
+    for pattern in dangerous_patterns:
+        if re.search(pattern, regex_str):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid: Potentially malicious regex pattern detected (ReDoS risk)",
+            )
+    
+    # Limit regex complexity
+    if len(regex_str) > 200:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid: Regex pattern too long (max 200 characters)",
+        )
+    
+    try:
+        regex_pattern = re.compile(regex_str, re.IGNORECASE)
+    except re.error as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid: {str(e)}",
+        )
+
+    # Search artifacts across all types
+    matching = []
+    for artifact_type in ["model", "dataset", "code"]:
+        artifacts = _get_artifacts_by_type(artifact_type)
+        for artifact in artifacts:
+            if regex_pattern.search(artifact["metadata"]["name"]):
+                matching.append(
+                    ArtifactMetadata(
+                        name=artifact["metadata"]["name"],
+                        id=artifact["metadata"]["id"],
+                        type=artifact["metadata"]["type"],
+                    )
+                )
+
+    if not matching:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No artifact found under this regex.",
+        )
+
+    return matching
 
 
 # ============================================================================
@@ -136,7 +235,14 @@ async def create_artifact(
     # ========================================================================
     # VALIDATION
     # ========================================================================
-    # Validate artifact type
+    # Validate artifact type (reject reserved keywords)
+    if artifact_type == "byRegEx":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid artifact type: 'byRegEx' is a reserved keyword. "
+            "Use POST /artifact/byRegEx endpoint for regex searches.",
+        )
+    
     valid_types = {"model", "dataset", "code"}
     if artifact_type not in valid_types:
         raise HTTPException(
@@ -375,6 +481,98 @@ async def update_artifact(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to update artifact: {str(e)}",
+        )
+
+
+# ============================================================================
+# DELETE /artifacts/{artifact_type}/{artifact_id} - DELETE ARTIFACT (BASELINE)
+# ============================================================================
+
+
+@router.delete("/artifacts/{artifact_type}/{artifact_id}")
+async def delete_artifact(
+    artifact_type: str,
+    artifact_id: str,
+    x_authorization: Optional[str] = Header(None),
+) -> Dict[str, str]:
+    """Delete artifact by type and ID per spec.
+
+    Per OpenAPI v3.4.7 spec:
+    - Deletes the artifact with specified type and ID
+    - Returns 200 if successful
+    - Returns 404 if artifact not found
+
+    Args:
+        artifact_type: Artifact type (model, dataset, or code)
+        artifact_id: Unique artifact identifier
+        x_authorization: Bearer token for authentication
+
+    Returns:
+        Dict with success message
+
+    Raises:
+        HTTPException: 400 if invalid, 403 if auth fails, 404 if not found
+    """
+    # ========================================================================
+    # AUTHENTICATION
+    # ========================================================================
+    if not x_authorization:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Authentication failed due to invalid or missing AuthenticationToken.",
+        )
+
+    try:
+        get_current_user(x_authorization, None)
+    except HTTPException:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Authentication failed due to invalid or missing AuthenticationToken.",
+        )
+
+    # ========================================================================
+    # VALIDATION
+    # ========================================================================
+    valid_types = {"model", "dataset", "code"}
+    if artifact_type not in valid_types:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"There is missing field(s) in the artifact_type or artifact_id or invalid",
+        )
+
+    # ========================================================================
+    # DELETE ARTIFACT FROM S3
+    # ========================================================================
+    try:
+        key = _get_artifact_key(artifact_type, artifact_id)
+        
+        # Check if artifact exists first
+        try:
+            s3_client.head_object(Bucket=BUCKET_NAME, Key=key)
+        except ClientError as e:
+            if e.response["Error"]["Code"] == "404":
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Artifact does not exist.",
+                )
+            raise
+
+        # Delete the artifact
+        s3_client.delete_object(Bucket=BUCKET_NAME, Key=key)
+
+        return {"message": f"Artifact {artifact_type}/{artifact_id} deleted successfully"}
+
+    except HTTPException:
+        raise
+    except ClientError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"There is missing field(s) in the artifact_type or artifact_id or invalid",
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"There is missing field(s) in the artifact_type or artifact_id or invalid",
         )
 
 
@@ -693,164 +891,3 @@ async def get_artifact_lineage(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to retrieve artifact: {str(e)}",
         )
-
-
-# ============================================================================
-# POST /artifact/model/{artifact_id}/license-check - LICENSE COMPATIBILITY (BASELINE)
-# ============================================================================
-
-
-@router.post("/artifact/model/{artifact_id}/license-check")
-async def check_license_compatibility(
-    artifact_id: str,
-    request_body: Dict[str, Any],
-    x_authorization: Optional[str] = Header(None),
-) -> Dict[str, bool]:
-    """Assess license compatibility for fine-tune and inference usage.
-
-    Per OpenAPI v3.4.4 spec:
-    - Takes github_url in request body
-    - Evaluates GitHub project license
-    - Returns JSON with boolean compatibility status
-    - Returns 404 if artifact/GitHub project not found
-    - Returns 502 if external license info unavailable
-
-    Args:
-        artifact_id: Unique model artifact identifier
-        request_body: Request body with github_url
-        x_authorization: Bearer token for authentication
-
-    Returns:
-        Dict with boolean license compatibility result
-
-    Raises:
-        HTTPException: 400 if malformed, 403 if auth fails, 404 if not found, 502 if external error
-    """
-    if not x_authorization:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed due to invalid or missing AuthenticationToken.",
-        )
-
-    try:
-        get_current_user(x_authorization, None)
-    except HTTPException:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed due to invalid or missing AuthenticationToken.",
-        )
-
-    # Validate request body
-    if "github_url" not in request_body:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="The license check request is malformed or references an unsupported usage context.",
-        )
-
-    github_url = request_body.get("github_url")
-    if not github_url or not isinstance(github_url, str):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="The license check request is malformed or references an unsupported usage context.",
-        )
-
-    # Verify artifact exists
-    try:
-        key = _get_artifact_key("model", artifact_id)
-        s3_client.head_object(Bucket=BUCKET_NAME, Key=key)
-    except ClientError as e:
-        if e.response["Error"]["Code"] == "404":
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="The artifact or GitHub project could not be found.",
-            )
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail="External license information could not be retrieved.",
-        )
-
-    # TODO: Implement actual license checking from GitHub
-    # For now, return True (compatible license)
-    # In production, this would:
-    # 1. Fetch repository from github_url
-    # 2. Check LICENSE file or GitHub API license field
-    # 3. Evaluate compatibility for fine-tuning and inference
-    return True
-
-
-# ============================================================================
-# POST /artifact/byRegEx - QUERY BY REGULAR EXPRESSION (BASELINE)
-# ============================================================================
-
-
-@router.post("/artifact/byRegEx", response_model=List[ArtifactMetadata])
-async def get_artifacts_by_regex(
-    request: Dict[str, str],
-    x_authorization: Optional[str] = Header(None),
-) -> List[ArtifactMetadata]:
-    """Search for artifacts using regular expression over names.
-
-    Per OpenAPI v3.4.4 spec:
-    - Searches artifact names
-    - Similar to search by name but using regex
-    - Returns 404 if no artifacts found
-
-    Args:
-        request: Request body with regex pattern
-        x_authorization: Bearer token for authentication
-
-    Returns:
-        List[ArtifactMetadata]: Matching artifacts
-
-    Raises:
-        HTTPException: 400 if invalid regex, 403 if auth fails, 404 if no matches
-    """
-    if not x_authorization:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header",
-        )
-
-    try:
-        get_current_user(x_authorization, None)
-    except HTTPException:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token",
-        )
-
-    if "regex" not in request:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid",
-        )
-
-    try:
-        regex_pattern = re.compile(request["regex"])
-    except re.error as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid: {str(e)}",
-        )
-
-    # Search artifacts across all types
-    matching = []
-    for artifact_type in ["model", "dataset", "code"]:
-        artifacts = _get_artifacts_by_type(artifact_type)
-        for artifact in artifacts:
-            if regex_pattern.search(artifact["metadata"]["name"]):
-                matching.append(
-                    ArtifactMetadata(
-                        name=artifact["metadata"]["name"],
-                        id=artifact["metadata"]["id"],
-                        type=artifact["metadata"]["type"],
-                    )
-                )
-
-    if not matching:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No artifact found under this regex.",
-        )
-
-    return matching
