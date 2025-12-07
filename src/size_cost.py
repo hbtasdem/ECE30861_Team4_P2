@@ -14,5 +14,5 @@ def get_model_size_gb(model_id: str) -> float:
         if size:
             total_bytes += int(size)
 
-    return round((total_bytes / (1024**3))/ 0.93, 3) 
+    return round((total_bytes / (1024**3))/ 0.93, 3) #division by 0.93 compensates for loss of overhead 
 

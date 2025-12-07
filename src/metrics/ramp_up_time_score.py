@@ -4,7 +4,7 @@ from typing import Tuple
 
 from license_score import fetch_readme
 
-from hugging_face_api import get_model_info
+from src.hugging_face_api import get_model_info
 
 
 def normalize_sigmoid(value: int, mid: int, steepness: float) -> float:
