@@ -29,8 +29,11 @@ jobs:
       - name: Make run script executable
         run: chmod +x ./run
       
+      - name: Install project dependencies
+        run: ./run install
+      
       - name: Run unit tests
-        run: ./run
+        run: ./run test
         env:
           # Add any environment variables needed by tests
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
