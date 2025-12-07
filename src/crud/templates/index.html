@@ -1,84 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Model Registry API</title>
-<style>
-    body { font-family: Arial, sans-serif; padding: 2rem; background: #f0f2f5; }
-    h1 { text-align: center; color: #333; margin-bottom: 2rem; }
-    .card { background: white; padding: 2rem; border-radius: 1rem; max-width: 600px; margin: 1rem auto; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    input { width: 100%; padding: 0.75rem; margin-bottom: 1rem; border-radius: 0.5rem; border: 1px solid #ccc; }
-    button { padding: 0.75rem 1.5rem; background: #667eea; color: white; border: none; border-radius: 0.5rem; cursor: pointer; }
-    button:disabled { background: #ccc; cursor: not-allowed; }
-    pre { background: #f5f5f5; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; }
-    a { color: #667eea; text-decoration: underline; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Registry API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background: #f0f2f5;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 600px;
+            margin: 1rem auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        pre {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+        }
+
+        a {
+            color: #667eea;
+            text-decoration: underline;
+        }
+    </style>
 </head>
+
 <body>
 
-<h1>🤖 Model Registry API</h1>
+    <h1>🤖 BoilerFace Model Registry</h1>
 
-<div class="card">
-    <h2>Upload Model</h2>
-    <label for="modelUrl">Model URL:</label>
-    <input type="url" id="modelUrl" placeholder="https://huggingface.co/..." />
-    <button id="uploadBtn" onclick="uploadModel()">Upload</button>
-    <div id="loading" style="display:none; margin-top:1rem;">Uploading...</div>
-    <div id="errorMsg" style="color:red; margin-top:1rem;"></div>
-    <div id="response" style="margin-top:1rem;"></div>
-</div>
+    <div class="card">
+        <h2>Upload Model</h2>
+        <label for="modelUrl">Model URL:</label>
+        <input type="url" id="modelUrl" placeholder="https://huggingface.co/..." />
+        <button id="uploadBtn" onclick="uploadModel()">Upload</button>
+        <div id="loading" style="display:none; margin-top:1rem;">Uploading...</div>
+        <div id="errorMsg" style="color:red; margin-top:1rem;"></div>
+        <div id="response" style="margin-top:1rem;"></div>
+    </div>
 
-<div class="card">
-    <h2>Quick Links</h2>
-    <ul>
-        <li><a href="/health" target="_blank">Health Check</a></li>
-        <li><a href="/docs" target="_blank">Swagger Docs</a></li>
-        <li><a href="/redoc" target="_blank">ReDoc Docs</a></li>
-    </ul>
-</div>
+    <div class="card">
+        <h2>Quick Links</h2>
+        <ul>
+            <li><a href="/health" target="_blank">Health Check</a></li>
+            <li><a href="/docs" target="_blank">Swagger Docs</a></li>
+            <li><a href="/redoc" target="_blank">ReDoc Docs</a></li>
+        </ul>
+    </div>
 
-<script>
-async function uploadModel() {
-    const url = document.getElementById('modelUrl').value.trim();
-    const btn = document.getElementById('uploadBtn');
-    const loading = document.getElementById('loading');
-    const errorMsg = document.getElementById('errorMsg');
-    const responseDiv = document.getElementById('response');
+    <script>
+        async function uploadModel() {
+            const url = document.getElementById('modelUrl').value.trim();
+            const btn = document.getElementById('uploadBtn');
+            const loading = document.getElementById('loading');
+            const errorMsg = document.getElementById('errorMsg');
+            const responseDiv = document.getElementById('response');
 
-    errorMsg.textContent = '';
-    responseDiv.innerHTML = '';
-    
-    if (!url) {
-        errorMsg.textContent = 'Please enter a model URL';
-        return;
-    }
+            errorMsg.textContent = '';
+            responseDiv.innerHTML = '';
 
-    btn.disabled = true;
-    loading.style.display = 'block';
+            if (!url) {
+                errorMsg.textContent = 'Please enter a model URL';
+                return;
+            }
 
-    try {
-        const res = await fetch('/api/models/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url })
-        });
+            btn.disabled = true;
+            loading.style.display = 'block';
 
-        const data = await res.json();
+            try {
+                const res = await fetch('/api/models/upload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
 
-        if (!res.ok) {
-            errorMsg.textContent = data.detail || JSON.stringify(data);
-        } else {
-            responseDiv.innerHTML = `<h3>Upload Response:</h3><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                const data = await res.json();
+
+                if (!res.ok) {
+                    errorMsg.textContent = data.detail || JSON.stringify(data);
+                } else {
+                    responseDiv.innerHTML = `<h3>Upload Response:</h3><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                }
+            } catch (err) {
+                errorMsg.textContent = 'Failed to upload model: ' + err.message;
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
+            }
         }
-    } catch (err) {
-        errorMsg.textContent = 'Failed to upload model: ' + err.message;
-    } finally {
-        btn.disabled = false;
-        loading.style.display = 'none';
-    }
-}
-</script>
+    </script>
 
 </body>
+
 </html>
