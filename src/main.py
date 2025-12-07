@@ -9,7 +9,7 @@ import time
 from io import StringIO
 from typing import Any, Dict
 
-import net_score_calculator
+import src.net_score_calculator
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "metrics"))
 

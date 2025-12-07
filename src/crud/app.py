@@ -23,8 +23,7 @@
 # from typing import Any, Dict
 
 # from fastapi import FastAPI
-# from flask import Flask, jsonify, render_template, request
-# from flask.wrappers import Response
+
 
 # # Add src and parent to path for imports
 # sys.path.insert(0, str(Path(__file__).parent))
@@ -103,26 +102,35 @@ from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from fastapi.templating import Jinja2Templates
 
+from crud.rate.rate_route import router as rate_router  # noqa: E402
+from crud.upload.artifact_routes import router as artifact_router  # noqa: E402
+from database import init_db  # noqa: E402
+from lineage_tree import router as lineage_router  # noqa: E402
+
 
 app = FastAPI()
 
-# Static + templates (Flask equivalent)
-
 BASE_DIR = Path(__file__).resolve().parent
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
-
-# app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 
 # Project paths
 PROJECT_ROOT = os.path.dirname(os.path.dirname(BASE_DIR))
 SRC_DIR = os.path.join(PROJECT_ROOT, "src")
 SCORER_PATH = os.path.join(SRC_DIR, "main.py")
 
+# app.include_router(artifact_router)
+# app.include_router(rate_router)
+# app.include_router(lineage_router)
 
 # --- Request model ---
 class ScoreRequest(BaseModel):
     model_url: str
 
+# app.include_router(
+#     artifact_router
+# )  # POST/GET/PUT /artifact(s)/{type}/{id}, POST /artifacts
+# app.include_router(rate_router)  # GET /artifact/model/{id}/rate
+# app.include_router(lineage_router)
 
 # --- Serve front-end ---
 @app.get("/", response_class=HTMLResponse)
