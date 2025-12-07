@@ -81,12 +81,12 @@ def demo_url_upload() -> None:
 
     if response.status_code == 201:
         artifact_id = result["metadata"]["id"]
-        print("\n✓ Model uploaded successfully!")
+        print("\nModel uploaded successfully!")
         print(f"  Artifact ID: {artifact_id}")
         print(f"  Type: {result['metadata']['type']}")
         print(f"  Name: {result['metadata']['name']}")
     else:
-        print(f"\n✗ Upload failed: {result['detail']}")
+        print(f"\nUpload failed: {result['detail']}")
         return
 
     # Test 2: Upload Dataset
@@ -111,7 +111,7 @@ def demo_url_upload() -> None:
 
     if response.status_code == 201:
         dataset_id = result["metadata"]["id"]
-        print("\n✓ Dataset uploaded successfully!")
+        print("\nDataset uploaded successfully!")
         print(f"  Artifact ID: {dataset_id}")
         print(f"  Type: {result['metadata']['type']}")
 
@@ -135,7 +135,7 @@ def demo_url_upload() -> None:
 
     if response.status_code == 201:
         code_id = result["metadata"]["id"]
-        print("\n✓ Code uploaded successfully!")
+        print("\nCode uploaded successfully!")
         print(f"  Artifact ID: {code_id}")
         print(f"  Type: {result['metadata']['type']}")
 
@@ -166,7 +166,7 @@ def demo_url_upload() -> None:
 
     print(f"Status: {response.status_code}")
     if response.status_code != 201:
-        print(f"✓ Correctly rejected (expected): {response.json()}")
+        print(f"Correctly rejected (expected): {response.json()}")
 
     # Test 6: Error handling - missing authentication
     print("\n[TEST 6] Error Handling - Missing Authentication")
@@ -176,7 +176,7 @@ def demo_url_upload() -> None:
 
     print(f"Status: {response.status_code}")
     if response.status_code == 403:
-        print(f"✓ Correctly rejected (expected): {response.json()['detail']}")
+        print(f"Correctly rejected (expected): {response.json()['detail']}")
 
     # Test 7: Error handling - invalid type
     print("\n[TEST 7] Error Handling - Invalid Artifact Type")
@@ -190,14 +190,14 @@ def demo_url_upload() -> None:
 
     print(f"Status: {response.status_code}")
     if response.status_code == 400:
-        print(f"✓ Correctly rejected (expected): {response.json()['detail']}")
+        print(f"Correctly rejected (expected): {response.json()['detail']}")
 
     print("\n" + "=" * 70)
     print("DEMONSTRATION COMPLETE")
     print("=" * 70)
-    print("\n✓ All URL uploads working 100%!")
-    print("✓ Authentication validated")
-    print("✓ Error handling working")
+    print("\nAll URL uploads working 100%!")
+    print("Authentication validated")
+    print("Error handling working")
     print("\nTo use in production:")
     print("  1. Start server: uvicorn src.crud.app:app --host 0.0.0.0 --port 8000")
     print("  2. Get JWT token via authentication endpoint")

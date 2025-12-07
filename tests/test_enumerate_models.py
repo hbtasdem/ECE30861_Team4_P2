@@ -67,7 +67,7 @@
 #         data = response.json()
 #         assert isinstance(data, list), "Response should be a list"
 #         assert len(data) == 0, "Should be empty"
-#         print("✓ Enumerate returns empty list when no models exist")
+#         print("Enumerate returns empty list when no models exist")
 
 #         # Create a test user first
 #         print("\n1b. Uploading test models...")
@@ -80,7 +80,7 @@
 #         )
 #         db.add(test_user)
 #         db.commit()
-#         print("✓ Test user created")
+#         print("Test user created")
 
 #         # Generate test token
 #         token = create_access_token(data={"sub": "1", "is_admin": False})
@@ -97,7 +97,7 @@
 #                 headers=headers
 #             )
 #             assert response.status_code == 200, f"Upload failed: {response.text}"
-#             print(f"  ✓ Uploaded model {i}")
+#             print(f"  Uploaded model {i}")
 
 #         # Test enumerate with models
 #         print("\n1c. Testing enumerate with models...")
@@ -105,7 +105,7 @@
 #         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
 #         models = response.json()
 #         assert len(models) == 3, f"Expected 3 models, got {len(models)}"
-#         print(f"✓ Enumerate returns all {len(models)} models")
+#         print(f"Enumerate returns all {len(models)} models")
 
 #         # Test pagination
 #         print("\n1d. Testing enumerate with pagination...")
@@ -113,15 +113,15 @@
 #         assert response.status_code == 200
 #         models = response.json()
 #         assert len(models) == 2, f"Expected 2 models with limit=2, got {len(models)}"
-#         print(f"✓ Enumerate respects pagination (limit=2 returned {len(models)} models)")
+#         print(f"Enumerate respects pagination (limit=2 returned {len(models)} models)")
 
 #         # Test skip
 #         response = client.get("/api/models/enumerate?skip=1&limit=10")
 #         models = response.json()
 #         assert len(models) == 2, f"Expected 2 models after skip=1, got {len(models)}"
-#         print(f"✓ Enumerate respects skip parameter (skip=1 returned {len(models)} models)")
+#         print(f"Enumerate respects skip parameter (skip=1 returned {len(models)} models)")
 
-#         print("\n✓ FEATURE 1 PASSED: Enumerate working correctly!")
+#         print("\nFEATURE 1 PASSED: Enumerate working correctly!")
 
 #     finally:
 #         try:

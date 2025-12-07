@@ -117,9 +117,9 @@ if __name__ == "__main__":
     # Debug: Check if environment variable is loaded
     api_key = os.getenv("GEN_AI_STUDIO_API_KEY")
     if api_key:
-        print("✅ Found API key")
+        print("Found API key")
     else:
-        print("❌ No API key found in environment variables")
+        print("No API key found in environment variables")
         print(
             "Make sure your .env file contains: " "GEN_AI_STUDIO_API_KEY=your-key-here"
         )

@@ -14,7 +14,7 @@ def test_health():
     print(f"Response: {response.json()}")
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
-    print("✅ PASSED")
+    print("PASSED")
 
 def test_health_components():
     """Test GET /health/components endpoint"""
@@ -25,7 +25,7 @@ def test_health_components():
     print(f"Components found: {len(data.get('components', []))}")
     assert response.status_code == 200
     assert "components" in data
-    print("✅ PASSED")
+    print("PASSED")
 
 def test_register():
     """Test POST /register endpoint"""
@@ -53,7 +53,7 @@ def test_register():
         print(f"Response: {json.dumps(data, indent=2)}")
         assert "token" in data
         assert "bearer " in data["token"]
-        print("✅ PASSED - JWT token received")
+        print("PASSED - JWT token received")
         return data["token"], username, password
     else:
         print(f"Response: {response.text}")
@@ -81,7 +81,7 @@ def test_authenticate(username="testuser123", password="testpass123"):
         print(f"Response: {json.dumps(data, indent=2)}")
         assert "token" in data
         assert "bearer " in data["token"]
-        print("✅ PASSED - JWT token received")
+        print("PASSED - JWT token received")
         return data["token"]
     else:
         print(f"Response: {response.text}")
@@ -103,14 +103,14 @@ def test_enumerate(token=None):
     if response.status_code == 200:
         data = response.json()
         print(f"Artifacts found: {len(data)}")
-        print("✅ PASSED")
+        print("PASSED")
         return data
     else:
         print(f"Response: {response.text}")
         if response.status_code == 403:
-            print("⚠️  Needs authentication")
+            print("WARNING: Needs authentication")
         else:
-            print("⚠️  May need setup or different payload")
+            print("WARNING: May need setup or different payload")
 
 def test_regex_search(token=None):
     """Test POST /artifact/byRegEx endpoint"""
@@ -129,11 +129,11 @@ def test_regex_search(token=None):
     )
     print(f"Status: {response.status_code}")
     if response.status_code == 404:
-        print("✅ PASSED - No artifacts match (expected for empty registry)")
+        print("PASSED - No artifacts match (expected for empty registry)")
     elif response.status_code == 200:
         data = response.json()
         print(f"Artifacts found: {len(data)}")
-        print("✅ PASSED")
+        print("PASSED")
     else:
         print(f"Response: {response.text}")
     
@@ -147,9 +147,9 @@ def test_regex_search(token=None):
     )
     print(f"Status: {response.status_code}")
     if response.status_code == 400:
-        print("✅ PASSED - Malicious regex rejected (DoS protection working)")
+        print("PASSED - Malicious regex rejected (DoS protection working)")
     else:
-        print(f"⚠️  Expected 400, got {response.status_code}")
+        print(f"WARNING: Expected 400, got {response.status_code}")
         print(f"Response: {response.text}")
     
     # Test 3: Too long regex
@@ -162,9 +162,9 @@ def test_regex_search(token=None):
     )
     print(f"Status: {response.status_code}")
     if response.status_code == 400:
-        print("✅ PASSED - Long regex rejected")
+        print("PASSED - Long regex rejected")
     else:
-        print(f"⚠️  Expected 400, got {response.status_code}")
+        print(f"WARNING: Expected 400, got {response.status_code}")
 
 if __name__ == "__main__":
     print("=" * 60)
@@ -189,10 +189,10 @@ if __name__ == "__main__":
         test_regex_search(token)
         
         print("\n" + "=" * 60)
-        print("✅ ALL TESTS COMPLETED SUCCESSFULLY")
+        print("ALL TESTS COMPLETED SUCCESSFULLY")
         print("=" * 60)
         
     except Exception as e:
-        print(f"\n❌ TEST FAILED: {e}")
+        print(f"\nTEST FAILED: {e}")
         import traceback
         traceback.print_exc()
