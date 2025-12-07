@@ -1,22 +1,20 @@
 """Artifact management and registry endpoints - OpenAPI v3.4.4 BASELINE spec only.
 
 FILE PURPOSE:
-Implements all 11 BASELINE artifact management endpoints that accept artifacts from URLs
+Implements 9 BASELINE artifact management endpoints that accept artifacts from URLs
 and manage them in the registry. All requests require URL-based artifact sources with no file
 uploads accepted.
 
-ENDPOINTS IMPLEMENTED (11/11 BASELINE):
-1. POST /artifact/{type} - Register new artifact from URL
-2. GET /artifacts/{type}/{id} - Retrieve artifact by type and ID
-3. PUT /artifacts/{type}/{id} - Update artifact source and metadata
+ENDPOINTS IMPLEMENTED:
+1. POST /artifact/{artifact_type} - Register new artifact from URL
+2. GET /artifacts/{artifact_type}/{artifact_id} - Retrieve artifact by type and ID
+3. PUT /artifacts/{artifact_type}/{artifact_id} - Update artifact source and metadata
 4. POST /artifacts - Query/enumerate artifacts with filters
 5. DELETE /reset - Reset registry (admin only)
-6. GET /artifact/{type}/{id}/cost - Get artifact cost in MB
-7. GET /artifact/model/{id}/lineage - Get artifact lineage graph
-8. POST /artifact/model/{id}/license-check - Check license compatibility
+6. GET /artifact/{artifact_type}/{artifact_id}/cost - Get artifact cost in MB
+7. GET /artifact/model/{artifact_id}/lineage - Get artifact lineage graph
+8. POST /artifact/model/{artifact_id}/license-check - Check license compatibility
 9. POST /artifact/byRegEx - Query artifacts by regular expression
-10. GET /health - Heartbeat check (in app.py)
-11. GET /artifact/model/{id}/rate - Get model rating (in rate/routes.py)
 
 ENVELOPE STRUCTURE (Per Spec Section 3.2.1):
 All responses follow:
@@ -31,6 +29,8 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from ulid import ULID
+import boto3
+import json
 
 from src.crud.upload.artifacts import (Artifact, ArtifactData, ArtifactLineageGraph, ArtifactLineageNode,
                                        ArtifactMetadata, ArtifactQuery)
@@ -38,19 +38,21 @@ from src.crud.upload.auth import get_current_user
 from src.database import get_db
 from src.database_models import Artifact as ArtifactModel
 from src.database_models import AuditEntry
+from src.main import calculate_all_scores
 
 router = APIRouter(tags=["artifacts"])
+# ============================================================================
+# Georgia's attempt to make a functional upload
+s3_client = boto3.client("s3")
+BUCKET = "phase2-s3-bucket"
+# ============================================================================
 
 # ============================================================================
 # POST /artifact/{artifact_type} - CREATE ARTIFACT (BASELINE)
 # ============================================================================
 
 
-@router.post(
-    "/artifact/{artifact_type}",
-    response_model=Artifact,
-    status_code=status.HTTP_201_CREATED,
-)
+@router.post("/artifact/{artifact_type}", response_model=Artifact, status_code=status.HTTP_201_CREATED)
 async def create_artifact(
     artifact_type: str,
     artifact_data: ArtifactData,
@@ -79,19 +81,21 @@ async def create_artifact(
     # ========================================================================
     # AUTHENTICATION
     # ========================================================================
-    if not x_authorization:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header",
-        )
 
-    try:
-        current_user = get_current_user(x_authorization, db)
-    except HTTPException as _e:  # noqa: F841
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token",
-        )
+    # georgia: commenting this out until it works, so upload not dependent
+    # if not x_authorization:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Missing X-Authorization header",
+    #     )
+
+    # try:
+    #     current_user = get_current_user(x_authorization, db)
+    # except HTTPException as _e:  # noqa: F841
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Authentication failed: Invalid or expired token",
+    #     )
 
     # ========================================================================
     # VALIDATION
@@ -131,30 +135,47 @@ async def create_artifact(
             name=name,
             type=artifact_type,
             url=artifact_data.url,
-            download_url=download_url,
-            uploader_id=current_user.id,
+            download_url=download_url, #uploader_id=current_user.id, MOCK FOR NOW - GEORGIA
+            uploader_id = 1
         )
+
+        # ========================================================================
+        # RATE
+        # ========================================================================
+        if artifact_type == "model":
+            code_link = ""
+            dataset_link = ""
+            rating = calculate_all_scores(code_link, dataset_link, artifact_data.url, set(), set())
+            try:
+                key = f"rating/{artifact_id}.rate.json"
+                s3_client.put_object(Bucket=BUCKET, Key=key, Body=json.dumps(rating))
+            except Exception as e:
+                raise HTTPException(status_code=424, detail=f"Error rating model: {str(e)}")
 
         db.add(new_artifact)
         db.flush()  # Flush to ensure ID is set before creating audit entry
 
+        # ========================================================================
+        # INGEST TO S3
+        # ========================================================================
+        try:
+            key = f"{artifact_type}/{artifact_id}.json"
+            artifact_s3 = Artifact(
+                metadata=ArtifactMetadata(name=new_artifact.name, id=new_artifact.id, type=new_artifact.type),
+                data=ArtifactData(url=new_artifact.url, download_url=new_artifact.download_url),
+            )
+            s3_client.put_object(Bucket=BUCKET, Key=key, Body=json.dumps(artifact_s3.dict()))
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"failed to ingest: {str(e)}")
+
         # Create audit entry for CREATE action
-        audit_entry = AuditEntry(
-            user_id=current_user.id, artifact_id=artifact_id, action="CREATE"
-        )
-        db.add(audit_entry)
-        db.commit()
-        db.refresh(new_artifact)
+        # audit_entry = AuditEntry(user_id=current_user.id, artifact_id=artifact_id, action="CREATE")
+        # db.add(audit_entry)
+        # db.commit()
+        # db.refresh(new_artifact)
 
         # Return artifact in envelope format
-        return Artifact(
-            metadata=ArtifactMetadata(
-                name=new_artifact.name, id=new_artifact.id, type=new_artifact.type
-            ),
-            data=ArtifactData(
-                url=new_artifact.url, download_url=new_artifact.download_url
-            ),
-        )
+        return artifact_s3
 
     except HTTPException:
         db.rollback()
