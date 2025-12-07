@@ -3,8 +3,12 @@ import re
 import os
 import sys
 import time
+import requests
 import google.generativeai as genai
 from typing import Tuple, Optional
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class ReproducibilityChecker:
     """
@@ -17,6 +21,32 @@ class ReproducibilityChecker:
         genai.configure(api_key=genai_api_key)
         self.model = genai.GenerativeModel('gemini-2.0-flash-exp')
         self.timeout = 300  # 5 minutes max execution time
+    
+    def fetch_model_card(self, model_identifier: str) -> Optional[str]:
+        """
+        Fetch README.md content from HuggingFace model.
+        model_identifier can be either:
+        - Full URL: https://huggingface.co/microsoft/DialoGPT-medium
+        - Model path: microsoft/DialoGPT-medium
+        """
+        # Clean up the model identifier
+        if "huggingface.co/" in model_identifier:
+            # Extract path from URL
+            model_path = model_identifier.split("huggingface.co/")[1]
+            model_path = model_path.split("/tree")[0].split("/blob")[0].strip("/")
+        else:
+            model_path = model_identifier.strip()
+        
+        # HuggingFace raw content URL for README
+        readme_url = f"https://huggingface.co/{model_path}/raw/main/README.md"
+        
+        try:
+            resp = requests.get(readme_url, timeout=10)
+            resp.raise_for_status()
+            return resp.text
+        except Exception as e:
+            print(f"Could not fetch README for {model_path}: {e}")
+            return None
         
     def extract_code_from_model_card(self, model_card_content: str) -> Optional[str]:
         """
@@ -154,19 +184,20 @@ Attempt {attempt}/3
             print(f"Gemini API error: {e}")
             return None
     
-    def check_reproducibility(self, model_card_path: str) -> Tuple[float, str]:
+    def check_reproducibility(self, model_identifier: str) -> Tuple[float, str]:
         """
         Main method to check reproducibility of a model.
+        
+        Args:
+            model_identifier: HuggingFace model identifier (URL or path)
         
         Returns:
             (score, explanation) where score is 0, 0.5, or 1
         """
-        # Read model card
-        try:
-            with open(model_card_path, 'r', encoding='utf-8') as f:
-                model_card = f.read()
-        except Exception as e:
-            return 0.0, f"Could not read model card: {e}"
+        # Fetch model card from HuggingFace
+        model_card = self.fetch_model_card(model_identifier)
+        if not model_card:
+            return 0.0, f"Could not fetch model card for {model_identifier}"
         
         # Extract code
         code = self.extract_code_from_model_card(model_card)
@@ -212,8 +243,15 @@ if __name__ == "__main__":
         genai_api_key=os.getenv("GOOGLE_API_KEY")
     )
     
-    # Check a model
-    score, explanation = checker.check_reproducibility("path/to/README.md")
+    # Test with command line args or default
+    if len(sys.argv) > 1:
+        model_id = sys.argv[1]
+    else:
+        # Default test model
+        model_id = "microsoft/DialoGPT-medium"
+    
+    print(f"Checking reproducibility for: {model_id}")
+    score, explanation = checker.check_reproducibility(model_id)
     
     print(f"\nReproducibility Score: {score}")
     print(f"Explanation: {explanation}")
