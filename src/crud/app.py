@@ -26,14 +26,13 @@ from fastapi import FastAPI, Query
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from src.authentication_routes import router as auth_router  # noqa: E402
 from src.crud.rate.rate_route import router as rate_router  # noqa: E402
 from src.crud.upload.artifact_routes import \
     router as artifact_router  # noqa: E402
-from src.authentication_routes import \
-    router as auth_router  # noqa: E402
 from src.database import init_db  # noqa: E402
-from src.health_monitor import (HealthComponentCollection,  # noqa: E402
-                                health_monitor)
+from src.health_monitor import HealthComponentCollection  # noqa: E402
+from src.health_monitor import health_monitor  # noqa: E402
 
 # Initialize FastAPI app
 app = FastAPI(

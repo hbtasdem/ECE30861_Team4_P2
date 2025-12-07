@@ -89,6 +89,7 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
 # because FastAPI matches routes in order. If this comes after, the parameterized
 # route will match "/artifact/byRegEx" first, treating "byRegEx" as the artifact_type.
 
+
 @router.post("/artifact/byRegEx", response_model=List[ArtifactMetadata])
 async def get_artifacts_by_regex(
     request: ArtifactRegEx,
@@ -127,8 +128,8 @@ async def get_artifacts_by_regex(
 
     # Validate regex pattern for DoS protection
     regex_str = request.regex
-    
-    # Check for malicious patterns that could cause ReDoS (Regular Expression Denial of Service)
+
+    # Check for malicious patterns (ReDoS)
     # Detect catastrophic backtracking patterns
     dangerous_patterns = [
         r'\(.*\+.*\)\+',  # Nested quantifiers like (a+)+
@@ -137,21 +138,29 @@ async def get_artifacts_by_regex(
         r'\(.*\{.*,.*\}.*\)\+',  # Nested bounded quantifiers
         r'(\(.*\|.*){3,}',  # Excessive alternation
     ]
-    
+
     for pattern in dangerous_patterns:
         if re.search(pattern, regex_str):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid: Potentially malicious regex pattern detected (ReDoS risk)",
+                detail=(
+                    "There is missing field(s) in the artifact_regex "
+                    "or it is formed improperly, or is invalid: "
+                    "Potentially malicious regex pattern detected (ReDoS risk)"
+                ),
             )
-    
+
     # Limit regex complexity
     if len(regex_str) > 200:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid: Regex pattern too long (max 200 characters)",
+            detail=(
+                "There is missing field(s) in the artifact_regex "
+                "or it is formed improperly, or is invalid: "
+                "Regex pattern too long (max 200 characters)"
+            ),
         )
-    
+
     try:
         regex_pattern = re.compile(regex_str, re.IGNORECASE)
     except re.error as e:
@@ -242,7 +251,7 @@ async def create_artifact(
             detail="Invalid artifact type: 'byRegEx' is a reserved keyword. "
             "Use POST /artifact/byRegEx endpoint for regex searches.",
         )
-    
+
     valid_types = {"model", "dataset", "code"}
     if artifact_type not in valid_types:
         raise HTTPException(
@@ -537,7 +546,7 @@ async def delete_artifact(
     if artifact_type not in valid_types:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"There is missing field(s) in the artifact_type or artifact_id or invalid",
+            detail="There is missing field(s) in the artifact_type or artifact_id or invalid",
         )
 
     # ========================================================================
@@ -545,12 +554,12 @@ async def delete_artifact(
     # ========================================================================
     try:
         key = _get_artifact_key(artifact_type, artifact_id)
-        
+
         # Check if artifact exists first
         try:
             s3_client.head_object(Bucket=BUCKET_NAME, Key=key)
-        except ClientError as e:
-            if e.response["Error"]["Code"] == "404":
+        except ClientError as client_err:
+            if client_err.response["Error"]["Code"] == "404":
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail="Artifact does not exist.",
@@ -564,15 +573,15 @@ async def delete_artifact(
 
     except HTTPException:
         raise
-    except ClientError as e:
+    except ClientError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"There is missing field(s) in the artifact_type or artifact_id or invalid",
+            detail="There is missing field(s) in the artifact_type or artifact_id or invalid",
         )
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"There is missing field(s) in the artifact_type or artifact_id or invalid",
+            detail="There is missing field(s) in the artifact_type or artifact_id or invalid",
         )
 
 
