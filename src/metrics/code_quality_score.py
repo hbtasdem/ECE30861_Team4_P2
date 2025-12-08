@@ -90,10 +90,6 @@ def code_quality_score(model_name: str) -> Tuple[float, float]:
     rd_score = readme_score(model_name)
     lic_score = license_score(model_name)
 
-    print(j_score)
-    print(rd_score)
-    print(lic_score)
-
     overall_score = round(j_score + rd_score + lic_score, 2)
     latency = time.time() - start_time
     return overall_score, latency

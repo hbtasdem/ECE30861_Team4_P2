@@ -139,13 +139,23 @@ def download_dataset(dataset_url: str, artifact_id: str) -> str:
     return url
 
 
+def get_hf_token() -> str:
+    ssm = boto3.client("ssm", region_name="us-east-2")
+    resp = ssm.get_parameter(Name="/ece30861/HF_TOKEN",WithDecryption=True)
+    return resp["Parameter"]["Value"]
+
+
 def download_dataset_huggingface(dataset_url: str, artifact_id: str) -> List[str]:
     dataset_id = dataset_url.split("huggingface.co/")[-1].replace("datasets/", "")
-    api = HfApi()
+
+    hf_token = get_hf_token()
+    api = HfApi(token=hf_token)
+    headers = {"Authorization": f"Bearer {hf_token}"}
+
     s3 = boto3.client("s3")
 
     # List all files in the dataset repo
-    files = api.list_repo_files(repo_id=dataset_id, repo_type="dataset")
+    files = api.list_repo_files(repo_id=dataset_id, repo_type="dataset", token=hf_token)
 
     # No pattern filtering for datasets — download everything in the repo
     for file_path in files:
@@ -153,7 +163,13 @@ def download_dataset_huggingface(dataset_url: str, artifact_id: str) -> List[str
         s3_key = f"downloads/{artifact_id}/{file_path}"
 
         # Stream the file in chunks
-        with httpx.stream("GET", file_url, follow_redirects=True) as response:
+        with httpx.stream("GET", file_url, headers=headers, follow_redirects=True) as response:
+            if response.status_code in [401, 403]:
+                raise Exception(
+                    f"Access denied for dataset '{dataset_id}'. "
+                    f"You must request access and use a valid HF token."
+                )
+
             response.raise_for_status()
 
             class StreamWrapper:
@@ -360,34 +376,61 @@ def download_code(code_url: str, artifact_id: str) -> str:
     """
     s3 = boto3.client("s3")
 
-    # Extract GitHub owner + repo name
-    parts = code_url.rstrip("/").split("/")
-    owner, repo = parts[-2], parts[-1]
+    # --- Parse GitHub URL properly -----------------------------------------
+    # Supported formats:
+    # https://github.com/owner/repo
+    # https://github.com/owner/repo/tree/branch
+    # https://github.com/owner/repo/tree/branch/path/to/subdir
 
+    try:
+        after_github = code_url.split("github.com/")[1].rstrip("/")
+    except IndexError:
+        raise ValueError("URL must be a GitHub repository URL")
+
+    parts = after_github.split("/")
+
+    owner = parts[0]
+    repo = parts[1]
+
+    if "tree" in parts:
+        tree_index = parts.index("tree")
+        branch = parts[tree_index + 1]
+        subdir = "/".join(parts[tree_index + 2:]) if len(parts) > tree_index + 2 else ""
+    else:
+        # No tree section → use default branch and root directory
+        branch = None
+        subdir = ""
+
+    # --- Determine default branch if needed --------------------------------
     with httpx.Client(follow_redirects=True) as client:
-        # Get default branch of repo
-        repo_api = f"https://api.github.com/repos/{owner}/{repo}"
-        repo_resp = client.get(repo_api)
-        repo_resp.raise_for_status()
-        default_branch = repo_resp.json()["default_branch"]
+        if branch is None:
+            repo_api = f"https://api.github.com/repos/{owner}/{repo}"
+            repo_resp = client.get(repo_api)
+            repo_resp.raise_for_status()
+            branch = repo_resp.json()["default_branch"]
 
-        # Get full recursive tree of default branch
-        tree_url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/{default_branch}?recursive=1"
-        tree_resp = client.get(tree_url)
+        # Recursively fetch entire tree
+        tree_api = f"https://api.github.com/repos/{owner}/{repo}/git/trees/{branch}?recursive=1"
+        tree_resp = client.get(tree_api)
         tree_resp.raise_for_status()
         tree = tree_resp.json().get("tree", [])
 
-        # Keep only blobs (files)
-        files = [item["path"] for item in tree if item["type"] == "blob"]
+    # --- Filter to files (blobs) -------------------------------------------
+    all_files = [item["path"] for item in tree if item["type"] == "blob"]
 
-    # Stream each file from raw GitHub
+    if subdir:
+        # Only include files in the requested subdirectory
+        files = [f for f in all_files if f.startswith(subdir + "/")]
+    else:
+        files = all_files
+
+    # --- Stream each file from raw.githubusercontent.com -------------------
     for file_path in files:
-        # URL-encode the file path to handle special characters like %
-        encoded_path = quote(file_path, safe='/')
-        file_url = f"https://raw.githubusercontent.com/{owner}/{repo}/{default_branch}/{encoded_path}"
+        encoded_path = quote(file_path, safe="/")
+        file_url = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{encoded_path}"
         s3_key = f"downloads/{artifact_id}/{file_path}"
 
-        # Stream file bytes using same pattern as model/dataset download
+        # Stream file bytes
         with httpx.stream("GET", file_url, follow_redirects=True) as response:
             if response.status_code == 404:
                 continue  # skip missing raw files
@@ -408,7 +451,6 @@ def download_code(code_url: str, artifact_id: str) -> str:
 
     # Generate index.html of all files
     url = generate_index_html(artifact_id, files)
-
     return url
 
 

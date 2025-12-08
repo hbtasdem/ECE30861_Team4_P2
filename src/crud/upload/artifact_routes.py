@@ -170,7 +170,10 @@ async def create_artifact(
         # Get download_url
         download_url = get_download_url(artifact_data.url, artifact_id, artifact_type)
 
-        # Extract name from URL
+        # Extract name from URL or user input
+        # if artifact_data.name: # this doesn't work :/
+        #     name = artifact_data.name
+        # else:
         name = artifact_data.url.split("/")[-1]
         if not name or name.startswith("http"):
             name = f"{artifact_type}_{artifact_id[:8]}"
