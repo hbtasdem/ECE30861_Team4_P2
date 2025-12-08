@@ -306,7 +306,9 @@ def download_dataset_github(dataset_url: str, artifact_id: str) -> List[str]:
     downloaded_files = []
 
     for file_path in files:
-        file_url = f"https://raw.githubusercontent.com/{owner}/{repo}/{default_branch}/{file_path}"
+        # URL-encode the file path
+        encoded_path = quote(file_path, safe='/')
+        file_url = f"https://raw.githubusercontent.com/{owner}/{repo}/{default_branch}/{encoded_path}"
         s3_key = f"downloads/{artifact_id}/{file_path}"
 
         try:
@@ -378,7 +380,9 @@ def download_code(code_url: str, artifact_id: str) -> str:
 
     # Stream each file from raw GitHub
     for file_path in files:
-        file_url = f"https://raw.githubusercontent.com/{owner}/{repo}/{default_branch}/{file_path}"
+        # URL-encode the file path to handle special characters like %
+        encoded_path = quote(file_path, safe='/')
+        file_url = f"https://raw.githubusercontent.com/{owner}/{repo}/{default_branch}/{encoded_path}"
         s3_key = f"downloads/{artifact_id}/{file_path}"
 
         # Stream file bytes using same pattern as model/dataset download

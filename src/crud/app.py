@@ -41,7 +41,10 @@ app = FastAPI(
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("uvicorn")
+# silence logs we don't want
 logging.getLogger("botocore").setLevel(logging.WARNING)
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
 
 
 @app.middleware("http")
