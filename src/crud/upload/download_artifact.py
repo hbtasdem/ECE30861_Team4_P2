@@ -130,8 +130,8 @@ def download_dataset(dataset_url: str, artifact_id: str) -> str:
         files = download_dataset_huggingface(dataset_url, artifact_id)
     elif "kaggle.com" in dataset_url:
         files = download_dataset_kaggle(dataset_url, artifact_id)
-    # elif "github.com" in dataset_url:
-    #     files = download_dataset_github(dataset_url, artifact_id)
+    elif "github.com" in dataset_url:
+        files = download_dataset_github(dataset_url, artifact_id)
     else:
         raise ValueError(f"Unsupported dataset URL: {dataset_url}")
 
@@ -171,7 +171,7 @@ def download_dataset_huggingface(dataset_url: str, artifact_id: str) -> List[str
     return files
 
 
-def download_dataset_kaggle(dataset_url: str, artifact_id: str) -> List(str):
+def download_dataset_kaggle(dataset_url: str, artifact_id: str) -> List[str]:
     """
     Download Kaggle dataset zip and stream directly to S3 without extracting.
     """
@@ -211,11 +211,7 @@ def download_dataset_kaggle(dataset_url: str, artifact_id: str) -> List(str):
 
     with httpx.Client(timeout=timeout, follow_redirects=True) as client:
         try:
-            print(f"Requesting: {download_url}")
-
             with client.stream("GET", download_url, headers=headers) as response:
-                print(f"Response status: {response.status_code}")
-
                 if response.status_code == 401:
                     raise Exception("Authentication failed - check Kaggle credentials")
                 elif response.status_code == 403:
@@ -253,6 +249,96 @@ def download_dataset_kaggle(dataset_url: str, artifact_id: str) -> List(str):
             raise Exception(f"HTTP error downloading dataset: {str(e)}")
         except Exception as e:
             raise Exception(f"Download failed: {str(e)}")
+
+
+def download_dataset_github(dataset_url: str, artifact_id: str) -> List[str]:
+    """
+    Stream download a GitHub dataset repo into S3. Return list of files.
+
+    Parameters
+    ----------
+    dataset_url: str - GitHub repo URL
+    artifact_id: str - unique identifier for this artifact
+
+    Returns
+    ----------
+    files: List[str] - list of file paths downloaded
+    """
+    s3 = boto3.client("s3")
+
+    # Parse GitHub URL to extract owner and repo
+    # Handles: https://github.com/owner/repo
+    #          https://github.com/owner/repo/tree/branch/path
+    #          https://github.com/owner/repo/blob/branch/file
+    dataset_url = dataset_url.rstrip("/")
+
+    # Remove trailing .git if present
+    if dataset_url.endswith('.git'):
+        dataset_url = dataset_url[:-4]
+
+    # Extract owner and repo from URL
+    match = re.match(r'https://github\.com/([^/]+)/([^/]+)(?:/.*)?', dataset_url)
+    if not match:
+        raise ValueError(f"Invalid GitHub URL: {dataset_url}")
+
+    owner, repo = match.groups()
+
+    # Remove any path segments from repo name
+    repo = repo.split('/')[0]
+
+    with httpx.Client(follow_redirects=True, timeout=30.0) as client:
+        # Get default branch of repo
+        repo_api = f"https://api.github.com/repos/{owner}/{repo}"
+        repo_resp = client.get(repo_api)
+        repo_resp.raise_for_status()
+        default_branch = repo_resp.json()["default_branch"]
+
+        # Get full recursive tree of default branch
+        tree_url = f"https://api.github.com/repos/{owner}/{repo}/git/trees/{default_branch}?recursive=1"
+        tree_resp = client.get(tree_url)
+        tree_resp.raise_for_status()
+        tree = tree_resp.json().get("tree", [])
+
+        # Keep only blobs (files), not trees (directories)
+        files = [item["path"] for item in tree if item["type"] == "blob"]
+
+    # Stream each file from raw GitHub
+    downloaded_files = []
+
+    for file_path in files:
+        file_url = f"https://raw.githubusercontent.com/{owner}/{repo}/{default_branch}/{file_path}"
+        s3_key = f"downloads/{artifact_id}/{file_path}"
+
+        try:
+            # Stream file bytes
+            with httpx.stream("GET", file_url, follow_redirects=True) as response:
+                if response.status_code == 404:
+                    continue
+
+                response.raise_for_status()
+
+                class StreamWrapper:
+                    def __init__(self, stream, chunk_size=1024 * 1024):
+                        self.stream = stream.iter_bytes(chunk_size)
+
+                    def read(self, size=-1):
+                        try:
+                            return next(self.stream)
+                        except StopIteration:
+                            return b""
+
+                # Upload to S3
+                s3.upload_fileobj(StreamWrapper(response), BUCKET_NAME, s3_key)
+                downloaded_files.append(file_path)
+
+        except Exception as e:
+            print(f"Failed to download {file_path}: {e}")
+            continue
+
+    if not downloaded_files:
+        raise Exception("No files were successfully downloaded from GitHub")
+
+    return downloaded_files
 
 
 def download_code(code_url: str, artifact_id: str) -> str:
@@ -321,7 +407,9 @@ def download_code(code_url: str, artifact_id: str) -> str:
 
 
 if __name__ == "__main__":
-    artifact_id = "01"
-    kaggle_dataset = "https://www.kaggle.com/datasets/hliang001/flickr2k"
-    files = download_dataset(kaggle_dataset, artifact_id)
+    artifact_id = "02"
+    # kaggle_dataset = "https://www.kaggle.com/datasets/hliang001/flickr2k"
+    # files = download_dataset(kaggle_dataset, artifact_id)
+    github_dataset = "https://github.com/datablist/sample-csv-files"
+    files = download_dataset(github_dataset, artifact_id)
     print(files)
