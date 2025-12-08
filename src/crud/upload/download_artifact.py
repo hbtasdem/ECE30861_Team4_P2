@@ -2,11 +2,11 @@ import base64
 import re
 import shutil
 from typing import List
+from urllib.parse import quote
 
 import boto3
 import httpx
 from huggingface_hub import HfApi
-from kaggle.api.kaggle_api_extended import KaggleApi
 
 BUCKET_NAME = "phase2-s3-bucket"
 
@@ -175,6 +175,8 @@ def download_dataset_kaggle(dataset_url: str, artifact_id: str) -> List[str]:
     """
     Download Kaggle dataset zip and stream directly to S3 without extracting.
     """
+    from kaggle.api.kaggle_api_extended import KaggleApi  # noqa: E402
+
     s3 = boto3.client("s3")
 
     # Minimal disk space check
