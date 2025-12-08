@@ -231,7 +231,7 @@ def rateOnUpload(model_url: str, artifact_id: str) -> bool:
     boolean: True if model, ingestible, False if not
     """
     # Find dataset and code url for model
-    dataset_url, code_url = "", "" # findDatasetAndCode(model_url)
+    dataset_url, code_url = "", ""  # findDatasetAndCode(model_url)
     # calculate metrics
     rating = calculate_all_scores(code_url, dataset_url, model_url, set(), set())
     # check if ingestible comment out until rate works

@@ -1,6 +1,12 @@
+import base64
+import re
+import shutil
+from typing import List
+
 import boto3
 import httpx
 from huggingface_hub import HfApi
+from kaggle.api.kaggle_api_extended import KaggleApi
 
 BUCKET_NAME = "phase2-s3-bucket"
 
@@ -124,16 +130,16 @@ def download_dataset(dataset_url: str, artifact_id: str) -> str:
         files = download_dataset_huggingface(dataset_url, artifact_id)
     elif "kaggle.com" in dataset_url:
         files = download_dataset_kaggle(dataset_url, artifact_id)
-    elif "github.com" in dataset_url:
-        files = download_dataset_github(dataset_url, artifact_id)
+    # elif "github.com" in dataset_url:
+    #     files = download_dataset_github(dataset_url, artifact_id)
     else:
         raise ValueError(f"Unsupported dataset URL: {dataset_url}")
-    
+
     url = generate_index_html(artifact_id, files)
     return url
 
 
-def download_dataset_huggingface(dataset_url, artifact_id):
+def download_dataset_huggingface(dataset_url: str, artifact_id: str) -> List[str]:
     dataset_id = dataset_url.split("huggingface.co/")[-1].replace("datasets/", "")
     api = HfApi()
     s3 = boto3.client("s3")
@@ -165,24 +171,19 @@ def download_dataset_huggingface(dataset_url, artifact_id):
     return files
 
 
-def download_dataset_kaggle(dataset_url, artifact_id):
+def download_dataset_kaggle(dataset_url: str, artifact_id: str) -> List(str):
     """
-    Stream Kaggle datasets directly without using temp files.
-    Much safer for memory/disk constrained environments.
+    Download Kaggle dataset zip and stream directly to S3 without extracting.
     """
-    import re
-    from kaggle.api.kaggle_api_extended import KaggleApi
-    import shutil
-    
     s3 = boto3.client("s3")
-    
-    # Check disk space FIRST
+
+    # Minimal disk space check
     stat = shutil.disk_usage('/tmp')
     free_gb = stat.free / (1024**3)
-    
+
     if free_gb < 0.1:
         raise Exception(f"Insufficient disk space: {free_gb:.1f}GB free")
-    
+
     # Parse URL
     if "/datasets/" in dataset_url:
         match = re.search(r'kaggle\.com/datasets/([^/]+/[^/?]+)', dataset_url)
@@ -191,87 +192,68 @@ def download_dataset_kaggle(dataset_url, artifact_id):
         dataset_ref = match.group(1)
     else:
         raise ValueError(f"Unsupported Kaggle URL format: {dataset_url}")
-    
+
     # Authenticate
     api = KaggleApi()
     api.authenticate()
-    
-    # Get file list (doesn't download)
-    try:
-        dataset_files = api.dataset_list_files(dataset_ref).files
-    except Exception as e:
-        raise Exception(f"Failed to list Kaggle dataset files: {str(e)}")
-    
-    # Limit to first 10 files or 1GB total to prevent crashes
-    MAX_FILES = 3
-    MAX_TOTAL_SIZE = 1 * 1024 * 1024  # 1GB
-    
-    total_size = 0
-    files_to_download = []
-    
-    for f in dataset_files[:MAX_FILES]:
-        if hasattr(f, 'size') and f.size:
-            if total_size + f.size > MAX_TOTAL_SIZE:
-                break
-            total_size += f.size
-        files_to_download.append(f)
-    
-    if len(dataset_files) > len(files_to_download):
-        print(f"Warning: Only downloading {len(files_to_download)} of {len(dataset_files)} files to prevent crashes")
-    
-    files = []
-    
-    # Download files one at a time with httpx streaming
-    timeout = httpx.Timeout(connect=30.0, read=300.0, write=30.0, pool=30.0)
-    
+
+    # Build download URL for entire dataset as zip
+    download_url = f"https://www.kaggle.com/api/v1/datasets/download/{dataset_ref}"
+
+    # Get credentials
+    username = api.get_config_value('username')
+    key = api.get_config_value('key')
+    credentials = base64.b64encode(f"{username}:{key}".encode()).decode()
+    headers = {"Authorization": f"Basic {credentials}"}
+
+    # Set generous timeout since we're just streaming through
+    timeout = httpx.Timeout(connect=30.0, read=600.0, write=30.0, pool=30.0)
+
     with httpx.Client(timeout=timeout, follow_redirects=True) as client:
-        for dataset_file in files_to_download:
-            file_name = dataset_file.name
-            
-            try:
-                # Build download URL
-                download_url = f"https://www.kaggle.com/api/v1/datasets/download/{dataset_ref}/{file_name}"
-                
-                # Get Kaggle credentials
-                username = api.get_config_value('username')
-                key = api.get_config_value('key')
-                
-                # Basic auth
-                import base64
-                credentials = base64.b64encode(f"{username}:{key}".encode()).decode()
-                
-                headers = {
-                    "Authorization": f"Basic {credentials}"
-                }
-                
-                # Stream download
-                with client.stream("GET", download_url, headers=headers) as response:
-                    response.raise_for_status()
-                    
-                    s3_key = f"downloads/{artifact_id}/{file_name}"
-                    
-                    class StreamWrapper:
-                        def __init__(self, stream, chunk_size=1024*1024):
-                            self.stream = stream.iter_bytes(chunk_size)
-                        
-                        def read(self, size=-1):
-                            try:
-                                return next(self.stream)
-                            except StopIteration:
-                                return b''
-                    
-                    s3.upload_fileobj(StreamWrapper(response), BUCKET_NAME, s3_key)
-                    files.append(file_name)
-                    print(f"✓ {file_name}")
-                    
-            except Exception as e:
-                print(f"Failed {file_name}: {str(e)}")
-                continue
-    
-    if not files:
-        raise Exception("No files downloaded successfully")
-    
-    return files
+        try:
+            print(f"Requesting: {download_url}")
+
+            with client.stream("GET", download_url, headers=headers) as response:
+                print(f"Response status: {response.status_code}")
+
+                if response.status_code == 401:
+                    raise Exception("Authentication failed - check Kaggle credentials")
+                elif response.status_code == 403:
+                    raise Exception("Access forbidden. You may need to accept the dataset's terms on Kaggle website first.")
+                elif response.status_code == 404:
+                    raise Exception(f"Dataset not found: {dataset_ref}")
+
+                response.raise_for_status()
+
+                # Extract dataset name for a clean filename
+                dataset_name = dataset_ref.split('/')[-1]
+                s3_key = f"downloads/{artifact_id}/{dataset_name}.zip"
+
+                # Stream directly to S3 as a zip file
+                class StreamWrapper:
+                    def __init__(self, stream, chunk_size=1024*1024):  # 1MB chunks
+                        self.stream = stream.iter_bytes(chunk_size)
+                        self.total_mb = 0
+
+                    def read(self, size=-1):
+                        try:
+                            chunk = next(self.stream)
+                            self.total_mb += len(chunk) / (1024 * 1024)
+                            return chunk
+                        except StopIteration:
+                            return b''
+
+                wrapper = StreamWrapper(response)
+                s3.upload_fileobj(wrapper, BUCKET_NAME, s3_key)
+
+                # Return list with just the zip file
+                return [f"{dataset_name}.zip"]
+
+        except httpx.HTTPError as e:
+            raise Exception(f"HTTP error downloading dataset: {str(e)}")
+        except Exception as e:
+            raise Exception(f"Download failed: {str(e)}")
+
 
 def download_code(code_url: str, artifact_id: str) -> str:
     """
@@ -336,3 +318,10 @@ def download_code(code_url: str, artifact_id: str) -> str:
     url = generate_index_html(artifact_id, files)
 
     return url
+
+
+if __name__ == "__main__":
+    artifact_id = "01"
+    kaggle_dataset = "https://www.kaggle.com/datasets/hliang001/flickr2k"
+    files = download_dataset(kaggle_dataset, artifact_id)
+    print(files)
