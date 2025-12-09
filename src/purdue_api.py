@@ -8,8 +8,9 @@ import os
 import urllib.error
 import urllib.request
 from typing import Any, Optional
-from botocore.exceptions import ClientError, NoCredentialsError
+
 import boto3
+from botocore.exceptions import ClientError, NoCredentialsError
 
 
 # Load environment variables from .env file
@@ -53,7 +54,6 @@ def get_genai_token() -> Any:
         print("error getting environment variable GEN_AI_STUDIO_API_KEY")
 
     return token
-
 
 
 class PurdueGenAI:
