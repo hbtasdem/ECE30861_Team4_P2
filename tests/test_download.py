@@ -64,8 +64,10 @@ def test_download_model(mock_httpx_stream: MagicMock, mock_hfapi_class: MagicMoc
 @mock_aws
 @patch("src.crud.upload.download_artifact.HfApi")
 @patch("src.crud.upload.download_artifact.httpx.stream")
-def test_download_dataset_huggingface(mock_httpx_stream: MagicMock, mock_hfapi_class: MagicMock) -> None:
+@patch("src.crud.upload.download_artifact.get_hf_token")
+def test_download_dataset_huggingface(mock_get_hf_token: MagicMock, mock_httpx_stream: MagicMock, mock_hfapi_class: MagicMock) -> None:
     # ----- Mock HF API -----
+    mock_get_hf_token.return_value = "hf_FAKE_TOKEN"
     mock_hfapi = MagicMock()
     mock_hfapi.list_repo_files.return_value = ["dataset_info.json", "train.jsonl", "README.md"]
     mock_hfapi_class.return_value = mock_hfapi
@@ -76,7 +78,6 @@ def test_download_dataset_huggingface(mock_httpx_stream: MagicMock, mock_hfapi_c
     # ----- Mock S3 -----
     s3 = boto3.client("s3", region_name="us-east-1")
     s3.create_bucket(Bucket=BUCKET_NAME)
-
     artifact_id = "dataset-artifact"
     dataset_url = "https://huggingface.co/datasets/bookcorpus/bookcorpus"
 
