@@ -38,7 +38,7 @@ from typing import Any, Dict, List, Optional
 
 import boto3
 from botocore.exceptions import ClientError
-from fastapi import APIRouter, Body, Header, HTTPException, Query, status
+from fastapi import APIRouter, Header, HTTPException, Query, status
 from ulid import ULID
 
 from src.crud.rate_route import rateOnUpload
@@ -96,7 +96,7 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
 @router.post("/artifact/{artifact_type}", response_model=Artifact, status_code=status.HTTP_201_CREATED)
 async def create_artifact(
     artifact_type: str,
-    artifact_data: Dict[str, Any] = Body(...),
+    artifact_data: ArtifactData,
     x_authorization: Optional[str] = Header(None),
 ) -> Artifact:
     """Create new artifact from source URL per spec.
@@ -148,10 +148,8 @@ async def create_artifact(
             f"Must be one of: {', '.join(valid_types)}",
         )
 
-    url = artifact_data.get("url")
-
     # Validate artifact data
-    if not url:
+    if not artifact_data.url:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Artifact data must contain 'url' field",
@@ -172,12 +170,10 @@ async def create_artifact(
         # Get download_url
         download_url = get_download_url(artifact_data.url, artifact_id, artifact_type)
 
-        # Extract name from URL if not given
-        name = artifact_data.get("name")
-        if not name:
-            name = artifact_data.url.split("/")[-1]
-            if not name or name.startswith("http"):
-                name = f"{artifact_type}_{artifact_id[:8]}"
+        # Extract name from URL
+        name = artifact_data.url.split("/")[-1]
+        if not name or name.startswith("http"):
+            name = f"{artifact_type}_{artifact_id[:8]}"
 
         # Create spec-compliant envelope
         artifact_envelope = {
