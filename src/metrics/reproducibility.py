@@ -4,9 +4,33 @@ import os
 import sys
 import time
 import requests
-import google.generativeai as genai
 from typing import Tuple, Optional
 from dotenv import load_dotenv
+
+# Import purdue_api - adjust path as needed
+# Try multiple possible paths
+purdue_api = None
+possible_paths = [
+    os.path.join(os.path.dirname(__file__), "../.."),  # ../../purdue_api
+    os.path.join(os.path.dirname(__file__), ".."),      # ../purdue_api
+    os.path.join(os.path.dirname(__file__), "../../src"),  # ../../src/purdue_api
+    os.path.join(os.path.dirname(__file__), "../src"),  # ../src/purdue_api
+]
+
+for path in possible_paths:
+    sys.path.insert(0, path)
+    try:
+        import purdue_api
+        print(f"✓ purdue_api imported successfully from {path}")
+        break
+    except ImportError:
+        pass
+
+if not purdue_api:
+    print("✗ Failed to import purdue_api from any path")
+    print(f"Current directory: {os.getcwd()}")
+    print(f"Script directory: {os.path.dirname(__file__)}")
+    print("Searched paths:", possible_paths)
 
 load_dotenv()
 
@@ -16,28 +40,41 @@ class ReproducibilityChecker:
     Scores: 0 (no code/doesn't run), 0.5 (runs with AI debugging), 1 (runs perfectly)
     """
     
-    def __init__(self, genai_api_key: str):
-        self.client = docker.from_env()
-        genai.configure(api_key=genai_api_key)
-        self.model = genai.GenerativeModel('gemini-2.0-flash-exp')
-        self.timeout = 300  # 5 minutes max execution time
+    def __init__(self):
+        print("\n=== Initializing ReproducibilityChecker ===")
+        
+        # Initialize Docker
+        try:
+            self.client = docker.from_env()
+            print("✓ Docker client initialized")
+        except Exception as e:
+            print(f"✗ Docker initialization failed: {e}")
+            raise
+        
+        # Initialize Purdue GenAI
+        self.model = None
+        if purdue_api:
+            try:
+                self.model = purdue_api.PurdueGenAI()
+                print(f"✓ Purdue GenAI initialized")
+            except Exception as e:
+                print(f"✗ Could not initialize Purdue GenAI: {e}")
+        else:
+            print("✗ purdue_api not available")
+        
+        self.timeout = 300
+        print("=== Initialization Complete ===\n")
     
     def fetch_model_card(self, model_identifier: str) -> Optional[str]:
         """
         Fetch README.md content from HuggingFace model.
-        model_identifier can be either:
-        - Full URL: https://huggingface.co/microsoft/DialoGPT-medium
-        - Model path: microsoft/DialoGPT-medium
         """
-        # Clean up the model identifier
         if "huggingface.co/" in model_identifier:
-            # Extract path from URL
             model_path = model_identifier.split("huggingface.co/")[1]
             model_path = model_path.split("/tree")[0].split("/blob")[0].strip("/")
         else:
             model_path = model_identifier.strip()
         
-        # HuggingFace raw content URL for README
         readme_url = f"https://huggingface.co/{model_path}/raw/main/README.md"
         
         try:
@@ -47,24 +84,20 @@ class ReproducibilityChecker:
         except Exception as e:
             print(f"Could not fetch README for {model_path}: {e}")
             return None
-        
+    
     def extract_code_from_model_card(self, model_card_content: str) -> Optional[str]:
         """
         Extract Python code blocks from model card (README.md).
-        Returns the first substantial code block found.
         """
-        # Find Python code blocks in markdown
         pattern = r'```python\n(.*?)```'
         matches = re.findall(pattern, model_card_content, re.DOTALL)
         
         if not matches:
-            # Try generic code blocks
             pattern = r'```\n(.*?)```'
             matches = re.findall(pattern, model_card_content, re.DOTALL)
         
-        # Find the first block with actual code (not just imports)
         for code in matches:
-            if len(code.strip()) > 20:  # Substantial code
+            if len(code.strip()) > 20:
                 return code.strip()
         
         return None
@@ -73,16 +106,49 @@ class ReproducibilityChecker:
         """
         Create a complete Python script with error handling.
         """
+        install_steps = []
+        exec_lines = []
+        
+        # Debug: print what we're parsing
+        print(f"  Parsing code for pip installs...")
+        
+        for line in code.split('\n'):
+            stripped_line = line.strip()
+            if stripped_line.startswith('pip install') or stripped_line.startswith('!pip install'):
+                clean_line = stripped_line.lstrip('!')
+                install_steps.append(clean_line)
+                print(f"    Found install: {clean_line}")
+            else:
+                exec_lines.append(line)
+        
+        print(f"  Total pip install commands found: {len(install_steps)}")
+        
+        code_to_execute = '\n'.join(exec_lines)
+        
+        install_block = ""
+        if install_steps:
+            install_block = "import subprocess\nimport sys\n\n"
+            for step in install_steps:
+                # Parse: "pip install transformers torch" -> ['pip', 'install', 'transformers', 'torch']
+                parts = step.split()
+                if len(parts) >= 3 and parts[0] == 'pip' and parts[1] == 'install':
+                    # Get just the package names: ['transformers', 'torch']
+                    packages = parts[2:]
+                    print(f"  Will install packages: {packages}")
+                    install_block += f"print('Installing: {' '.join(packages)}...')\n"
+                    # Add --root-user-action=ignore to suppress the warning
+                    install_block += f"subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--root-user-action=ignore', '--quiet'] + {packages})\n"
+                    install_block += f"print('✓ Installed {' '.join(packages)}')\n\n"
+        
         script = f"""
 import sys
 import traceback
 
-# Install requirements if needed
-{f"# Requirements: {requirements}" if requirements else ""}
+{install_block}
 
 try:
     # User's demonstration code
-{self._indent_code(code, 4)}
+{self._indent_code(code_to_execute, 4)}
     
     print("\\n=== CODE EXECUTED SUCCESSFULLY ===")
     sys.exit(0)
@@ -105,13 +171,11 @@ except Exception as e:
     def run_code_in_docker(self, code: str, image: str = "python:3.9-slim") -> Tuple[bool, str]:
         """
         Run code in isolated Docker container.
-        Returns (success, output/error).
         """
         script = self.create_test_script(code)
         container_name = f"repro_test_{int(time.time())}"
         
         try:
-            # Create and run container
             container = self.client.containers.run(
                 image=image,
                 command=["python", "-c", script],
@@ -121,8 +185,8 @@ except Exception as e:
                 mem_limit="512m",
                 network_mode="bridge",
                 stdout=True,
-                stderr=True,
-                timeout=self.timeout
+                stderr=True
+                # Removed timeout - not supported in this Docker API version
             )
             
             output = container.decode('utf-8')
@@ -136,122 +200,151 @@ except Exception as e:
     
     def get_ai_fix(self, code: str, error_output: str, attempt: int = 1) -> Optional[str]:
         """
-        Use Gemini to debug and fix the code.
+        Use Purdue GenAI to debug and fix the code.
         """
-        prompt = f"""You are an expert Python debugger. Return only fixed code, no explanations.
+        print(f"\n  --- AI Fix Attempt {attempt} ---")
+        print(f"  Model available: {self.model is not None}")
+        
+        if not self.model:
+            print("  ✗ AI model not initialized, skipping")
+            return None
+        
+        prompt = f"""You are fixing Python code that failed to run.
 
-Original Code:
-```python
+FAILED CODE:
 {code}
-```
 
-Error Output:
-```
-{error_output}
-```
+ERROR MESSAGE:
+{error_output[:500]}
 
-Please provide ONLY the fixed Python code that resolves this error. 
-Do not include explanations, just the corrected code in a single code block.
-If the error is due to missing packages, add pip install commands as comments at the top.
+INSTRUCTIONS:
+1. If the error is about missing packages (ModuleNotFoundError, ImportError), add "pip install <package>" at the VERY START
+2. For PyTorch/transformers errors: Use RECENT versions - DO NOT specify old versions like torch==1.12 or torch==1.13
+3. Use "pip install torch transformers" WITHOUT version numbers to get latest compatible versions
+4. Fix any other errors in the code
+5. Return ONLY the fixed Python code, no explanations or markdown
+6. Format example:
+pip install torch transformers
+from transformers import AutoModel
+model = AutoModel.from_pretrained('bert-base')
 
-Attempt {attempt}/3
-"""
+Fix the code now (attempt {attempt}/3):"""
         
         try:
-            response = self.model.generate_content(
-                prompt,
-                generation_config=genai.types.GenerationConfig(
-                    temperature=0.3,
-                    max_output_tokens=1000,
-                )
-            )
+            print(f"  Calling Purdue GenAI API...")
+            response = self.model.chat(prompt)
             
-            fixed_code = response.text
+            if not response:
+                print(f"  ✗ API returned empty response")
+                return None
+            
+            fixed_code = response.strip()
+            print(f"  ✓ API Response received ({len(fixed_code)} chars)")
+            print(f"  First 150 chars: {fixed_code[:150]}")
             
             # Extract code from markdown if present
             if "```python" in fixed_code:
                 match = re.search(r'```python\n(.*?)```', fixed_code, re.DOTALL)
                 if match:
-                    fixed_code = match.group(1)
+                    fixed_code = match.group(1).strip()
+                    print("  Extracted from ```python block")
             elif "```" in fixed_code:
                 match = re.search(r'```\n(.*?)```', fixed_code, re.DOTALL)
                 if match:
-                    fixed_code = match.group(1)
+                    fixed_code = match.group(1).strip()
+                    print("  Extracted from ``` block")
             
-            return fixed_code.strip()
+            if not fixed_code:
+                print("  ✗ Fixed code is empty after extraction")
+                return None
+            
+            print(f"  ✓ Final fixed code: {len(fixed_code)} chars")
+            return fixed_code
             
         except Exception as e:
-            print(f"Gemini API error: {e}")
+            print(f"  ✗ API error: {e}")
+            import traceback
+            traceback.print_exc()
             return None
     
     def check_reproducibility(self, model_identifier: str) -> Tuple[float, str]:
         """
         Main method to check reproducibility of a model.
-        
-        Args:
-            model_identifier: HuggingFace model identifier (URL or path)
-        
-        Returns:
-            (score, explanation) where score is 0, 0.5, or 1
         """
-        # Fetch model card from HuggingFace
+        print(f"\n{'='*60}")
+        print(f"Checking: {model_identifier}")
+        print('='*60)
+        
+        # Fetch model card
+        print("\n[1/4] Fetching README from HuggingFace...")
         model_card = self.fetch_model_card(model_identifier)
         if not model_card:
             return 0.0, f"Could not fetch model card for {model_identifier}"
+        print(f"✓ Fetched {len(model_card)} characters")
         
         # Extract code
+        print("\n[2/4] Extracting code from README...")
         code = self.extract_code_from_model_card(model_card)
         if not code:
             return 0.0, "No demonstration code found in model card"
+        print(f"✓ Extracted {len(code)} chars of code")
+        print(f"Preview:\n{code[:200]}...\n")
         
-        print(f"Extracted code ({len(code)} chars)")
-        
-        # First attempt: run as-is
-        print("Attempting to run code as-is...")
+        # First attempt
+        print("[3/4] Running code as-is in Docker...")
         success, output = self.run_code_in_docker(code)
         
         if success:
+            print("✓ Code executed successfully!")
             return 1.0, "Code runs successfully without modifications"
         
-        print(f"Initial run failed. Error: {output[:200]}...")
+        print(f"✗ Initial run failed")
+        print(f"Error: {output[:300]}...")
         
-        # Second attempt: with AI debugging
-        print("Attempting AI-assisted debugging...")
-        max_attempts = 3
+        # AI debugging
+        print("\n[4/4] Attempting AI-assisted debugging...")
+        max_attempts = 5  # Increased from 3 since AI is making progress
         
         for attempt in range(1, max_attempts + 1):
-            print(f"Debug attempt {attempt}/{max_attempts}")
-            
             fixed_code = self.get_ai_fix(code, output, attempt)
+            
             if not fixed_code:
+                print(f"  No fix generated for attempt {attempt}")
                 continue
             
+            print(f"  Testing fixed code...")
             success, output = self.run_code_in_docker(fixed_code)
             
             if success:
+                print(f"✓ Fixed code works!")
                 return 0.5, f"Code runs after AI debugging (attempt {attempt}/{max_attempts})"
             
-            code = fixed_code  # Use fixed version for next iteration
+            # Show more of the error output
+            print(f"  Still failing. Full output:")
+            print(f"  {output[:1000]}")
+            code = fixed_code
         
+        print("✗ All attempts failed")
         return 0.0, f"Code does not run even after {max_attempts} AI debugging attempts"
 
 
-# Example usage
 if __name__ == "__main__":
     # Initialize checker
-    checker = ReproducibilityChecker(
-        genai_api_key=os.getenv("GOOGLE_API_KEY")
-    )
+    checker = ReproducibilityChecker()
     
-    # Test with command line args or default
+    # Get model to test
     if len(sys.argv) > 1:
         model_id = sys.argv[1]
     else:
-        # Default test model
         model_id = "microsoft/DialoGPT-medium"
     
-    print(f"Checking reproducibility for: {model_id}")
+    # Run check
     score, explanation = checker.check_reproducibility(model_id)
     
-    print(f"\nReproducibility Score: {score}")
+    # Print results
+    print(f"\n{'='*60}")
+    print(f"FINAL RESULT")
+    print('='*60)
+    print(f"Score: {score}")
     print(f"Explanation: {explanation}")
+    print('='*60)
