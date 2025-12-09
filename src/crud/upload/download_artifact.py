@@ -1,6 +1,7 @@
 import base64
 import re
 import shutil
+import time
 from typing import List
 from urllib.parse import quote
 
@@ -141,7 +142,7 @@ def download_dataset(dataset_url: str, artifact_id: str) -> str:
 
 def get_hf_token() -> str:
     ssm = boto3.client("ssm", region_name="us-east-2")
-    resp = ssm.get_parameter(Name="/ece30861/HF_TOKEN",WithDecryption=True)
+    resp = ssm.get_parameter(Name="/ece30861/HF_TOKEN", WithDecryption=True)
     return resp["Parameter"]["Value"]
 
 
@@ -363,7 +364,7 @@ def download_dataset_github(dataset_url: str, artifact_id: str) -> List[str]:
 
 def download_code(code_url: str, artifact_id: str) -> str:
     """
-    Stream download a GitHub code repo into s3. Return htlm of objects in s3 for download_url
+    Stream download a GitHub code repo into s3. Return html of objects in s3 for download_url
 
     Parameters
     ----------
@@ -377,11 +378,6 @@ def download_code(code_url: str, artifact_id: str) -> str:
     s3 = boto3.client("s3")
 
     # --- Parse GitHub URL properly -----------------------------------------
-    # Supported formats:
-    # https://github.com/owner/repo
-    # https://github.com/owner/repo/tree/branch
-    # https://github.com/owner/repo/tree/branch/path/to/subdir
-
     try:
         after_github = code_url.split("github.com/")[1].rstrip("/")
     except IndexError:
@@ -392,72 +388,135 @@ def download_code(code_url: str, artifact_id: str) -> str:
     owner = parts[0]
     repo = parts[1]
 
+    # Remove .git from repo name if it somehow got through
+    if repo.endswith('.git'):
+        repo = repo[:-4]
+
     if "tree" in parts:
         tree_index = parts.index("tree")
         branch = parts[tree_index + 1]
         subdir = "/".join(parts[tree_index + 2:]) if len(parts) > tree_index + 2 else ""
     else:
-        # No tree section → use default branch and root directory
         branch = None
         subdir = ""
 
+    # --- Set timeouts to prevent hanging -----------------------------------
+    timeout = httpx.Timeout(connect=10.0, read=30.0, write=10.0, pool=10.0)
+
     # --- Determine default branch if needed --------------------------------
-    with httpx.Client(follow_redirects=True) as client:
+    max_retries = 3
+
+    with httpx.Client(follow_redirects=True, timeout=timeout) as client:
         if branch is None:
             repo_api = f"https://api.github.com/repos/{owner}/{repo}"
-            repo_resp = client.get(repo_api)
-            repo_resp.raise_for_status()
-            branch = repo_resp.json()["default_branch"]
+
+            for attempt in range(max_retries):
+                try:
+                    repo_resp = client.get(repo_api)
+
+                    # Handle rate limiting
+                    if repo_resp.status_code == 403:
+                        raise Exception("GitHub API rate limit exceeded. Please try again later.")
+
+                    repo_resp.raise_for_status()
+                    branch = repo_resp.json()["default_branch"]
+                    break
+
+                except httpx.TimeoutException:
+                    if attempt == max_retries - 1:
+                        raise Exception(f"Timeout fetching repository info after {max_retries} attempts")
+                    time.sleep(2 ** attempt)  # Exponential backoff
+                except httpx.HTTPError as e:
+                    if attempt == max_retries - 1:
+                        raise Exception(f"Failed to fetch repository info: {str(e)}")
+                    time.sleep(2 ** attempt)
 
         # Recursively fetch entire tree
         tree_api = f"https://api.github.com/repos/{owner}/{repo}/git/trees/{branch}?recursive=1"
-        tree_resp = client.get(tree_api)
-        tree_resp.raise_for_status()
-        tree = tree_resp.json().get("tree", [])
+
+        for attempt in range(max_retries):
+            try:
+                tree_resp = client.get(tree_api)
+
+                # Handle rate limiting
+                if tree_resp.status_code == 403:
+                    raise Exception("GitHub API rate limit exceeded. Please try again later.")
+
+                tree_resp.raise_for_status()
+                tree = tree_resp.json().get("tree", [])
+                break
+
+            except httpx.TimeoutException:
+                if attempt == max_retries - 1:
+                    raise Exception(f"Timeout fetching file tree after {max_retries} attempts")
+                time.sleep(2 ** attempt)
+            except httpx.HTTPError as e:
+                if attempt == max_retries - 1:
+                    raise Exception(f"Failed to fetch file tree: {str(e)}")
+                time.sleep(2 ** attempt)
 
     # --- Filter to files (blobs) -------------------------------------------
     all_files = [item["path"] for item in tree if item["type"] == "blob"]
 
     if subdir:
-        # Only include files in the requested subdirectory
         files = [f for f in all_files if f.startswith(subdir + "/")]
     else:
         files = all_files
 
+    if not files:
+        raise Exception(f"No files found in repository{' at path: ' + subdir if subdir else ''}")
+
+    # --- Limit number of files to prevent overwhelming the system ----------
+    MAX_FILES = 100
+    if len(files) > MAX_FILES:
+        print(f"Warning: Repository has {len(files)} files, limiting to {MAX_FILES}")
+        files = files[:MAX_FILES]
+
     # --- Stream each file from raw.githubusercontent.com -------------------
+    downloaded_files = []
+    failed_files = []
+
     for file_path in files:
         encoded_path = quote(file_path, safe="/")
         file_url = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{encoded_path}"
         s3_key = f"downloads/{artifact_id}/{file_path}"
 
-        # Stream file bytes
-        with httpx.stream("GET", file_url, follow_redirects=True) as response:
-            if response.status_code == 404:
-                continue  # skip missing raw files
-            response.raise_for_status()
+        try:
+            # Stream with timeout
+            with httpx.stream("GET", file_url, follow_redirects=True, timeout=timeout) as response:
+                if response.status_code == 404:
+                    print(f"Skipping missing file: {file_path}")
+                    continue
 
-            class StreamWrapper:
-                def __init__(self, stream, chunk_size=1024 * 1024):
-                    self.stream = stream.iter_bytes(chunk_size)
+                if response.status_code == 403:
+                    print("Rate limited, skipping remaining files")
+                    break
 
-                def read(self, size=-1):
-                    try:
-                        return next(self.stream)
-                    except StopIteration:
-                        return b""
+                response.raise_for_status()
 
-            # Upload to S3
-            s3.upload_fileobj(StreamWrapper(response), BUCKET_NAME, s3_key)
+                class StreamWrapper:
+                    def __init__(self, stream, chunk_size=1024 * 1024):
+                        self.stream = stream.iter_bytes(chunk_size)
 
-    # Generate index.html of all files
-    url = generate_index_html(artifact_id, files)
+                    def read(self, size=-1):
+                        try:
+                            return next(self.stream)
+                        except StopIteration:
+                            return b""
+
+                # Upload to S3
+                s3.upload_fileobj(StreamWrapper(response), BUCKET_NAME, s3_key)
+                downloaded_files.append(file_path)
+
+        except Exception as e:
+            print(f"Failed to download {file_path}: {e}")
+            failed_files.append(file_path)
+            # Don't fail entirely, continue with other files
+            continue
+
+    if not downloaded_files:
+        raise Exception(f"Failed to download any files. Errors: {len(failed_files)} files failed")
+
+    # Generate index.html only for successfully downloaded files
+    url = generate_index_html(artifact_id, downloaded_files)
     return url
-
-
-if __name__ == "__main__":
-    artifact_id = "02"
-    # kaggle_dataset = "https://www.kaggle.com/datasets/hliang001/flickr2k"
-    # files = download_dataset(kaggle_dataset, artifact_id)
-    github_dataset = "https://github.com/datablist/sample-csv-files"
-    files = download_dataset(github_dataset, artifact_id)
-    print(files)
