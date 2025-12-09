@@ -264,6 +264,8 @@ def test_download_code(mock_httpx_client: MagicMock, mock_httpx_stream: MagicMoc
 
     # Fake response for repo info (default branch)
     class FakeRepoResponse:
+        status_code = 200
+
         def raise_for_status(self) -> None:
             pass
 
@@ -272,6 +274,8 @@ def test_download_code(mock_httpx_client: MagicMock, mock_httpx_stream: MagicMoc
 
     # Fake response for repo tree
     class FakeTreeResponse:
+        status_code = 200
+
         def raise_for_status(self) -> None:
             pass
 
