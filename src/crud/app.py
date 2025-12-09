@@ -87,7 +87,6 @@
 """FastAPI web application for model scoring."""
 
 import json
-import json
 import os
 import subprocess
 import subprocess
@@ -98,8 +97,6 @@ from typing import Any, Dict
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
-from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from fastapi.templating import Jinja2Templates
 

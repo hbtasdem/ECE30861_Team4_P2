@@ -110,6 +110,27 @@ class PurdueGenAI:
             raise Exception(f"HTTP Error {e.code}: {error_text}")
         except Exception as e:
             raise Exception(f"Error calling Purdue GenAI: {str(e)}")
+    def generate_content(self, message: str, generation_config: Optional[object] = None) -> object:
+        """
+        Wrapper for the chat method to satisfy the ReproducibilityChecker's 
+        expected interface (mimicking the original GenAI SDK).
+
+        Args:
+            message: Your message (the prompt for fixing the code).
+            generation_config: Ignored, but included to match the expected signature.
+
+        Returns:
+            A simple object with a 'text' attribute containing the response.
+        """
+        # Call the existing chat method
+        response_text = self.chat(message)
+        
+        # Return a simple object mimicking the required structure (response.text)
+        class MockResponse:
+            def __init__(self, text):
+                self.text = text
+        
+        return MockResponse(response_text)
 
 
 # Example usage
