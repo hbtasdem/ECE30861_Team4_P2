@@ -22,7 +22,7 @@ COMPONENTS MONITORED:
 import logging
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, ConfigDict
 
@@ -30,7 +30,7 @@ from pydantic import BaseModel, ConfigDict
 class HealthMetricValue(BaseModel):
     """Single metric value with unit."""
 
-    value: float | str | bool | int
+    value: Union[float, str, bool, int]
     unit: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)

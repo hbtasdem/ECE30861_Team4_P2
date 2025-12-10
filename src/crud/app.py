@@ -14,9 +14,9 @@ ENDPOINTS PROVIDED (10/10 BASELINE):
 9. GET /health (defined below)
 10. GET /artifact/model/{id}/rate (in rate/routes.py)
 """
+# app.py
 
 import logging
-# app.py
 import sys
 from pathlib import Path
 from typing import Any, Dict, List
@@ -28,7 +28,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.authentication_routes import router as auth_router  # noqa: E402
-from src.crud.rate.rate_route import router as rate_router  # noqa: E402
+from src.crud.rate_route import router as rate_router  # noqa: E402
 from src.crud.upload.artifact_routes import router as artifact_router  # noqa: E402
 from src.database import init_db  # noqa: E402
 from src.health_monitor import HealthComponentCollection  # noqa: E402
@@ -42,16 +42,14 @@ app = FastAPI(
 )
 
 
+# Per spec Section 3.2.1: S3-based artifact storage
+# Database tables are used for authentication and audit logging
 @app.on_event("startup")
 def startup_event():
     """Initialize database on application startup"""
     init_db()
 
-
-# Per spec Section 3.2.1: S3-based artifact storage
-# Database tables are used for authentication and audit logging
-
-# Configure logging
+# --------------- Configure logging ---------------
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("uvicorn")
 # silence logs we don't want
@@ -81,7 +79,8 @@ async def log_requests(request: Request, call_next):
 
     return response
 
-# Include routers - BASELINE endpoints only
+
+# --------------- Include routers ---------------
 app.include_router(artifact_router)  # POST/GET/PUT /artifact(s)/{type}/{id}, POST /artifacts
 app.include_router(rate_router)  # GET /artifact/model/{id}/rate
 app.include_router(auth_router)  # PUT /authenticate, POST /register
@@ -126,9 +125,7 @@ def get_health_components(
     Returns:
         HealthComponentCollection with all component details
     """
-    return health_monitor.get_health_components(
-        window_minutes=windowMinutes, include_timeline=includeTimeline
-    )
+    return health_monitor.get_health_components(window_minutes=windowMinutes, include_timeline=includeTimeline)
 
 
 @app.get("/tracks")
