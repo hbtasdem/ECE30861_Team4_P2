@@ -731,14 +731,14 @@ if __name__ == "__main__":
     print()
 
     # Test deterministic scoring
-    print("🔍 Deterministic scoring (regex-based):")
+    print("Deterministic scoring (regex-based):")
     score_det, elapsed_det = dataset_quality_sub_score(model_id, use_ai=False)
     print(f"  Score: {score_det:.3f}")
     print(f"  Time: {elapsed_det:.3f}s")
     print()
 
     # Test AI-enhanced scoring
-    print("🤖 AI-enhanced hybrid scoring:")
+    print("AI-enhanced hybrid scoring:")
     try:
         score_ai, elapsed_ai = dataset_quality_sub_score(model_id, use_ai=True)
         print(f"  Score: {score_ai:.3f}")
@@ -746,12 +746,12 @@ if __name__ == "__main__":
         print(f"  Improvement: {score_ai - score_det:+.3f}")
 
         if score_ai > score_det:
-            print("  ✅ AI enhancement improved the score")
+            print("  AI enhancement improved the score")
         elif score_ai < score_det:
-            print("  ⚠️ AI enhancement lowered the score")
+            print("  WARNING: AI enhancement lowered the score")
         else:
-            print("  ➡️ AI enhancement had no effect (likely AI unavailable)")
+            print("  AI enhancement had no effect (likely AI unavailable)")
 
     except Exception as e:
-        print(f"  ❌ AI enhancement failed: {e}")
+        print(f"  AI enhancement failed: {e}")
         print("  Make sure GEN_AI_STUDIO_API_KEY is set in your environment")

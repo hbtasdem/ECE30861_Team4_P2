@@ -109,7 +109,7 @@ def health() -> Tuple[Response, int]:
 if __name__ == "__main__":
     # Verify setup
     print("\n" + "=" * 60)
-    print("🚀 Model Scorer Web Interface")
+    print("Model Scorer Web Interface")
     print("=" * 60)
     print(f"\nProject Root: {PROJECT_ROOT}")
     print(f"Source Directory: {SRC_DIR}")
