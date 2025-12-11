@@ -319,6 +319,23 @@ Now output ONLY the fixed code with NO markdown (attempt {attempt}/5):"""
         print(f"✗ Initial run failed")
         print(f"Error: {output[:300]}...")
         
+        # Check if the ONLY issue is missing packages (no actual code bugs)
+        is_only_missing_packages = (
+            ('ModuleNotFoundError' in output or 'ImportError' in output) and
+            not any(err in output for err in [
+                'SyntaxError', 'NameError', 'AttributeError', 
+                'TypeError', 'ValueError', 'IndentationError'
+            ])
+        )
+        
+        # If code has actual substance (not just a single import) and only needs packages
+        # Try AI fix to add packages, and if that works, it's a 1.0
+        if is_only_missing_packages and len(code.split('\n')) > 3:
+            print("  → Only issue appears to be missing packages")
+            print("  → Will try adding packages to verify code is correct")
+        else:
+            print("  → Code has errors beyond missing packages, needs debugging")
+        
         # AI debugging
         print("\n[4/4] Attempting AI-assisted debugging...")
         max_attempts = 5  # Increased from 3 since AI is making progress
