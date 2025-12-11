@@ -16,11 +16,24 @@ def detect_dataset_links(readme_text: str) -> bool:
 
     # Common dataset hosting platforms and patterns
     dataset_patterns = [
-        r"https?://[^\s]*\.(csv|json|jsonl|parquet|tsv|txt|zip|tar\.gz|" r"tar\.bz2)",
+        # Original patterns
+        r"https?://[^\s]*\.(csv|json|jsonl|parquet|tsv|txt|zip|tar\.gz|tar\.bz2)",
         r"https?://[^\s]*(dataset|data)[^\s]*",
-        r"https?://[^\s]*(kaggle|huggingface\.co/datasets|zenodo|figshare|"
-        r"drive\.google\.com)",
-        r"\[.*\]\([^)]*\.(csv|json|jsonl|parquet|tsv|txt|zip|tar\.gz|" r"tar\.bz2)",
+        r"https?://[^\s]*(kaggle|huggingface\.co/datasets|zenodo|figshare|drive\.google\.com)",
+        # NEW: Common dataset names
+        r"\b(common crawl|c4|glue|squad|coco|imagenet|openwebtext|pile|redpajama|dolly)\b",
+        # NEW: DOIs
+        r"doi:\s*10\.\d+/[^\s]+",
+        # NEW: More data repositories
+        r"https?://[^\s]*(archive\.org|data\.gov|aws\.amazon\.com/datasets)",
+        # NEW: Data folder references
+        r"(data|dataset)/\s*(folder|directory)",
+        r"see\s+(the\s+)?data",
+        # NEW: Academic references
+        r"data(set)?\s+(available|from|in)\s+",
+        r"upon\s+request",
+        # Existing patterns
+        r"\[.*\]\([^)]*\.(csv|json|jsonl|parquet|tsv|txt|zip|tar\.gz|tar\.bz2)",
         r"##?\s*Dataset",
         r"##?\s*Data",
         r"dataset[:\s]",
@@ -48,20 +61,27 @@ def detect_code_examples(readme_text: str) -> bool:
 
     # Patterns for code examples and scripts
     code_patterns = [
-        r"```[a-zA-Z]*\n.*\n```",  # Code blocks
-        r"```[a-zA-Z]*\n.*",  # Incomplete code blocks
-        r"\.py\b",  # Python files
-        r"\.js\b",  # JavaScript files
-        r"\.java\b",  # Java files
-        r"\.cpp\b",  # C++ files
-        r"\.c\b",  # C files
-        r"\.sh\b",  # Shell scripts
-        r"\.ipynb\b",  # Jupyter notebooks
-        r"##?\s*Usage",
-        r"##?\s*Example",
-        r"##?\s*Code",
-        r"##?\s*Installation",
-        r"##?\s*Quick\s+start",
+        # Original patterns
+        r"```[a-zA-Z]*\n.*\n```",
+        r"```[a-zA-Z]*\n.*",
+        r"\.(py|js|java|cpp|c|sh|ipynb)\b",
+        # NEW: More code hosts
+        r"https?://[^\s]*(github|gitlab|bitbucket|codeberg)\.com",
+        r"git\s+clone",
+        # NEW: More file extensions
+        r"\.(r|scala|go|rs|kt|rb|php|swift)\b",
+        # NEW: Container references
+        r"docker\s+(pull|run)",
+        r"podman\s+",
+        # NEW: Notebook platforms
+        r"colab\.research\.google\.com",
+        r"kaggle\.com/code",
+        # NEW: API/CLI usage
+        r"\.(generate|predict|infer|run)\(",
+        r"api\s+(endpoint|call)",
+        r"cli\s+tool",
+        # Existing patterns
+        r"##?\s*(Usage|Example|Code|Installation|Quick\s+start)",
         r"pip\s+install",
         r"python\s+",
         r"import\s+",

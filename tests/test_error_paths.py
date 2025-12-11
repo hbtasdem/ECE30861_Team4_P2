@@ -1,9 +1,5 @@
 """Tests for error paths and edge cases to improve code coverage."""
 
-import json
-from unittest.mock import MagicMock, patch
-
-import pytest
 from fastapi.testclient import TestClient
 
 from src.crud.app import app
@@ -45,7 +41,7 @@ class TestAuthenticationErrors:
         """Test registering a user that already exists."""
         import time
         unique_name = f"duplicate_user_{int(time.time() * 1000)}"
-        
+
         # First registration
         response = client.post(
             "/register",
@@ -291,10 +287,10 @@ class TestHealthEndpoints:
         assert "components" in data
 
     def test_health_components_invalid_window(self):
-        """Test /health/components with invalid window (too small)."""
+        """Test /health/components with invalid window (too small) - FastAPI validates with 422."""
         response = client.get("/health/components?windowMinutes=2")
-        assert response.status_code == 200
-        # Should use default (60) since 2 < 5
+        # FastAPI Query validation returns 422 for values outside ge=5, le=1440
+        assert response.status_code == 422
 
 
 class TestCostEndpoint:

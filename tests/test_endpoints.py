@@ -1,6 +1,7 @@
 """Quick test script for verifying implemented endpoints."""
 
 import json
+from typing import Any, Optional
 
 from fastapi.testclient import TestClient
 
@@ -9,7 +10,7 @@ from src.crud.app import app
 client = TestClient(app)
 
 
-def test_health():
+def test_health() -> None:
     """Test GET /health endpoint"""
     print("\n=== Testing GET /health ===")
     response = client.get("/health")
@@ -20,7 +21,7 @@ def test_health():
     print("PASSED")
 
 
-def test_health_components():
+def test_health_components() -> None:
     """Test GET /health/components endpoint"""
     print("\n=== Testing GET /health/components ===")
     response = client.get("/health/components?windowMinutes=60")
@@ -32,7 +33,7 @@ def test_health_components():
     print("PASSED")
 
 
-def test_register():
+def test_register() -> tuple[Any, str, str]:
     """Test POST /register endpoint"""
     print("\n=== Testing POST /register ===")
     import time
@@ -69,10 +70,7 @@ def test_register():
         raise AssertionError(f"Registration failed: {response.text}")
 
 
-def test_authenticate(
-    username="ece30861defaultadminuser",
-    password="correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;",
-):
+def test_authenticate(username: str = "testuser123", password: str = "testpass123") -> Any:
     """Test PUT /authenticate endpoint"""
     print("\n=== Testing PUT /authenticate ===")
     payload = {
@@ -92,7 +90,7 @@ def test_authenticate(
         raise AssertionError(f"Authentication failed: {response.text}")
 
 
-def test_enumerate(token=None):
+def test_enumerate(token: Optional[str | None] = None) -> Any:
     """Test POST /artifacts endpoint"""
     print("\n=== Testing POST /artifacts (enumerate) ===")
     payload = [{"name": "*"}]  # Array of ArtifactQuery objects
@@ -113,7 +111,7 @@ def test_enumerate(token=None):
             print("WARNING: May need setup or different payload")
 
 
-def test_regex_search(token=None):
+def test_regex_search(token: Optional[str] = None) -> None:
     """Test POST /artifact/byRegEx endpoint"""
     print("\n=== Testing POST /artifact/byRegEx (regex search) ===")
 

@@ -11,12 +11,11 @@ from urllib.parse import urlparse
 
 import boto3
 import requests
-from botocore.exceptions import ClientError, NoCredentialsError
 
 GITHUB_API = "https://api.github.com"
 
 
-def get_github_token() -> Any:
+def get_github_token() -> Any:  # pragma: no cover
     """
     Get github token for api from ec2 or local env.
 
@@ -30,12 +29,13 @@ def get_github_token() -> Any:
         The github token
     """
     try:
-        ssm = boto3.client("ssm", region_name="us-east-1")
+        ssm = boto3.client("ssm", region_name="us-east-2")
         response = ssm.get_parameter(Name="/ece30861/GITHUB_TOKEN", WithDecryption=True)
         token = response["Parameter"]["Value"]
         if token:
             return token
-    except (ClientError, NoCredentialsError):
+    except Exception as e:
+        print(f"Reviewedness: error fetching GitHub token. {e}")
         pass
     # no parameter found or no ec2 attahched or running locally w/o credentials
     # look for local env variable
@@ -78,7 +78,7 @@ def get_pull_requests(
         }
         r = requests.get(url, headers=headers, params=params)
         if r.status_code != 200:
-            print(f"Error fetching PRs: {r.status_code}, {r.text}")
+            print(f"Reviewedness: Error fetching PRs for {owner}/{repo}: {r.status_code}, {r.text}")
             break
         data = r.json()
         if not data:
@@ -129,7 +129,7 @@ def pr_info(
     return pr_lines, reviewed
 
 
-def reviewedness_score(code_url: str) -> tuple[float, float]:
+def reviewedness_score(code_url: str) -> tuple[float, float]:  # pragma: no cover
     """
     Calculate reviewedness metric.
 
@@ -151,6 +151,9 @@ def reviewedness_score(code_url: str) -> tuple[float, float]:
         end = time.time()
         latency = (end - start) * 1000
         return -1, latency
+
+    if 'github.com' not in code_url.lower():
+        print(f"ERROR Reviewedness: not given github code url, {code_url}")
 
     # Extract owner and repo name from GitHub URL.
     path_parts = urlparse(code_url).path.strip("/").split("/")

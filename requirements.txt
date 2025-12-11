@@ -45,6 +45,7 @@ isort
 mypy
 types-requests
 passlib
+kaggle
 
 # Testing dependencies (optional)
 pytest>=7.0.0
@@ -53,7 +54,7 @@ pytest-asyncio>=0.21.0
 httpx>=0.23.0
 pydantic>=2.0.0
 moto
-markupsafe==2.0.1
+markupsafe==3.0.3
 
 # Standard library modules (built-in, listed for reference)
 # math, time, re, os, sys, typing, logging, pathlib, enum, 
