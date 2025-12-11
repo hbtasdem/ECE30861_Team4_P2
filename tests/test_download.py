@@ -12,7 +12,9 @@ except ImportError:
 
 import pytest
 
-from src.crud.upload.download_artifact import BUCKET_NAME, download_code, download_dataset, download_model
+from src.crud.upload.download_artifact import (BUCKET_NAME, download_code,
+                                               download_dataset,
+                                               download_model)
 
 
 class FakeResponse:
@@ -24,7 +26,7 @@ class FakeResponse:
     def raise_for_status(self) -> None:
         pass
 
-    def iter_bytes(self, chunk_size: int = 1024*1024) -> Iterator[bytes]:
+    def iter_bytes(self, chunk_size: int = 1024 * 1024) -> Iterator[bytes]:
         return self._stream
 
     def __enter__(self) -> "FakeResponse":

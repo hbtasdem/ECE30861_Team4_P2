@@ -139,9 +139,10 @@ def init_db() -> None:
     """
     # Import models to register them with SQLAlchemy Base
     # IMPORTANT: This must import Artifact (not Model!) for spec compliance
-    from src.database_models import Artifact, AuditEntry, Base, User  # noqa: F401
-    # from src.phase3_models import FileStorage  # noqa: F401
+    from src.database_models import (Artifact, AuditEntry, Base,  # noqa: F401
+                                     User)
 
+    # from src.phase3_models import FileStorage  # noqa: F401
     # Create all tables defined in src.models
     # Per spec: All tables must exist before API can be used
     # Includes Phase 2 tables (User, Artifact, AuditEntry)
@@ -154,10 +155,10 @@ def init_db() -> None:
         existing_admin = db.query(User).filter(User.username == "ece30861defaultadminuser").first()
         if not existing_admin:
             from src.crud.upload.auth import hash_password
-            
+
             default_password = "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
             hashed = hash_password(default_password)
-            
+
             admin_user = User(
                 username="ece30861defaultadminuser",
                 email="admin@registry.local",

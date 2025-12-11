@@ -30,7 +30,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.authentication_routes import router as auth_router  # noqa: E402
 from src.crud.rate_route import router as rate_router  # noqa: E402
-from src.crud.upload.artifact_routes import router as artifact_router  # noqa: E402
+from src.crud.upload.artifact_routes import \
+    router as artifact_router  # noqa: E402
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -101,24 +102,26 @@ def health_check() -> Dict[str, str]:
 
 
 @app.get("/health/components")
-def health_components(window_minutes: int = 60, include_timeline: bool = False) -> Dict[str, Any]:
+def health_components(
+    window_minutes: int = 60, include_timeline: bool = False
+) -> Dict[str, Any]:
     """Get component health details (NON-BASELINE per spec).
-    
+
     Returns per-component health diagnostics including status, active issues, and log references.
-    
+
     Args:
         window_minutes: Length of observation window in minutes (5-1440). Defaults to 60.
         include_timeline: Set to true to include per-component activity timelines.
-        
+
     Returns:
         HealthComponentCollection with detailed component status information.
     """
     from datetime import datetime, timezone
-    
+
     # Validate window_minutes
     if window_minutes < 5 or window_minutes > 1440:
         window_minutes = 60
-    
+
     return {
         "components": [
             {

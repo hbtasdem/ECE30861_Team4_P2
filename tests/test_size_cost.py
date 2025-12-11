@@ -21,15 +21,14 @@ def is_within_tolerance(actual: float, expected: float, pct_tol: float = TOLERAN
     "model_id, expected_size",
     [
         ("parvk11/audience_classifier_model", 0.268),
-        ("microsoft/DialoGPT-medium",         5.43),
-        ("openai/whisper-tiny",               0.609),
-        ("google-bert/bert-base-uncased",     3.45),
-        ("tencent/HunyuanOCR",                2.0),
-        ("Tongyi-MAI/Z-Image-Turbo",          32.9),
+        ("microsoft/DialoGPT-medium", 5.43),
+        ("openai/whisper-tiny", 0.609),
+        ("google-bert/bert-base-uncased", 3.45),
+        ("tencent/HunyuanOCR", 2.0),
+        ("Tongyi-MAI/Z-Image-Turbo", 32.9),
         # ("deepseek-ai/DeepSeek-Math-V2",      689),
-        ("microsoft/Fara-7B",                 16.6),
-
-    ]
+        ("microsoft/Fara-7B", 16.6),
+    ],
 )
 def test_get_model_size_gb(model_id: str, expected_size: float) -> None:
     actual_size = get_model_size_gb(model_id)

@@ -8,6 +8,7 @@ from src.crud.app import app
 
 client = TestClient(app)
 
+
 def test_health():
     """Test GET /health endpoint"""
     print("\n=== Testing GET /health ===")
@@ -17,6 +18,7 @@ def test_health():
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
     print("PASSED")
+
 
 def test_health_components():
     """Test GET /health/components endpoint"""
@@ -28,6 +30,7 @@ def test_health_components():
     assert response.status_code == 200
     assert "components" in data
     print("PASSED")
+
 
 def test_register():
     """Test POST /register endpoint"""
@@ -65,22 +68,18 @@ def test_register():
         print(f"Response: {response.text}")
         raise AssertionError(f"Registration failed: {response.text}")
 
-def test_authenticate(username="ece30861defaultadminuser", password="correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"):
+
+def test_authenticate(
+    username="ece30861defaultadminuser",
+    password="correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;",
+):
     """Test PUT /authenticate endpoint"""
     print("\n=== Testing PUT /authenticate ===")
     payload = {
-        "user": {
-            "name": username,
-            "is_admin": True
-        },
-        "secret": {
-            "password": password
-        }
+        "user": {"name": username, "is_admin": True},
+        "secret": {"password": password},
     }
-    response = client.put(
-        "/authenticate",
-        json=payload
-    )
+    response = client.put("/authenticate", json=payload)
     print(f"Status: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
@@ -92,6 +91,7 @@ def test_authenticate(username="ece30861defaultadminuser", password="correcthors
         print(f"Response: {response.text}")
         raise AssertionError(f"Authentication failed: {response.text}")
 
+
 def test_enumerate(token=None):
     """Test POST /artifacts endpoint"""
     print("\n=== Testing POST /artifacts (enumerate) ===")
@@ -99,11 +99,7 @@ def test_enumerate(token=None):
     headers = {}
     if token:
         headers["X-Authorization"] = token
-    response = client.post(
-        "/artifacts",
-        json=payload,
-        headers=headers
-    )
+    response = client.post("/artifacts", json=payload, headers=headers)
     print(f"Status: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
@@ -116,10 +112,11 @@ def test_enumerate(token=None):
         else:
             print("WARNING: May need setup or different payload")
 
+
 def test_regex_search(token=None):
     """Test POST /artifact/byRegEx endpoint"""
     print("\n=== Testing POST /artifact/byRegEx (regex search) ===")
-    
+
     # Test 1: Valid regex
     print("Test 1: Valid regex pattern")
     payload = {"regex": ".*test.*"}
@@ -127,9 +124,7 @@ def test_regex_search(token=None):
     if token:
         headers["X-Authorization"] = token
     response = client.post(
-        "/artifact/byRegEx",
-        json=payload,
-        headers=headers
+        "/artifact/byRegEx", json=payload, headers=headers
     )
     print(f"Status: {response.status_code}")
     if response.status_code == 404:
@@ -140,14 +135,12 @@ def test_regex_search(token=None):
         print("PASSED")
     else:
         print(f"Response: {response.text}")
-    
+
     # Test 2: Malicious regex (ReDoS protection)
     print("\nTest 2: Malicious regex (should be rejected)")
     payload = {"regex": "(a+)+b"}  # Classic ReDoS pattern
     response = client.post(
-        "/artifact/byRegEx",
-        json=payload,
-        headers=headers
+        "/artifact/byRegEx", json=payload, headers=headers
     )
     print(f"Status: {response.status_code}")
     if response.status_code == 400:
@@ -155,14 +148,12 @@ def test_regex_search(token=None):
     else:
         print(f"WARNING: Expected 400, got {response.status_code}")
         print(f"Response: {response.text}")
-    
+
     # Test 3: Too long regex
     print("\nTest 3: Excessively long regex (should be rejected)")
     payload = {"regex": "a" * 250}  # Exceeds 200 char limit
     response = client.post(
-        "/artifact/byRegEx",
-        json=payload,
-        headers=headers
+        "/artifact/byRegEx", json=payload, headers=headers
     )
     print(f"Status: {response.status_code}")
     if response.status_code == 400:
@@ -170,33 +161,35 @@ def test_regex_search(token=None):
     else:
         print(f"WARNING: Expected 400, got {response.status_code}")
 
+
 if __name__ == "__main__":
     print("=" * 60)
     print("TESTING IMPLEMENTED ENDPOINTS")
     print("=" * 60)
-    
+
     try:
         # Test health endpoints (no auth required)
         test_health()
         test_health_components()
-        
+
         # Test authentication endpoints
         token, username, password = test_register()
-        
+
         # Also test authentication with the registered user
         test_authenticate(username, password)
-        
+
         # Test enumerate endpoint
         test_enumerate(token)
-        
+
         # Test regex search endpoint with DoS protection
         test_regex_search(token)
-        
+
         print("\n" + "=" * 60)
         print("ALL TESTS COMPLETED SUCCESSFULLY")
         print("=" * 60)
-        
+
     except Exception as e:
         print(f"\nTEST FAILED: {e}")
         import traceback
+
         traceback.print_exc()

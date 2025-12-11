@@ -79,14 +79,6 @@ async def get_model_rating(
             detail="Authentication failed due to invalid or missing AuthenticationToken.",
         )
 
-    try:
-        get_current_user(x_authorization, db=None)
-    except HTTPException:
-        raise HTTPException(
-            status_code=403,
-            detail="Authentication failed due to invalid or missing AuthenticationToken.",
-        )
-
     # get ModelRating from s3 bucket
     key = f"rating/{artifact_id}.rate.json"
     try:

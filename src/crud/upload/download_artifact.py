@@ -98,7 +98,7 @@ def download_model(model_url: str, artifact_id: str) -> str:
 
             # boto3 upload_fileobj accepts any file-like object with a read() method
             class StreamWrapper:
-                def __init__(self, stream, chunk_size=1024*1024):
+                def __init__(self, stream, chunk_size=1024 * 1024):
                     self.stream = stream.iter_bytes(chunk_size)
 
                 def read(self, size=-1):
@@ -143,7 +143,7 @@ def download_dataset(dataset_url: str, artifact_id: str) -> str:
             response.raise_for_status()
 
             class StreamWrapper:
-                def __init__(self, stream, chunk_size=1024*1024):
+                def __init__(self, stream, chunk_size=1024 * 1024):
                     self.stream = stream.iter_bytes(chunk_size)
 
                 def read(self, size=-1):
