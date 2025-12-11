@@ -210,7 +210,7 @@ def calculate_size_scores(model_id: str) -> Tuple[Dict[str, float], float, int]:
         if hasattr(model_info, "safetensors") and model_info.safetensors:
             api_file_size = model_info.safetensors.total / (1024**3)
     except Exception as e:
-        print(f"[DEBUG] Could not fetch API data for {clean_model_id}: {e}")
+        print(f"Size score: Could not fetch API data for model {clean_model_id}: {e}")
 
     # Estimate model memory
     size_gb = estimate_model_memory(clean_model_id, api_file_size)

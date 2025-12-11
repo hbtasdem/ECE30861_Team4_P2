@@ -78,7 +78,7 @@ def get_pull_requests(
         }
         r = requests.get(url, headers=headers, params=params)
         if r.status_code != 200:
-            print(f"Error fetching PRs: {r.status_code}, {r.text}")
+            print(f"Reviewedness: Error fetching PRs for {owner}/{repo}: {r.status_code}, {r.text}")
             break
         data = r.json()
         if not data:

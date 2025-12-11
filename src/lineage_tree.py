@@ -29,7 +29,7 @@ def get_model_config(model_identifier: str) -> Optional[Dict[str, Any]]:
         resp.raise_for_status()
         return cast(Dict[str, Any], resp.json())
     except Exception as e:
-        print(f"Could not fetch HF API metadata for {model_path}: {e}")
+        print(f"Lineage tree: Could not fetch HF API metadata for model {model_path}: {e}")
         return None
 
 
