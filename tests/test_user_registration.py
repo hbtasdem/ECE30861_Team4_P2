@@ -80,19 +80,19 @@
 #         result = response.json()
 #         assert "token" in result, "Response should contain token"
 #         assert result["token"].startswith("bearer "), "Token should be in bearer format"
-#         print("✓ User registered successfully with bearer token returned")
+#         print("User registered successfully with bearer token returned")
 
 #         # Verify user was created in database
 #         print("\n2b. Verifying user was created in database...")
 #         user = db.query(User).filter(User.username == "newuser").first()
 #         assert user is not None, "User should be created in database"
 #         assert user.email == "newuser", "Email should match username"
-#         print("✓ User 'newuser' created in database with hashed password")
+#         print("User 'newuser' created in database with hashed password")
 
 #         # Verify password was hashed correctly
 #         print("\n2c. Verifying password was hashed...")
 #         assert verify_password("securepassword123", str(user.hashed_password)), "Password verification failed"
-#         print("✓ Password hashed and verifiable")
+#         print("Password hashed and verifiable")
 
 #         # Test registration with duplicate user (should fail)
 #         print("\n2d. Testing duplicate registration (should fail)...")
@@ -101,9 +101,9 @@
 #             json=registration_data
 #         )
 #         assert response.status_code == 409, f"Expected 409, got {response.status_code}"
-#         print("✓ Duplicate registration correctly rejected with 409")
+#         print("Duplicate registration correctly rejected with 409")
 
-#         print("\n✓ FEATURE 2 PASSED: User registration working correctly!")
+#         print("\nFEATURE 2 PASSED: User registration working correctly!")
 
 #     finally:
 #         try:

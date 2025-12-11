@@ -235,5 +235,6 @@ def license_check(github_url: str, artifact_id) -> bool:
         # check compatability
         return check_compatibility(github_license, model_license)
 
-    except Exception:
+    except Exception as e:
+        print(f"License check error on {github_url}: {str(e)}")
         return False

@@ -70,7 +70,7 @@
 #         )
 #         db.add(test_user)
 #         db.commit()
-#         print("✓ Test user created")
+#         print("Test user created")
 
 #         # Test authentication with valid credentials
 #         print("\n3b. Testing authentication with valid credentials...")
@@ -93,7 +93,7 @@
 #         assert "token" in result, "Response should contain token"
 #         token = result["token"]
 #         assert token.startswith("bearer "), "Token should be in bearer format"
-#         print("✓ Authentication successful, bearer token returned")
+#         print("Authentication successful, bearer token returned")
 
 #         # Extract and verify token
 #         print("\n3c. Verifying JWT token...")
@@ -102,7 +102,7 @@
 #         payload = decode_access_token(token_without_bearer)
 #         assert payload.get("sub") == "1", "Token sub claim should be user ID"
 #         assert "exp" in payload, "Token should have expiration"
-#         print(f"✓ JWT token valid with claims: sub={payload.get('sub')}, exp={payload.get('exp')}")
+#         print(f"JWT token valid with claims: sub={payload.get('sub')}, exp={payload.get('exp')}")
 
 #         # Test authentication with wrong password
 #         print("\n3d. Testing authentication with invalid password...")
@@ -121,7 +121,7 @@
 #             json=wrong_auth_data
 #         )
 #         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
-#         print("✓ Invalid password correctly rejected with 401")
+#         print("Invalid password correctly rejected with 401")
 
 #         # Test authentication with nonexistent user
 #         print("\n3e. Testing authentication with nonexistent user...")
@@ -140,9 +140,9 @@
 #             json=nonexistent_auth_data
 #         )
 #         assert response.status_code == 401, f"Expected 401, got {response.status_code}"
-#         print("✓ Nonexistent user correctly rejected with 401")
+#         print("Nonexistent user correctly rejected with 401")
 
-#         print("\n✓ FEATURE 3 PASSED: User authentication working correctly!")
+#         print("\nFEATURE 3 PASSED: User authentication working correctly!")
 
 #     finally:
 #         try:
@@ -153,28 +153,28 @@
 
 # def main() -> None:
 #     """Run all feature tests."""
-#     print("\n" + "🚀 "*35)
+#     print("\n" + " "*35)
 #     print("COMPREHENSIVE FEATURE TEST SUITE".center(70))
-#     print("🚀 "*35)
+#     print(" "*35)
 
 #     try:
 #         test_feature_3_authentication()
 
 #         print("\n" + "="*70)
-#         print("✓ ALL FEATURES PASSED SUCCESSFULLY!".center(70))
+#         print("ALL FEATURES PASSED SUCCESSFULLY!".center(70))
 #         print("="*70)
 #         print("\nImplementation Summary:")
-#         print("  1. ✓ Basic Enumerate: GET /api/models/enumerate works with pagination")
-#         print("  2. ✓ User Registration: POST /auth/register creates users with hashed passwords")
-#         print("  3. ✓ User Authentication: PUT /authenticate validates credentials and returns JWT")
+#         print("  1. Basic Enumerate: GET /api/models/enumerate works with pagination")
+#         print("  2. User Registration: POST /auth/register creates users with hashed passwords")
+#         print("  3. User Authentication: PUT /authenticate validates credentials and returns JWT")
 #         print("\nAll features implemented per OpenAPI specification!")
 #         print("="*70 + "\n")
 
 #     except AssertionError as e:
-#         print(f"\n✗ TEST FAILED: {e}")
+#         print(f"\nTEST FAILED: {e}")
 #         sys.exit(1)
 #     except Exception as e:
-#         print(f"\n✗ ERROR: {e}")
+#         print(f"\nERROR: {e}")
 #         import traceback
 #         traceback.print_exc()
 #         sys.exit(1)

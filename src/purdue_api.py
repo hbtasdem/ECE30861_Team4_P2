@@ -7,7 +7,10 @@ import json
 import os
 import urllib.error
 import urllib.request
-from typing import Optional
+from typing import Any, Optional
+
+import boto3
+from botocore.exceptions import ClientError, NoCredentialsError
 
 
 # Load environment variables from .env file
@@ -26,6 +29,33 @@ def load_env_file() -> None:
 load_env_file()
 
 
+def get_genai_token() -> Any:
+    """
+    Get GEN_AI_STUDIO_API_KEY token for api from ec2 or local env.
+
+    Returns
+    ----------
+    str: The github token
+    """
+    token = ""
+    try:
+        ssm = boto3.client("ssm", region_name="us-east-2")
+        response = ssm.get_parameter(Name="/ece30861/GEN_AI_STUDIO_API_KEY", WithDecryption=True)
+        token = response["Parameter"]["Value"]
+        if token:
+            return token
+    except (ClientError, NoCredentialsError):
+        pass
+    # no parameter found or no ec2 attahched or running locally w/o credentials
+    # look for local env variable
+    try:
+        token = os.getenv("GEN_AI_STUDIO_API_KEY")
+    except Exception:
+        print("error getting environment variable GEN_AI_STUDIO_API_KEY")
+
+    return token
+
+
 class PurdueGenAI:
     """Simple client for Purdue GenAI Studio"""
 
@@ -37,7 +67,11 @@ class PurdueGenAI:
             api_key: API key for Purdue GenAI Studio. If None, will try to
                      load from GEN_AI_STUDIO_API_KEY environment variable
         """
-        self.api_key = api_key or os.getenv("GEN_AI_STUDIO_API_KEY")
+
+        if api_key:
+            self.api_key = api_key
+        else:
+            self.api_key = get_genai_token()
         if not self.api_key:
             raise ValueError(
                 "API key is required. Provide it directly or set "
@@ -117,9 +151,9 @@ if __name__ == "__main__":
     # Debug: Check if environment variable is loaded
     api_key = os.getenv("GEN_AI_STUDIO_API_KEY")
     if api_key:
-        print("✅ Found API key")
+        print("Found API key")
     else:
-        print("❌ No API key found in environment variables")
+        print("No API key found in environment variables")
         print(
             "Make sure your .env file contains: " "GEN_AI_STUDIO_API_KEY=your-key-here"
         )

@@ -615,30 +615,6 @@ class ArtifactLineageGraph(BaseModel):
 # ADDITIONAL REQUEST SCHEMAS
 
 
-class SimpleLicenseCheckRequest(BaseModel):
-    """License compatibility check request per OpenAPI spec.
-
-    Per spec POST /artifact/model/{id}/license-check endpoint:
-    Checks if model licenses are compatible with another repository.
-
-    Used for compliance checking and license compatibility analysis.
-
-    Example request:
-    {
-        "github_url": "https://github.com/huggingface/transformers"
-    }
-
-    Attributes:
-        github_url (str): GitHub repository URL to check compatibility
-    """
-
-    github_url: str = Field(
-        ...,
-        description="GitHub repository URL for license compatibility check "
-        "per spec POST /artifact/model/{id}/license-check",
-    )
-
-
 class ArtifactRegEx(BaseModel):
     """Regular expression search request per OpenAPI spec.
 
