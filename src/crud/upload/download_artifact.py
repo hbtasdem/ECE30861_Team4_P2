@@ -9,6 +9,8 @@ import boto3
 import httpx
 from huggingface_hub import HfApi
 
+from src.hugging_face_api import get_hf_token
+
 BUCKET_NAME = "phase2-s3-bucket"
 
 
@@ -140,18 +142,15 @@ def download_dataset(dataset_url: str, artifact_id: str) -> str:
     return url
 
 
-def get_hf_token() -> str:
-    ssm = boto3.client("ssm", region_name="us-east-2")
-    resp = ssm.get_parameter(Name="/ece30861/HF_TOKEN", WithDecryption=True)
-    return resp["Parameter"]["Value"]
-
-
 def download_dataset_huggingface(dataset_url: str, artifact_id: str) -> List[str]:
     dataset_id = dataset_url.split("huggingface.co/")[-1].replace("datasets/", "")
 
     hf_token = get_hf_token()
     api = HfApi(token=hf_token)
-    headers = {"Authorization": f"Bearer {hf_token}"}
+    if hf_token and hf_token.strip():
+        headers = {"Authorization": f"Bearer {hf_token}"}
+    else:
+        headers = {}
 
     s3 = boto3.client("s3")
 

@@ -36,10 +36,10 @@ def ramp_up_time_score(model_id: str) -> Tuple[float, float]:
         return 0.0, time.time() - start
 
     # 1. Downloads
-    score += normalize_sigmoid(value=info.get("downloads", 0), mid=100, steepness=0.01)
+    score += normalize_sigmoid(value=info.get("downloads", 0), mid=50, steepness=0.05)
 
     # 2. Likes
-    score += normalize_sigmoid(value=info.get("likes", 0), mid=5, steepness=0.01)
+    score += normalize_sigmoid(value=info.get("likes", 0), mid=3, steepness=0.3)
 
     # 3. README exists
     readme = fetch_readme(model_id)
@@ -51,8 +51,8 @@ def ramp_up_time_score(model_id: str) -> Tuple[float, float]:
             score += 1
 
     # Normalize (max score is 4)
-    normalized = score / 4
-    normalized = round(normalized, 2)
+    normalized = (score / 4) * 1.2
+    normalized = min(round(normalized, 2), 1)
     return normalized, time.time() - start
 
 

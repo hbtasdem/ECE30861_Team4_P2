@@ -11,7 +11,6 @@ from urllib.parse import urlparse
 
 import boto3
 import requests
-from botocore.exceptions import ClientError, NoCredentialsError
 
 GITHUB_API = "https://api.github.com"
 
@@ -152,6 +151,9 @@ def reviewedness_score(code_url: str) -> tuple[float, float]:
         end = time.time()
         latency = (end - start) * 1000
         return -1, latency
+
+    if 'github.com' not in code_url.lower():
+        print(f"ERROR Reviewedness: not given github code url, {code_url}")
 
     # Extract owner and repo name from GitHub URL.
     path_parts = urlparse(code_url).path.strip("/").split("/")

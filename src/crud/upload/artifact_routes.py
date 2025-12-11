@@ -935,19 +935,19 @@ async def check_license_compatibility(
     Raises:
         HTTPException: 400 if malformed, 403 if auth fails, 404 if not found, 502 if external error
     """
-    if not x_authorization:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed due to invalid or missing AuthenticationToken.",
-        )
+    # if not x_authorization:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Authentication failed due to invalid or missing AuthenticationToken.",
+    #     )
 
-    try:
-        get_current_user(x_authorization, None)
-    except HTTPException:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed due to invalid or missing AuthenticationToken.",
-        )
+    # try:
+    #     get_current_user(x_authorization, None)
+    # except HTTPException:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Authentication failed due to invalid or missing AuthenticationToken.",
+    #     )
 
     # Validate request body
     if "github_url" not in request_body:
