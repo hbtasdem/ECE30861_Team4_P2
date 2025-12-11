@@ -12,9 +12,7 @@ except ImportError:
     HAS_MOTO = False
     mock_aws = None  # type: ignore
 
-from src.crud.upload.download_artifact import (BUCKET_NAME, download_code,
-                                               download_dataset,
-                                               download_model)
+from src.crud.upload.download_artifact import BUCKET_NAME, download_code, download_dataset, download_model
 
 
 class FakeResponse:
