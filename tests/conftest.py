@@ -10,9 +10,9 @@ from tests.test_setup import client, db, test_db, test_token  # noqa: F401
 
 
 @pytest.fixture
-def auth_token(test_token_fixture: str) -> str:
+def auth_token(test_token: str) -> str:
     """Alias for test_token to use in tests."""
-    return test_token_fixture
+    return test_token
 
 
 @pytest.fixture(autouse=True)
