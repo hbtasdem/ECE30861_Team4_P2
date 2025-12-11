@@ -1,5 +1,6 @@
-from huggingface_hub import HfApi, hf_hub_url
 import requests
+from huggingface_hub import HfApi, hf_hub_url
+
 
 def get_model_size_gb(model_id: str) -> float:
     api = HfApi()
@@ -14,5 +15,4 @@ def get_model_size_gb(model_id: str) -> float:
         if size:
             total_bytes += int(size)
 
-    return round((total_bytes / (1024**3))/ 0.93, 3) #division by 0.93 compensates for loss of overhead 
-
+    return round((total_bytes / (1024 ** 3)) / 0.93, 3)  # division by 0.93 compensates for loss of overhead

@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import Any, Dict, Tuple
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -8,7 +8,6 @@ import pytest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src", "metrics"))
 
 import size_score  # noqa: E402
-
 
 # Test data for different model scenarios
 MOCK_MODEL_INFO_SMALL = MagicMock()

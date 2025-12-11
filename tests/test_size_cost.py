@@ -1,4 +1,5 @@
 import pytest
+
 from src.size_cost import get_model_size_gb
 
 # Global tolerance (± in GB)
@@ -30,7 +31,7 @@ def is_within_tolerance(actual: float, expected: float, pct_tol: float = TOLERAN
 
     ]
 )
-def test_get_model_size_gb(model_id, expected_size):
+def test_get_model_size_gb(model_id: str, expected_size: float) -> None:
     actual_size = get_model_size_gb(model_id)
     assert is_within_tolerance(actual_size, expected_size), (
         f"{model_id}: expected ~{expected_size}GB ±{TOLERANCE_PERCENT}, "

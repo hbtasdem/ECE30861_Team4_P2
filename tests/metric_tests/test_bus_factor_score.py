@@ -2,7 +2,7 @@ import os
 import sys
 import time
 import unittest
-from unittest.mock import MagicMock, patch, Mock
+from unittest.mock import MagicMock, Mock, patch
 
 # Add the src directory to the path so we can import bus_factor
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src/metrics"))
@@ -30,10 +30,10 @@ class TestBusFactorScore(unittest.TestCase):
             "microsoft/DialoGPT-medium": 6,
         }
 
-    def _create_mock_api_response(self, model_id: str) -> list:
+    def _create_mock_api_response(self, model_id: str) -> list[Mock]:
         """Create mock commit objects for HuggingFace API."""
         contributor_count = self.expected_contributors.get(model_id, 0)
-        
+
         # Create mock commits with unique authors
         commits = []
         for i in range(contributor_count):
@@ -41,12 +41,12 @@ class TestBusFactorScore(unittest.TestCase):
             commit.author = f"author_{i}"
             commit.authors = [f"author_{i}"]
             commits.append(commit)
-        
+
         return commits
 
     @patch('bus_factor_score.HF_HUB_AVAILABLE', True)
     @patch('bus_factor_score.list_repo_commits')
-    def test_bus_factor_score_timing(self, mock_list_commits) -> None:
+    def test_bus_factor_score_timing(self, mock_list_commits: MagicMock) -> None:
         """Test bus_factor_score function and measure execution time."""
         print("\n" + "=" * 60)
         print("BUS FACTOR SCORE TIMING TESTS")
@@ -54,7 +54,7 @@ class TestBusFactorScore(unittest.TestCase):
 
         for model_id in self.test_models:
             print(f"\nTesting model: {model_id}")
-            
+
             # Mock the API response
             mock_list_commits.return_value = self._create_mock_api_response(model_id)
 
@@ -81,7 +81,7 @@ class TestBusFactorScore(unittest.TestCase):
 
     @patch('bus_factor_score.HF_HUB_AVAILABLE', True)
     @patch('bus_factor_score.list_repo_commits')
-    def test_bus_factor_score_correctness(self, mock_list_commits) -> None:
+    def test_bus_factor_score_correctness(self, mock_list_commits: MagicMock) -> None:
         """Test that bus_factor_score returns correct contributor counts."""
         print("\n" + "=" * 60)
         print("BUS FACTOR SCORE CORRECTNESS TESTS")
@@ -89,7 +89,7 @@ class TestBusFactorScore(unittest.TestCase):
 
         for model_id in self.test_models:
             print(f"\nTesting model: {model_id}")
-            
+
             # Mock the API response
             mock_list_commits.return_value = self._create_mock_api_response(model_id)
 
@@ -120,7 +120,7 @@ class TestBusFactorScore(unittest.TestCase):
 
     @patch('bus_factor_score.HF_HUB_AVAILABLE', True)
     @patch('bus_factor_score.list_repo_commits')
-    def test_get_huggingface_contributors_timing(self, mock_list_commits) -> None:
+    def test_get_huggingface_contributors_timing(self, mock_list_commits: MagicMock) -> None:
         """Test get_huggingface_contributors function and measure execution."""
         print("\n" + "=" * 60)
         print("HUGGING FACE CONTRIBUTORS TIMING TESTS")
@@ -128,7 +128,7 @@ class TestBusFactorScore(unittest.TestCase):
 
         for model_id in self.test_models:
             print(f"\nTesting model: {model_id}")
-            
+
             # Mock the API response
             mock_list_commits.return_value = self._create_mock_api_response(model_id)
 
@@ -146,7 +146,7 @@ class TestBusFactorScore(unittest.TestCase):
 
     @patch('bus_factor_score.HF_HUB_AVAILABLE', True)
     @patch('bus_factor_score.list_repo_commits')
-    def test_invalid_model(self, mock_list_commits) -> None:
+    def test_invalid_model(self, mock_list_commits: MagicMock) -> None:
         """Test that invalid model IDs return 0."""
         print("\n" + "=" * 60)
         print("INVALID MODEL TESTS")
@@ -161,7 +161,7 @@ class TestBusFactorScore(unittest.TestCase):
 
         for model_id in invalid_models:
             print(f"\nTesting invalid model: '{model_id}'")
-            
+
             # Mock API to raise an exception for invalid models
             mock_list_commits.side_effect = Exception("Model not found")
 
@@ -175,13 +175,13 @@ class TestBusFactorScore(unittest.TestCase):
 
             contributors, latency = result
             self.assertEqual(contributors, 0)
-            
+
             # Reset side_effect for next iteration
             mock_list_commits.side_effect = None
 
     @patch('bus_factor_score.HF_HUB_AVAILABLE', True)
     @patch('bus_factor_score.list_repo_commits')
-    def test_performance_benchmark(self, mock_list_commits) -> None:
+    def test_performance_benchmark(self, mock_list_commits: MagicMock) -> None:
         """Run a performance benchmark with multiple iterations."""
         print("\n" + "=" * 60)
         print("PERFORMANCE BENCHMARK")
@@ -189,7 +189,7 @@ class TestBusFactorScore(unittest.TestCase):
 
         model_id = "moonshotai/Kimi-K2-Instruct-0905"
         iterations = 3
-        
+
         # Mock the API response
         mock_list_commits.return_value = self._create_mock_api_response(model_id)
 
@@ -291,27 +291,27 @@ class TestBusFactorScore(unittest.TestCase):
 
     @patch('bus_factor_score.HF_HUB_AVAILABLE', True)
     @patch('bus_factor_score.list_repo_commits')
-    def test_api_method_with_empty_commits(self, mock_list_commits) -> None:
+    def test_api_method_with_empty_commits(self, mock_list_commits: MagicMock) -> None:
         """Test API method when no commits are returned."""
         mock_list_commits.return_value = []
-        
+
         result = get_huggingface_contributors("empty/model")
         self.assertEqual(result, 0)
 
     @patch('bus_factor_score.HF_HUB_AVAILABLE', True)
     @patch('bus_factor_score.list_repo_commits')
-    def test_api_method_fallback_to_scrape(self, mock_list_commits) -> None:
+    def test_api_method_fallback_to_scrape(self, mock_list_commits: MagicMock) -> None:
         """Test that API method falls back to scraping on failure."""
         # API raises exception
         mock_list_commits.side_effect = Exception("API Error")
-        
+
         # Mock scraping to succeed
         with patch("requests.get") as mock_get:
             mock_response = MagicMock()
             mock_response.status_code = 200
             mock_response.text = "7 contributors"
             mock_get.return_value = mock_response
-            
+
             result = get_huggingface_contributors("test/model")
             self.assertEqual(result, 7)
 
