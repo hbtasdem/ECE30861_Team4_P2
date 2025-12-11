@@ -120,21 +120,20 @@ async def create_artifact(
     # ========================================================================
     # AUTHENTICATION
     # ========================================================================
-    # georgia: commenting this out until it works, so upload not dependent
+    # Per OpenAPI spec: All endpoints require X-Authorization header
+    if not x_authorization:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Missing X-Authorization header",
+        )
 
-    # if not x_authorization:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN,
-    #         detail="Missing X-Authorization header",
-    #     )
-
-    # try:
-    #     get_current_user(x_authorization, None)
-    # except HTTPException:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN,
-    #         detail="Authentication failed: Invalid or expired token",
-    #     )
+    try:
+        get_current_user(x_authorization, None)
+    except HTTPException:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Authentication failed: Invalid or expired token",
+        )
 
     # ========================================================================
     # VALIDATION
@@ -225,20 +224,20 @@ async def get_artifact(
     # ========================================================================
     # AUTHENTICATION
     # ========================================================================
-    # georgia commenting out for now
-    # if not x_authorization:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN,
-    #         detail="Missing X-Authorization header",
-    #     )
+    # Per OpenAPI spec: All endpoints require X-Authorization header
+    if not x_authorization:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Missing X-Authorization header",
+        )
 
-    # try:
-    #     get_current_user(x_authorization, None)
-    # except HTTPException:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN,
-    #         detail="Authentication failed: Invalid or expired token",
-    #     )
+    try:
+        get_current_user(x_authorization, None)
+    except HTTPException:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Authentication failed: Invalid or expired token",
+        )
 
     # ========================================================================
     # RETRIEVE ARTIFACT FROM S3
@@ -416,19 +415,20 @@ async def enumerate_artifacts(
     # ========================================================================
     # AUTHENTICATION
     # ========================================================================
-    # if not x_authorization:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN,
-    #         detail="Missing X-Authorization header",
-    #     )
+    # Per OpenAPI spec: All endpoints require X-Authorization header
+    if not x_authorization:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Missing X-Authorization header",
+        )
 
-    # try:
-    #     get_current_user(x_authorization, None)
-    # except HTTPException:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN,
-    #         detail="Authentication failed: Invalid or expired token",
-    #     )
+    try:
+        get_current_user(x_authorization, None)
+    except HTTPException:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Authentication failed: Invalid or expired token",
+        )
 
     # ========================================================================
     # VALIDATION
@@ -727,19 +727,20 @@ async def check_license_compatibility(
     Raises:
         HTTPException: 400 if malformed, 403 if auth fails, 404 if not found, 502 if external error
     """
-    # if not x_authorization:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN,
-    #         detail="Authentication failed due to invalid or missing AuthenticationToken.",
-    #     )
+    # Per OpenAPI spec: All endpoints require X-Authorization header
+    if not x_authorization:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Authentication failed due to invalid or missing AuthenticationToken.",
+        )
 
-    # try:
-    #     get_current_user(x_authorization, None)
-    # except HTTPException:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN,
-    #         detail="Authentication failed due to invalid or missing AuthenticationToken.",
-    #    )
+    try:
+        get_current_user(x_authorization, None)
+    except HTTPException:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Authentication failed due to invalid or missing AuthenticationToken.",
+        )
 
     # Validate request body
     if "github_url" not in request_body:

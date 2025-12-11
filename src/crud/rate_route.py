@@ -72,19 +72,20 @@ async def get_model_rating(
         )
 
     # Validate authentication token
-    # if not x_authorization:
-    #     raise HTTPException(
-    #         status_code=403,
-    #         detail="Authentication failed due to invalid or missing AuthenticationToken.",
-    #     )
+    # Per OpenAPI spec: All endpoints require X-Authorization header
+    if not x_authorization:
+        raise HTTPException(
+            status_code=403,
+            detail="Authentication failed due to invalid or missing AuthenticationToken.",
+        )
 
-    # try:
-    #     get_current_user(x_authorization, db=None)
-    # except HTTPException:
-    #     raise HTTPException(
-    #         status_code=403,
-    #         detail="Authentication failed due to invalid or missing AuthenticationToken.",
-    #     )
+    try:
+        get_current_user(x_authorization, db=None)
+    except HTTPException:
+        raise HTTPException(
+            status_code=403,
+            detail="Authentication failed due to invalid or missing AuthenticationToken.",
+        )
 
     # get ModelRating from s3 bucket
     key = f"rating/{artifact_id}.rate.json"

@@ -2,14 +2,16 @@
 
 import json
 
-import requests
+from fastapi.testclient import TestClient
 
-BASE_URL = "http://127.0.0.1:8000"
+from src.crud.app import app
+
+client = TestClient(app)
 
 def test_health():
     """Test GET /health endpoint"""
     print("\n=== Testing GET /health ===")
-    response = requests.get(f"{BASE_URL}/health")
+    response = client.get("/health")
     print(f"Status: {response.status_code}")
     print(f"Response: {response.json()}")
     assert response.status_code == 200
@@ -19,7 +21,7 @@ def test_health():
 def test_health_components():
     """Test GET /health/components endpoint"""
     print("\n=== Testing GET /health/components ===")
-    response = requests.get(f"{BASE_URL}/health/components?windowMinutes=60")
+    response = client.get("/health/components?windowMinutes=60")
     print(f"Status: {response.status_code}")
     data = response.json()
     print(f"Components found: {len(data.get('components', []))}")
@@ -43,8 +45,8 @@ def test_register():
             "password": password
         }
     }
-    response = requests.post(
-        f"{BASE_URL}/register",
+    response = client.post(
+        "/register",
         json=payload
     )
     print(f"Status: {response.status_code}")
@@ -54,25 +56,29 @@ def test_register():
         assert "token" in data
         assert "bearer " in data["token"]
         print("PASSED - JWT token received")
-        return data["token"], username, password
+        # Store in global for next test to use
+        global registered_user_token, registered_username, registered_password
+        registered_user_token = data["token"]
+        registered_username = username
+        registered_password = password
     else:
         print(f"Response: {response.text}")
         raise AssertionError(f"Registration failed: {response.text}")
 
-def test_authenticate(username="testuser123", password="testpass123"):
+def test_authenticate(username="ece30861defaultadminuser", password="correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"):
     """Test PUT /authenticate endpoint"""
     print("\n=== Testing PUT /authenticate ===")
     payload = {
         "user": {
             "name": username,
-            "isAdmin": False
+            "is_admin": True
         },
         "secret": {
             "password": password
         }
     }
-    response = requests.put(
-        f"{BASE_URL}/authenticate",
+    response = client.put(
+        "/authenticate",
         json=payload
     )
     print(f"Status: {response.status_code}")
@@ -82,7 +88,6 @@ def test_authenticate(username="testuser123", password="testpass123"):
         assert "token" in data
         assert "bearer " in data["token"]
         print("PASSED - JWT token received")
-        return data["token"]
     else:
         print(f"Response: {response.text}")
         raise AssertionError(f"Authentication failed: {response.text}")
@@ -94,8 +99,8 @@ def test_enumerate(token=None):
     headers = {}
     if token:
         headers["X-Authorization"] = token
-    response = requests.post(
-        f"{BASE_URL}/artifacts",
+    response = client.post(
+        "/artifacts",
         json=payload,
         headers=headers
     )
@@ -104,7 +109,6 @@ def test_enumerate(token=None):
         data = response.json()
         print(f"Artifacts found: {len(data)}")
         print("PASSED")
-        return data
     else:
         print(f"Response: {response.text}")
         if response.status_code == 403:
@@ -122,8 +126,8 @@ def test_regex_search(token=None):
     headers = {}
     if token:
         headers["X-Authorization"] = token
-    response = requests.post(
-        f"{BASE_URL}/artifact/byRegEx",
+    response = client.post(
+        "/artifact/byRegEx",
         json=payload,
         headers=headers
     )
@@ -140,8 +144,8 @@ def test_regex_search(token=None):
     # Test 2: Malicious regex (ReDoS protection)
     print("\nTest 2: Malicious regex (should be rejected)")
     payload = {"regex": "(a+)+b"}  # Classic ReDoS pattern
-    response = requests.post(
-        f"{BASE_URL}/artifact/byRegEx",
+    response = client.post(
+        "/artifact/byRegEx",
         json=payload,
         headers=headers
     )
@@ -155,8 +159,8 @@ def test_regex_search(token=None):
     # Test 3: Too long regex
     print("\nTest 3: Excessively long regex (should be rejected)")
     payload = {"regex": "a" * 250}  # Exceeds 200 char limit
-    response = requests.post(
-        f"{BASE_URL}/artifact/byRegEx",
+    response = client.post(
+        "/artifact/byRegEx",
         json=payload,
         headers=headers
     )

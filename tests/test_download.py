@@ -2,7 +2,15 @@ from typing import Any, Iterator, Type
 from unittest.mock import MagicMock, patch
 
 import boto3
-from moto import mock_aws
+
+try:
+    from moto import mock_aws
+    HAS_MOTO = True
+except ImportError:
+    HAS_MOTO = False
+    mock_aws = None  # type: ignore
+
+import pytest
 
 from src.crud.upload.download_artifact import BUCKET_NAME, download_code, download_dataset, download_model
 
@@ -26,7 +34,7 @@ class FakeResponse:
         pass
 
 
-@mock_aws
+@pytest.mark.skipif(not HAS_MOTO, reason="moto not available")
 @patch("src.crud.upload.download_artifact.HfApi")
 @patch("src.crud.upload.download_artifact.httpx.stream")
 def test_download_model(mock_httpx_stream: MagicMock, mock_hfapi_class: MagicMock) -> None:
@@ -59,7 +67,7 @@ def test_download_model(mock_httpx_stream: MagicMock, mock_hfapi_class: MagicMoc
     assert index_url == f"https://{BUCKET_NAME}.s3.amazonaws.com/downloads/{artifact_id}/index.html"
 
 
-@mock_aws
+@pytest.mark.skipif(not HAS_MOTO, reason="moto not available")
 @patch("src.crud.upload.download_artifact.HfApi")
 @patch("src.crud.upload.download_artifact.httpx.stream")
 def test_download_dataset(mock_httpx_stream: MagicMock, mock_hfapi_class: MagicMock) -> None:
@@ -95,7 +103,7 @@ def test_download_dataset(mock_httpx_stream: MagicMock, mock_hfapi_class: MagicM
     assert index_url == (f"https://{BUCKET_NAME}.s3.amazonaws.com/downloads/{artifact_id}/index.html")
 
 
-@mock_aws
+@pytest.mark.skipif(not HAS_MOTO, reason="moto not available")
 @patch("src.crud.upload.download_artifact.httpx.stream")
 @patch("src.crud.upload.download_artifact.httpx.Client")
 def test_download_code(mock_httpx_client: MagicMock, mock_httpx_stream: MagicMock) -> None:

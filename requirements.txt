@@ -35,6 +35,7 @@ python-ulid>=1.0.0
 
 # AWS stuff
 boto3
+moto>=4.0.0
 
 # Development and build dependencies
 pyinstaller>=5.0.0
