@@ -15,7 +15,7 @@ def auth_token(test_token: str) -> str:
     return test_token
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture  # georgia turned off (autouse=True) bc it was messing w my tests that don't use this
 def mock_s3_operations() -> Generator[None, None, None]:
     """Mock boto3 S3 operations to avoid AWS calls during tests."""
     # Mock the s3_client to succeed without actual S3 calls

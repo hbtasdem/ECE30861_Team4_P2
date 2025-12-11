@@ -89,8 +89,8 @@ def calculate_all_scores(
         "reproducibility_latency": 0,
         "reviewedness": 0.0,
         "reviewedness_latency": 0,
-        "treescore": 0.0,
-        "treescore_latency": 0.0,
+        "tree_score": 0.0,
+        "tree_score_latency": 0.0,
         "size_score": {
             "raspberry_pi": 0.0,
             "jetson_nano": 0.0,
@@ -195,13 +195,13 @@ def calculate_all_scores(
         result["reviewedness_latency"] = int(reviewedness_latency)
     except Exception as e:
         print(f"Error calculating treescore for {model_name}: {e}", file=sys.stderr)
-    # Treescore
+    # Tree_score
     try:
         treescore_val, treescore_latency = tree_score.treescore_calc(model_name)
-        result["treescore"] = treescore_val
-        result["treescore_latency"] = int(treescore_latency * 1000)
+        result["tree_score"] = treescore_val
+        result["tree_score_latency"] = int(treescore_latency * 1000)
     except Exception as e:
-        print(f"Error calculating treescore for {model_name}: {e}", file=sys.stderr)
+        print(f"Error calculating tree_score for {model_name}: {e}", file=sys.stderr)
 
     # Net Score (calculated from all other scores)
     try:

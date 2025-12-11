@@ -139,8 +139,8 @@ def init_db() -> None:
     """
     # Import models to register them with SQLAlchemy Base
     # IMPORTANT: This must import Artifact (not Model!) for spec compliance
-    from src.database_models import (Artifact, AuditEntry, Base,  # noqa: F401
-                                     User)
+    from src.database_models import Artifact, AuditEntry, Base, User  # noqa: F401
+    from src.phase3_models import FileStorage  # noqa: F401
 
     # Create all tables defined in src.models
     # Per spec: All tables must exist before API can be used
