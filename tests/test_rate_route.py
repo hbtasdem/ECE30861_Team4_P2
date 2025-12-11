@@ -27,7 +27,7 @@ def client() -> TestClient:
 def mock_s3_bucket() -> Generator[tuple[boto3.client, Dict[str, Any]], None, None]:
     """Start Moto S3 mock and create the test bucket."""
     with mock_aws():
-        s3 = boto3.client("s3", region_name="us-east-1")
+        s3 = boto3.client("s3", region_name="us-east-2")
         s3.create_bucket(Bucket="phase2-s3-bucket")
 
         # upload a valid mock rating, id 01

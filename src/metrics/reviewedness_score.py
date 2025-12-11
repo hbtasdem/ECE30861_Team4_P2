@@ -30,12 +30,13 @@ def get_github_token() -> Any:
         The github token
     """
     try:
-        ssm = boto3.client("ssm", region_name="us-east-1")
+        ssm = boto3.client("ssm", region_name="us-east-2")
         response = ssm.get_parameter(Name="/ece30861/GITHUB_TOKEN", WithDecryption=True)
         token = response["Parameter"]["Value"]
         if token:
             return token
-    except (ClientError, NoCredentialsError):
+    except Exception as e:
+        print(f"Reviewedness: error fetching GitHub token. {e}")
         pass
     # no parameter found or no ec2 attahched or running locally w/o credentials
     # look for local env variable

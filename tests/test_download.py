@@ -41,7 +41,7 @@ def test_download_model(mock_httpx_stream: MagicMock, mock_hfapi_class: MagicMoc
     mock_httpx_stream.side_effect = lambda *args, **kwargs: FakeResponse(b"fake content")
 
     # ----- Mock S3 -----
-    s3 = boto3.client("s3", region_name="us-east-1")
+    s3 = boto3.client("s3", region_name="us-east-2")
     s3.create_bucket(Bucket=BUCKET_NAME)
 
     artifact_id = "test-artifact"
@@ -76,7 +76,7 @@ def test_download_dataset_huggingface(mock_get_hf_token: MagicMock, mock_httpx_s
     mock_httpx_stream.side_effect = lambda *args, **kwargs: FakeResponse(b"fake dataset bytes")
 
     # ----- Mock S3 -----
-    s3 = boto3.client("s3", region_name="us-east-1")
+    s3 = boto3.client("s3", region_name="us-east-2")
     s3.create_bucket(Bucket=BUCKET_NAME)
     artifact_id = "dataset-artifact"
     dataset_url = "https://huggingface.co/datasets/bookcorpus/bookcorpus"
@@ -133,7 +133,7 @@ def test_download_dataset_kaggle(
     mock_client.stream.return_value.__enter__.return_value = mock_stream_response
 
     # ----- Mock S3 -----
-    s3 = boto3.client("s3", region_name="us-east-1")
+    s3 = boto3.client("s3", region_name="us-east-2")
     s3.create_bucket(Bucket=BUCKET_NAME)
 
     artifact_id = "kaggle-artifact"
@@ -199,7 +199,7 @@ def test_download_dataset_github(mock_httpx_client_class: MagicMock, mock_httpx_
     mock_httpx_stream.side_effect = [FakeResponse(b"train data"), FakeResponse(b"test data"), FakeResponse(b"readme content")]
 
     # ----- Mock S3 -----
-    s3 = boto3.client("s3", region_name="us-east-1")
+    s3 = boto3.client("s3", region_name="us-east-2")
     s3.create_bucket(Bucket=BUCKET_NAME)
 
     artifact_id = "github-artifact"
@@ -290,7 +290,7 @@ def test_download_code(mock_httpx_client: MagicMock, mock_httpx_stream: MagicMoc
     mock_httpx_stream.side_effect = lambda *args, **kwargs: FakeResponse(b"fake bytes", status_code=200)
 
     # -------- Create S3 Bucket --------
-    s3 = boto3.client("s3", region_name="us-east-1")
+    s3 = boto3.client("s3", region_name="us-east-2")
     s3.create_bucket(Bucket=BUCKET_NAME)
 
     artifact_id = "code-artifact"
