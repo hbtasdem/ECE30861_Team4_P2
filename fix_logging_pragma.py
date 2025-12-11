@@ -8,8 +8,8 @@ new_lines = []
 for line in lines:
     stripped = line.strip()
     # Add pragma to class and function definitions (but not __init__, __str__, etc.)
-    if (stripped.startswith('class ') or 
-        (stripped.startswith('def ') and not stripped.startswith('def __'))):
+    if (stripped.startswith('class ') or
+            (stripped.startswith('def ') and not stripped.startswith('def __'))):
         if '# pragma: no cover' not in line:
             new_lines.append(line.rstrip() + '  # pragma: no cover\n')
         else:
