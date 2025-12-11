@@ -35,7 +35,6 @@ SPEC SECTIONS REFERENCED:
 """
 import argparse
 import sys
-from pathlib import Path
 from typing import Optional
 
 # NOTE: URLStorageService module does not exist in this codebase
@@ -69,7 +68,7 @@ def validate_url_cli(
     if validate_model_url is None:
         print("ERROR: url_validator module not available in this codebase")
         return
-    
+
     result = validate_model_url(url, test_accessibility=test_accessibility)
 
     print("Validation Results:")

@@ -1,12 +1,14 @@
 """Quick test script for verifying implemented endpoints."""
 
 import json
+from typing import Any, Optional
 
 import requests
 
 BASE_URL = "http://127.0.0.1:8000"
 
-def test_health():
+
+def test_health() -> None:
     """Test GET /health endpoint"""
     print("\n=== Testing GET /health ===")
     response = requests.get(f"{BASE_URL}/health")
@@ -16,7 +18,8 @@ def test_health():
     assert response.json() == {"status": "ok"}
     print("PASSED")
 
-def test_health_components():
+
+def test_health_components() -> None:
     """Test GET /health/components endpoint"""
     print("\n=== Testing GET /health/components ===")
     response = requests.get(f"{BASE_URL}/health/components?windowMinutes=60")
@@ -27,7 +30,8 @@ def test_health_components():
     assert "components" in data
     print("PASSED")
 
-def test_register():
+
+def test_register() -> tuple[Any, str, str]:
     """Test POST /register endpoint"""
     print("\n=== Testing POST /register ===")
     import time
@@ -59,7 +63,8 @@ def test_register():
         print(f"Response: {response.text}")
         raise AssertionError(f"Registration failed: {response.text}")
 
-def test_authenticate(username="testuser123", password="testpass123"):
+
+def test_authenticate(username: str = "testuser123", password: str = "testpass123") -> Any:
     """Test PUT /authenticate endpoint"""
     print("\n=== Testing PUT /authenticate ===")
     payload = {
@@ -87,7 +92,8 @@ def test_authenticate(username="testuser123", password="testpass123"):
         print(f"Response: {response.text}")
         raise AssertionError(f"Authentication failed: {response.text}")
 
-def test_enumerate(token=None):
+
+def test_enumerate(token: Optional[str | None] = None) -> Any:
     """Test POST /artifacts endpoint"""
     print("\n=== Testing POST /artifacts (enumerate) ===")
     payload = [{"name": "*"}]  # Array of ArtifactQuery objects
@@ -112,10 +118,11 @@ def test_enumerate(token=None):
         else:
             print("WARNING: May need setup or different payload")
 
-def test_regex_search(token=None):
+
+def test_regex_search(token: Optional[str] = None) -> None:
     """Test POST /artifact/byRegEx endpoint"""
     print("\n=== Testing POST /artifact/byRegEx (regex search) ===")
-    
+
     # Test 1: Valid regex
     print("Test 1: Valid regex pattern")
     payload = {"regex": ".*test.*"}
@@ -136,7 +143,7 @@ def test_regex_search(token=None):
         print("PASSED")
     else:
         print(f"Response: {response.text}")
-    
+
     # Test 2: Malicious regex (ReDoS protection)
     print("\nTest 2: Malicious regex (should be rejected)")
     payload = {"regex": "(a+)+b"}  # Classic ReDoS pattern
@@ -151,7 +158,7 @@ def test_regex_search(token=None):
     else:
         print(f"WARNING: Expected 400, got {response.status_code}")
         print(f"Response: {response.text}")
-    
+
     # Test 3: Too long regex
     print("\nTest 3: Excessively long regex (should be rejected)")
     payload = {"regex": "a" * 250}  # Exceeds 200 char limit
@@ -166,32 +173,33 @@ def test_regex_search(token=None):
     else:
         print(f"WARNING: Expected 400, got {response.status_code}")
 
+
 if __name__ == "__main__":
     print("=" * 60)
     print("TESTING IMPLEMENTED ENDPOINTS")
     print("=" * 60)
-    
+
     try:
         # Test health endpoints (no auth required)
         test_health()
         test_health_components()
-        
+
         # Test authentication endpoints
         token, username, password = test_register()
-        
+
         # Also test authentication with the registered user
         test_authenticate(username, password)
-        
+
         # Test enumerate endpoint
         test_enumerate(token)
-        
+
         # Test regex search endpoint with DoS protection
         test_regex_search(token)
-        
+
         print("\n" + "=" * 60)
         print("ALL TESTS COMPLETED SUCCESSFULLY")
         print("=" * 60)
-        
+
     except Exception as e:
         print(f"\nTEST FAILED: {e}")
         import traceback

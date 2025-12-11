@@ -49,6 +49,7 @@ def startup_event():
     """Initialize database on application startup"""
     init_db()
 
+
 # --------------- Configure logging ---------------
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("uvicorn")
