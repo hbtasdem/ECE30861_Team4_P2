@@ -136,12 +136,15 @@ def run_tests() -> int:
 
         print(f"{effective_passed}/{total} test cases passed. {coverage}% line coverage achieved.")
         
-        # Pass if no failures OR if pass rate >= 95%
-        pass_rate = (effective_passed / total * 100) if total > 0 else 0
-        if failed == 0 or pass_rate >= 95.0:
-            return 0
-        else:
-            return 1
+        # If there are failures, print them
+        if failed > 0:
+            print(f"\nFailed tests detected ({failed} failures):", file=sys.stderr)
+            # Extract FAILED lines from pytest output
+            for line in output_lines:
+                if "FAILED" in line:
+                    print(f"  {line.strip()}", file=sys.stderr)
+        
+        return 0 if failed == 0 else 1
 
     except subprocess.TimeoutExpired:
         print("Tests timed out", file=sys.stderr)
