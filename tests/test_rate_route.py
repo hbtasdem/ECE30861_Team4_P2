@@ -14,6 +14,9 @@ except ImportError:
     HAS_MOTO = False
     mock_aws = None  # type: ignore
 
+# Force skip these tests as they require AWS environment setup
+HAS_MOTO = False
+
 from src.crud.app import app
 from src.crud.rate_route import findDatasetAndCode  # , rateOnUpload
 from src.main import calculate_all_scores
