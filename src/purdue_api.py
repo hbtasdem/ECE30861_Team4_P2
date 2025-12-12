@@ -144,9 +144,10 @@ class PurdueGenAI:
             raise Exception(f"HTTP Error {e.code}: {error_text}")
         except Exception as e:
             raise Exception(f"Error calling Purdue GenAI: {str(e)}")
+
     def generate_content(self, message: str, generation_config: Optional[object] = None) -> object:
         """
-        Wrapper for the chat method to satisfy the ReproducibilityChecker's 
+        Wrapper for the chat method to satisfy the ReproducibilityChecker's
         expected interface (mimicking the original GenAI SDK).
 
         Args:

@@ -19,12 +19,11 @@ ENDPOINTS PROVIDED (10/10 BASELINE):
 import logging
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict, List
 
 from fastapi import FastAPI, Request, Query
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
-from fastapi import Request
 
 # Add src and parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent))

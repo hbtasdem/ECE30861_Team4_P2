@@ -362,7 +362,7 @@ Now output ONLY the fixed code with NO markdown (attempt {attempt}/5):"""
                 return 0.5, f"Code runs after AI debugging (attempt {attempt}/{max_attempts})"
 
             # Show more of the error output
-            print(f"  Still failing. Full output:")
+            print("  Still failing. Full output:")
             print(f"  {output[:2000]}")  # Increased from 1000
             print(f"  ... (total {len(output)} chars)")
             code = fixed_code
