@@ -19,8 +19,10 @@ from typing import Dict
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from src.crud.upload.artifacts import AuthenticationRequest, AuthenticationToken
-from src.crud.upload.auth import create_access_token, hash_password, verify_password
+from src.crud.upload.artifacts import (AuthenticationRequest,
+                                       AuthenticationToken)
+from src.crud.upload.auth import (create_access_token, hash_password,
+                                  verify_password)
 from src.database import get_db
 from src.database_models import User as DBUser
 

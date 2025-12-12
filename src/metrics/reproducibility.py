@@ -1,10 +1,11 @@
-import docker
-import re
 import os
+import re
 import sys
 import time
+from typing import Optional, Tuple
+
+import docker
 import requests
-from typing import Tuple, Optional
 from dotenv import load_dotenv
 
 # Import purdue_api - adjust path as needed

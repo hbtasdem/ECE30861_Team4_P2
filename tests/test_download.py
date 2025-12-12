@@ -6,7 +6,9 @@ import boto3
 import pytest
 from moto import mock_aws
 
-from src.crud.upload.download_artifact import BUCKET_NAME, download_code, download_dataset, download_model
+from src.crud.upload.download_artifact import (BUCKET_NAME, download_code,
+                                               download_dataset,
+                                               download_model)
 
 
 class FakeResponse:
