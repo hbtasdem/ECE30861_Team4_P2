@@ -442,114 +442,83 @@
     <a href="#main-content" class="skip-link">Skip to main content</a>
     
     <div class="container">
-        <header class="header" role="banner">
-            <h1>🤖 Model Quality Scorer</h1>
-            <p>Analyze HuggingFace models with comprehensive quality metrics</p>
-        </header>
+      <div class="header">
+        <h1>Model Quality Scorer</h1>
+        <p>Analyze HuggingFace models with comprehensive quality metrics</p>
+      </div>
 
-        <main id="main-content" role="main">
-            <section class="card" aria-labelledby="input-heading">
-                <h2 id="input-heading" class="visually-hidden">Model Input</h2>
-                <div class="input-section">
-                    <label for="modelUrl">Model URL</label>
-                    <div class="input-group">
-                        <input 
-                            type="url"
-                            id="modelUrl" 
-                            placeholder="https://huggingface.co/microsoft/DialoGPT-medium"
-                            aria-required="true"
-                            aria-describedby="url-help"
-                        >
-                        <button 
-                            class="btn" 
-                            id="analyzeBtn" 
-                            onclick="analyzeModel()"
-                            aria-label="Analyze model"
-                        >
-                            <span aria-hidden="true">🔍</span>
-                            Analyze
-                        </button>
-                    </div>
-                    <div class="examples">
-                        <p id="url-help">Try these examples:</p>
-                        <div class="example-btns" role="group" aria-label="Example model URLs">
-                            <button 
-                                class="example-btn" 
-                                onclick="setModelUrl('https://huggingface.co/microsoft/DialoGPT-medium')"
-                                aria-label="Load DialoGPT-medium example"
-                            >
-                                DialoGPT-medium
-                            </button>
-                            <button 
-                                class="example-btn" 
-                                onclick="setModelUrl('https://huggingface.co/bert-base-uncased')"
-                                aria-label="Load BERT base uncased example"
-                            >
-                                bert-base-uncased
-                            </button>
-                            <button 
-                                class="example-btn" 
-                                onclick="setModelUrl('https://huggingface.co/openai/whisper-small')"
-                                aria-label="Load Whisper small example"
-                            >
-                                whisper-small
-                            </button>
-                        </div>
-                    </div>
-                </div>
+      <div class="card">
+        <div class="input-section">
+          <label for="modelUrl">Model URL</label>
+          <div class="input-group">
+            <input
+              type="text"
+              id="modelUrl"
+              placeholder="https://huggingface.co/microsoft/DialoGPT-medium"
+            />
+            <button class="btn" id="analyzeBtn" onclick="analyzeModel()">
+              <span></span>
+              Analyze
+            </button>
+          </div>
+          <div class="examples">
+            <p>Try these examples:</p>
+            <div class="example-btns">
+              <button
+                class="example-btn"
+                onclick="setModelUrl('https://huggingface.co/microsoft/DialoGPT-medium')"
+              >
+                DialoGPT-medium
+              </button>
+              <button
+                class="example-btn"
+                onclick="setModelUrl('https://huggingface.co/bert-base-uncased')"
+              >
+                bert-base-uncased
+              </button>
+              <button
+                class="example-btn"
+                onclick="setModelUrl('https://huggingface.co/openai/whisper-small')"
+              >
+                whisper-small
+              </button>
+            </div>
+          </div>
+        </div>
 
-                <div id="errorMsg" class="error hidden" role="alert" aria-live="assertive"></div>
-                
-                <div id="loading" class="loading hidden" role="status" aria-live="polite">
-                    <div class="spinner" aria-label="Loading"></div>
-                    <p>Analyzing model... This may take a minute.</p>
-                </div>
-            </section>
+        <div id="errorMsg" class="error hidden"></div>
 
-            <div id="results" class="results" role="region" aria-live="polite">
-                <section class="card" aria-labelledby="results-heading">
-                    <div class="score-header">
-                        <div>
-                            <h2 id="results-heading">
-                                <span id="modelName">Model Name</span>
-                            </h2>
-                            <span class="badge" id="modelCategory">MODEL</span>
-                        </div>
-                        <a href="#" id="modelLink" target="_blank" class="link-btn" rel="noopener noreferrer">
-                            <span aria-hidden="true">🔗</span>
-                            View on HuggingFace
-                            <span class="visually-hidden">(opens in new tab)</span>
-                        </a>
-                    </div>
+        <div id="loading" class="loading hidden">
+          <div class="spinner"></div>
+          <p>Analyzing model... This may take a minute.</p>
+        </div>
+      </div>
 
-                    <div class="net-score" role="region" aria-labelledby="net-score-label">
-                        <div>
-                            <div class="score-number" id="netScore" aria-label="Overall score">85</div>
-                            <div id="net-score-label">Overall Score</div>
-                        </div>
-                        <div class="score-bar">
-                            <div class="progress-bar" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" aria-label="Score progress">
-                                <div class="progress-fill" id="netScoreBar"></div>
-                            </div>
-                            <p style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.9;">
-                                Computed in <span id="netScoreLatency">0</span>ms
-                            </p>
-                        </div>
-                    </div>
+      <div id="results" class="results">
+        <div class="card">
+          <div class="score-header">
+            <div>
+              <h2 id="modelName">Model Name</h2>
+              <span class="badge" id="modelCategory">MODEL</span>
+            </div>
+            <a href="#" id="modelLink" target="_blank" class="link-btn">
+              <span></span>
+              View on HuggingFace
+            </a>
+          </div>
 
-                    <div class="metrics-grid" id="metricsGrid">
-                        <!-- Metric cards will be inserted here -->
-                    </div>
-                </section>
-
-                <section class="card" aria-labelledby="deployment-heading">
-                    <h3 id="deployment-heading" style="margin-bottom: 1.5rem; color: #333;">
-                        Deployment Compatibility
-                    </h3>
-                    <div class="size-scores" id="sizeScores" role="list">
-                        <!-- Size scores will be inserted here -->
-                    </div>
-                </section>
+          <div class="net-score">
+            <div>
+              <div class="score-number" id="netScore">85</div>
+              <div>Overall Score</div>
+            </div>
+            <div class="score-bar">
+              <div class="progress-bar">
+                <div class="progress-fill" id="netScoreBar"></div>
+              </div>
+              <p style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.9">
+                Computed in <span id="netScoreLatency">0</span>ms
+              </p>
             </div>
         </main>
     </div>

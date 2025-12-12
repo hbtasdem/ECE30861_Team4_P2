@@ -6,6 +6,8 @@ from typing import Any, Dict, Optional, Tuple, cast
 
 import requests
 
+from src.hugging_face_api import get_hf_token
+
 
 def get_model_config(model_identifier: str) -> Optional[Dict[str, Any]]:
     """
@@ -23,13 +25,30 @@ def get_model_config(model_identifier: str) -> Optional[Dict[str, Any]]:
         model_path = model_identifier.strip()
 
     api_url = f"https://huggingface.co/api/models/{model_path}"
+    hf_token = get_hf_token()
+    headers = {}
+    if hf_token and hf_token.strip():
+        headers = {"Authorization": f"Bearer {hf_token}"}
 
     try:
-        resp = requests.get(api_url, timeout=10)
+        resp = requests.get(api_url, headers=headers, timeout=10)
+
+        # Better error handling
+        if resp.status_code == 401:
+            print(f"Lineage tree: Model '{model_path}' requires authentication or doesn't exist")
+            return None
+        elif resp.status_code == 404:
+            print(f"Lineage tree: Model '{model_path}' not found on Hugging Face")
+            return None
+        elif resp.status_code == 403:
+            print(f"Lineage tree: Access forbidden for model '{model_path}'")
+            return None
+
         resp.raise_for_status()
         return cast(Dict[str, Any], resp.json())
+
     except Exception as e:
-        print(f"Could not fetch HF API metadata for {model_path}: {e}")
+        print(f"ERROR Lineage tree: Could not fetch HF API metadata for model {model_path}: {e}")
         return None
 
 

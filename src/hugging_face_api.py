@@ -2,9 +2,20 @@ import os
 import time
 from typing import Any, Dict, Optional
 
+import boto3
 import requests
 
 HF_API_BASE = "https://huggingface.co/api"
+
+
+def get_hf_token() -> str:
+    try:
+        ssm = boto3.client("ssm", region_name="us-east-2")
+        resp = ssm.get_parameter(Name="/ece30861/HF_TOKEN", WithDecryption=True)
+        return resp["Parameter"]["Value"]
+    except Exception as e:
+        print(f"Error get_hf_token: {str(e)}")
+        return ""
 
 
 def get_model_info(model_id: str) -> tuple[Optional[Dict[str, Any]], float]:
