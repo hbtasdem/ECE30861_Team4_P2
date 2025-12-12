@@ -9,17 +9,18 @@ from fastapi.testclient import TestClient
 
 try:
     from moto import mock_aws
+
     HAS_MOTO = True
 except ImportError:
     HAS_MOTO = False
     mock_aws = None  # type: ignore
 
-# Force skip these tests as they require AWS environment setup
-HAS_MOTO = False
-
 from src.crud.app import app
 from src.crud.rate_route import findDatasetAndCode  # , rateOnUpload
 from src.main import calculate_all_scores
+
+# Force skip these tests as they require AWS environment setup
+HAS_MOTO = False
 
 # ---------------------------------------------
 # tests for the /rate endpoint
@@ -150,6 +151,7 @@ def test_get_rating_incomplete(
 # ---------------------------------------------
 # Tests for rate calculation on upload endpoint
 # ---------------------------------------------
+
 
 def test_find_code_dataset_valid() -> None:
     """Test that llm can find code link and dataset link"""
