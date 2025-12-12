@@ -138,8 +138,7 @@ class ReproducibilityChecker:
                     print(f"  Will install packages: {packages}")
                     install_block += f"print('Installing: {' '.join(packages)}...')\n"
                     # Add --root-user-action=ignore to suppress the warning
-                    install_block += f"subprocess.check_call([sys.executable, '-m', 'pip', 
-                    'install', '--root-user-action=ignore', '--quiet'] + {packages})\n"
+                    install_block += f"subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--root-user-action=ignore', '--quiet'] + {packages})\n"
                     install_block += f"print(' Installed {' '.join(packages)}')\n\n"
 
         script = f"""

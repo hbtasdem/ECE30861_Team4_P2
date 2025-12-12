@@ -19,9 +19,9 @@ ENDPOINTS PROVIDED (10/10 BASELINE):
 import logging
 import sys
 from pathlib import Path
-# from typing import Any, Dict
+from typing import Any, Dict, List
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Query
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi import Request
@@ -36,6 +36,8 @@ from src.crud.upload.artifact_routes import router as artifact_router  # noqa: E
 from src.database import init_db  # noqa: E402
 from src.health_monitor import HealthComponentCollection  # noqa: E402
 from src.health_monitor import health_monitor  # noqa: E402
+
+templates = Jinja2Templates(directory="templates")
 
 # Initialize FastAPI app
 app = FastAPI(
