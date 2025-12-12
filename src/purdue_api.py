@@ -158,12 +158,12 @@ class PurdueGenAI:
         """
         # Call the existing chat method
         response_text = self.chat(message)
-        
+
         # Return a simple object mimicking the required structure (response.text)
         class MockResponse:
             def __init__(self, text):
                 self.text = text
-        
+
         return MockResponse(response_text)
 
 
