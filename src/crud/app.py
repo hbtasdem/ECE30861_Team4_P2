@@ -21,6 +21,9 @@ import sys
 from pathlib import Path
 from typing import Dict, List
 
+from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -28,6 +31,7 @@ from fastapi.templating import Jinja2Templates
 # Add src and parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.authentication_routes import router as auth_router  # noqa: E402
 from src.crud.rate_route import router as rate_router  # noqa: E402
