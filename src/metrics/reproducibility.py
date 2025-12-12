@@ -21,13 +21,13 @@ for path in possible_paths:
     sys.path.insert(0, path)
     try:
         import purdue_api
-        print(f"✓ purdue_api imported successfully from {path}")
+        print(f"purdue_api imported successfully from {path}")
         break
     except ImportError:
         pass
 
 if not purdue_api:
-    print("✗ Failed to import purdue_api from any path")
+    print("Failed to import purdue_api from any path")
     print(f"Current directory: {os.getcwd()}")
     print(f"Script directory: {os.path.dirname(__file__)}")
     print("Searched paths:", possible_paths)
@@ -46,9 +46,9 @@ class ReproducibilityChecker:
         # Initialize Docker
         try:
             self.client = docker.from_env()
-            print("✓ Docker client initialized")
+            print(" Docker client initialized")
         except Exception as e:
-            print(f"✗ Docker initialization failed: {e}")
+            print(f" Docker initialization failed: {e}")
             raise
         
         # Initialize Purdue GenAI
@@ -56,11 +56,11 @@ class ReproducibilityChecker:
         if purdue_api:
             try:
                 self.model = purdue_api.PurdueGenAI()
-                print(f"✓ Purdue GenAI initialized")
+                print(f" Purdue GenAI initialized")
             except Exception as e:
-                print(f"✗ Could not initialize Purdue GenAI: {e}")
+                print(f" Could not initialize Purdue GenAI: {e}")
         else:
-            print("✗ purdue_api not available")
+            print(" purdue_api not available")
         
         self.timeout = 300
         print("=== Initialization Complete ===\n")
@@ -138,7 +138,7 @@ class ReproducibilityChecker:
                     install_block += f"print('Installing: {' '.join(packages)}...')\n"
                     # Add --root-user-action=ignore to suppress the warning
                     install_block += f"subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--root-user-action=ignore', '--quiet'] + {packages})\n"
-                    install_block += f"print('✓ Installed {' '.join(packages)}')\n\n"
+                    install_block += f"print(' Installed {' '.join(packages)}')\n\n"
         
         script = f"""
 import sys
@@ -222,7 +222,7 @@ except Exception as e:
         print(f"  Model available: {self.model is not None}")
         
         if not self.model:
-            print("  ✗ AI model not initialized, skipping")
+            print("   AI model not initialized, skipping")
             return None
         
         prompt = f"""Fix this Python code. Return ONLY plain Python code with NO markdown, NO code blocks, NO backticks, NO explanations.
@@ -253,11 +253,11 @@ Now output ONLY the fixed code with NO markdown (attempt {attempt}/5):"""
             response = self.model.chat(prompt)
             
             if not response:
-                print(f"  ✗ API returned empty response")
+                print(f"   API returned empty response")
                 return None
             
             fixed_code = response.strip()
-            print(f"  ✓ API Response received ({len(fixed_code)} chars)")
+            print(f"   API Response received ({len(fixed_code)} chars)")
             print(f"  First 150 chars: {fixed_code[:150]}")
             
             # Extract code from markdown if present
@@ -273,14 +273,14 @@ Now output ONLY the fixed code with NO markdown (attempt {attempt}/5):"""
                     print("  Extracted from ``` block")
             
             if not fixed_code:
-                print("  ✗ Fixed code is empty after extraction")
+                print("   Fixed code is empty after extraction")
                 return None
             
-            print(f"  ✓ Final fixed code: {len(fixed_code)} chars")
+            print(f"   Final fixed code: {len(fixed_code)} chars")
             return fixed_code
             
         except Exception as e:
-            print(f"  ✗ API error: {e}")
+            print(f"   API error: {e}")
             import traceback
             traceback.print_exc()
             return None
@@ -298,14 +298,14 @@ Now output ONLY the fixed code with NO markdown (attempt {attempt}/5):"""
         model_card = self.fetch_model_card(model_identifier)
         if not model_card:
             return 0.0, f"Could not fetch model card for {model_identifier}"
-        print(f"✓ Fetched {len(model_card)} characters")
+        print(f" Fetched {len(model_card)} characters")
         
         # Extract code
         print("\n[2/4] Extracting code from README...")
         code = self.extract_code_from_model_card(model_card)
         if not code:
             return 0.0, "No demonstration code found in model card"
-        print(f"✓ Extracted {len(code)} chars of code")
+        print(f" Extracted {len(code)} chars of code")
         print(f"Preview:\n{code[:200]}...\n")
         
         # First attempt
@@ -313,10 +313,10 @@ Now output ONLY the fixed code with NO markdown (attempt {attempt}/5):"""
         success, output = self.run_code_in_docker(code)
         
         if success:
-            print("✓ Code executed successfully!")
+            print(" Code executed successfully!")
             return 1.0, "Code runs successfully without modifications"
         
-        print(f"✗ Initial run failed")
+        print(f" Initial run failed")
         print(f"Error: {output[:300]}...")
         
         # Check if the ONLY issue is missing packages (no actual code bugs)
@@ -350,7 +350,7 @@ Now output ONLY the fixed code with NO markdown (attempt {attempt}/5):"""
             # Check if the fix looks reasonable (has pip install for missing packages)
             has_pip_install = 'pip install' in fixed_code
             if has_pip_install and 'ModuleNotFoundError' in output:
-                print(f"  ✓ AI added pip install commands to fix ModuleNotFoundError")
+                print(f"   AI added pip install commands to fix ModuleNotFoundError")
                 # This is a valid fix even if we can't fully test it
                 # (testing would require downloading large ML models which takes too long)
                 return 0.5, f"Code appears fixable with AI debugging (added package installations)"
@@ -359,7 +359,7 @@ Now output ONLY the fixed code with NO markdown (attempt {attempt}/5):"""
             success, output = self.run_code_in_docker(fixed_code)
             
             if success:
-                print(f"✓ Fixed code works!")
+                print(f" Fixed code works!")
                 return 0.5, f"Code runs after AI debugging (attempt {attempt}/{max_attempts})"
             
             # Show more of the error output
@@ -368,7 +368,7 @@ Now output ONLY the fixed code with NO markdown (attempt {attempt}/5):"""
             print(f"  ... (total {len(output)} chars)")
             code = fixed_code
         
-        print("✗ All attempts failed")
+        print(" All attempts failed")
         return 0.0, f"Code does not run even after {max_attempts} AI debugging attempts"
 
 
