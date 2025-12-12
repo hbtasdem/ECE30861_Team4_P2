@@ -22,9 +22,9 @@ from pathlib import Path
 # from typing import Any, Dict
 
 from fastapi import FastAPI
-# from fastapi.templating import Jinja2Templates
+from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
-# from fastapi import Request
+from fastapi import Request
 
 # Add src and parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
