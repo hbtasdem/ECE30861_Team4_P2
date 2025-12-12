@@ -2,9 +2,8 @@ import math
 import time
 from typing import Tuple
 
-from license_score import fetch_readme
-
-from hugging_face_api import get_model_info
+from src.hugging_face_api import get_model_info
+from src.metrics.license_score import fetch_readme
 
 
 def normalize_sigmoid(value: int, mid: int, steepness: float) -> float:
@@ -37,12 +36,10 @@ def ramp_up_time_score(model_id: str) -> Tuple[float, float]:
         return 0.0, time.time() - start
 
     # 1. Downloads
-    score += normalize_sigmoid(
-        value=info.get("downloads", 0), mid=10000, steepness=0.0001
-    )
+    score += normalize_sigmoid(value=info.get("downloads", 0), mid=50, steepness=0.05)
 
     # 2. Likes
-    score += normalize_sigmoid(value=info.get("likes", 0), mid=50, steepness=0.01)
+    score += normalize_sigmoid(value=info.get("likes", 0), mid=3, steepness=0.3)
 
     # 3. README exists
     readme = fetch_readme(model_id)
@@ -54,8 +51,8 @@ def ramp_up_time_score(model_id: str) -> Tuple[float, float]:
             score += 1
 
     # Normalize (max score is 4)
-    normalized = score / 4
-    normalized = round(normalized, 2)
+    normalized = (score / 4) * 1.2
+    normalized = min(round(normalized, 2), 1)
     return normalized, time.time() - start
 
 

@@ -43,8 +43,8 @@ flake8
 isort
 mypy
 types-requests
-jwt
 passlib
+kaggle
 
 # Testing dependencies (optional)
 pytest>=7.0.0
@@ -54,6 +54,7 @@ httpx>=0.23.0
 pydantic>=2.0.0
 moto
 selenium==4.15.2 # frontend
+markupsafe==3.0.3
 
 # Standard library modules (built-in, listed for reference)
 # math, time, re, os, sys, typing, logging, pathlib, enum, 

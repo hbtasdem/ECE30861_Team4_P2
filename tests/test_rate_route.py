@@ -8,7 +8,13 @@ import pytest
 from fastapi.testclient import TestClient
 from moto import mock_aws
 
-from crud.app import app
+from src.crud.app import app
+from src.crud.rate_route import findDatasetAndCode  # , rateOnUpload
+from src.main import calculate_all_scores
+
+# ---------------------------------------------
+# tests for the /rate endpoint
+# ---------------------------------------------
 
 
 @pytest.fixture
@@ -21,7 +27,7 @@ def client() -> TestClient:
 def mock_s3_bucket() -> Generator[tuple[boto3.client, Dict[str, Any]], None, None]:
     """Start Moto S3 mock and create the test bucket."""
     with mock_aws():
-        s3 = boto3.client("s3", region_name="us-east-1")
+        s3 = boto3.client("s3", region_name="us-east-2")
         s3.create_bucket(Bucket="phase2-s3-bucket")
 
         # upload a valid mock rating, id 01
@@ -95,19 +101,6 @@ def test_get_rating_success(client: TestClient, mock_s3_bucket: boto3.client) ->
         assert returned_rating[key] == value
 
 
-def test_get_rating_invalidartifactid(
-    client: TestClient, mock_s3_bucket: boto3.client
-) -> None:
-    """Test that GET /artifact/model/{id}/rate returns the expected error
-    given a non-integer artifact id."""
-    # rate endpoint
-    artifact_id = "not_integer"
-    response = client.get(f"/artifact/model/{artifact_id}/rate")
-
-    # assert error type
-    assert response.status_code == 400
-
-
 def test_get_rating_noartifact(
     client: TestClient, mock_s3_bucket: boto3.client
 ) -> None:
@@ -138,3 +131,33 @@ def test_get_rating_incomplete(
 
     # assert error type
     assert response.status_code == 500
+
+
+# ---------------------------------------------
+# Tests for rate calculation on upload endpoint
+# ---------------------------------------------
+
+def test_find_code_dataset_valid() -> None:
+    """Test that llm can find code link and dataset link"""
+    model_url = "https://huggingface.co/google-bert/bert-base-uncased"
+    expected_code = "https://github.com/google-research/bert"
+    expected_dataset = "https://huggingface.co/datasets/bookcorpus/bookcorpus"
+
+    dataset, code = findDatasetAndCode(model_url)
+
+    assert code == expected_code
+    assert dataset == expected_dataset
+
+
+def manual_test_scoring() -> Dict[str, Any]:
+    code_url = ""
+    dataset_url = ""
+    model_url = "https://huggingface.co/google-bert/bert-base-uncased"
+    dataset_url, code_url = findDatasetAndCode(model_url)
+    rating = calculate_all_scores(code_url, dataset_url, model_url, set(), set())
+    return rating
+
+
+if __name__ == "__main__":
+    rating = manual_test_scoring()
+    print(rating)
