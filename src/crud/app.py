@@ -183,23 +183,6 @@ from typing import Dict, List
 # Use absolute path to ensure .env is found regardless of working directory
 from dotenv import find_dotenv, load_dotenv
 
-# Try to find .env file starting from current file's directory
-dotenv_path = find_dotenv(usecwd=True)
-if dotenv_path:
-    load_dotenv(dotenv_path)
-    print(f"✓ Loaded .env from: {dotenv_path}")
-else:
-    # Fallback: look in parent directories
-    current_dir = Path(__file__).resolve().parent
-    for parent in [current_dir, current_dir.parent, current_dir.parent.parent]:
-        env_file = parent / ".env"
-        if env_file.exists():
-            load_dotenv(env_file)
-            print(f"✓ Loaded .env from: {env_file}")
-            break
-    else:
-        print("⚠️  No .env file found")
-
 from fastapi import FastAPI, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -216,6 +199,23 @@ from src.crud.upload.artifact_routes import \
 from src.database import init_db  # noqa: E402
 from src.health_monitor import HealthComponentCollection  # noqa: E402
 from src.health_monitor import health_monitor  # noqa: E402
+
+# Try to find .env file starting from current file's directory
+dotenv_path = find_dotenv(usecwd=True)
+if dotenv_path:
+    load_dotenv(dotenv_path)
+    print(f"✓ Loaded .env from: {dotenv_path}")
+else:
+    # Fallback: look in parent directories
+    current_dir = Path(__file__).resolve().parent
+    for parent in [current_dir, current_dir.parent, current_dir.parent.parent]:
+        env_file = parent / ".env"
+        if env_file.exists():
+            load_dotenv(env_file)
+            print(f"✓ Loaded .env from: {env_file}")
+            break
+    else:
+        print("⚠️  No .env file found")
 
 # Set templates directory - since app.py is in src/crud/ and templates is src/crud/templates/
 # Use __file__ to get absolute path relative to this file
