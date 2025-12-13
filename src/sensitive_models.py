@@ -20,6 +20,7 @@ If the program exits with a non-zero code, the download of the model should
 be rejected with an appropriate error message that includes the stdout from the program.
 """
 
+import json
 import os
 import subprocess
 import tempfile
@@ -38,7 +39,8 @@ BUCKET_NAME = "phase2-s3-bucket"
 
 def make_sensitive_zip(model_name: str, model_url: str) -> str:
     """
-    Create a lightweight zip containing only the README for security scanning.
+    Create a  zip containing README and metadata for security scanning.
+    Does NOT download large model files - only metadata.
 
     Args:
         model_name: Name of the model
@@ -56,22 +58,63 @@ def make_sensitive_zip(model_name: str, model_url: str) -> str:
 
     try:
         with zipfile.ZipFile(temp_zip.name, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            # Download just the README
+            # 1. Download README
             readme_url = f"https://huggingface.co/{model_id}/resolve/main/README.md"
-
             try:
                 response = httpx.get(readme_url, follow_redirects=True, timeout=10.0)
                 response.raise_for_status()
-
-                # Add README to zip
                 zipf.writestr("README.md", response.content)
                 print(f"Added README.md to zip for {model_name}")
-
             except Exception as e:
-                # If README doesn't exist, create a minimal one
                 print(f"Warning: Could not download README for {model_id}: {e}")
                 minimal_readme = f"# {model_name}\n\nModel URL: {model_url}\n"
                 zipf.writestr("README.md", minimal_readme)
+
+            # 2. Get model info from HuggingFace API
+            try:
+                api_url = f"https://huggingface.co/api/models/{model_id}"
+                response = httpx.get(api_url, timeout=10.0)
+                response.raise_for_status()
+                model_info = response.json()
+                zipf.writestr("model_info.json", json.dumps(model_info, indent=2))
+                print(f"Added model_info.json for {model_name}")
+            except Exception as e:
+                print(f"Warning: Could not fetch model info: {e}")
+
+            # 3. Get model config
+            config_url = f"https://huggingface.co/{model_id}/resolve/main/config.json"
+            try:
+                response = httpx.get(config_url, follow_redirects=True, timeout=10.0)
+                response.raise_for_status()
+                zipf.writestr("config.json", response.content)
+                print(f"Added config.json for {model_name}")
+            except Exception:
+                print("Info: No config.json found (this is OK)")
+
+            # 4. Get list of files in the repo (metadata only, not downloading)
+            try:
+                from huggingface_hub import HfApi
+                api = HfApi()
+                file_list = api.list_repo_files(repo_id=model_id)
+                file_manifest = {
+                    "model_id": model_id,
+                    "total_files": len(file_list),
+                    "files": file_list
+                }
+                zipf.writestr("file_manifest.json", json.dumps(file_manifest, indent=2))
+                print(f"Added file_manifest.json for {model_name}")
+
+            except Exception as e:
+                print(f"Warning: Could not list repo files: {e}")
+
+            # 5. Create a security scan summary
+            scan_summary = {
+                "model_name": model_name,
+                "model_url": model_url,
+                "model_id": model_id,
+                "note": "This scan includes only metadata and README - no model weights downloaded"
+            }
+            zipf.writestr("_scan_summary.json", json.dumps(scan_summary, indent=2))
 
         return temp_zip.name
 
@@ -82,6 +125,18 @@ def make_sensitive_zip(model_name: str, model_url: str) -> str:
 
 
 def sensitive_check(model_name: str, model_url: str, uploader_username: str) -> Any:
+    """
+    Run JS program on model.
+
+    Args:
+        model_name: Name of the model
+        model_url: HuggingFace model URL
+        uploader_username: Username that accessed upload endpoint
+
+    Returns:
+        If JS returns 0, nothing just accept the download
+        If JS returns non-zero, print the error and reject download
+    """
     s3_client = boto3.client("s3")
     # get JS program from s3
     try:
@@ -102,14 +157,7 @@ def sensitive_check(model_name: str, model_url: str, uploader_username: str) -> 
 
         # run JS program with args MODEL_NAME UPLOADER_USERNAME DOWNLOADER_USERNAME ZIP_FILE_PATH
         result = subprocess.run(
-            [
-                'node',
-                js_file_path,
-                model_name,
-                uploader_username,
-                uploader_username,  # Same user for upload check
-                zip_path
-            ],
+            ['node', js_file_path, model_name, uploader_username, uploader_username, zip_path],
             capture_output=True,
             text=True,
             timeout=30  # 30 second timeout
@@ -123,7 +171,7 @@ def sensitive_check(model_name: str, model_url: str, uploader_username: str) -> 
             )
 
     finally:
-        # Cleanup temp files
+        # Clean up temp files
         if os.path.exists(js_file_path):
             os.unlink(js_file_path)
         if os.path.exists(zip_path):
@@ -150,14 +198,12 @@ async def upload_js_program(program: UploadFile = File(...), x_authorization: Op
     # username = get_current_user(x_authorization, None)
     # if not is_admin(username):
     #     raise HTTPException(status_code=403, detail="Admin access required")
+
     s3_client = boto3.client("s3")
 
     # Validate it's a JS file
     if not program.filename.endswith('.js'):
-        raise HTTPException(
-            status_code=400,
-            detail="Program must be a .js file"
-        )
+        raise HTTPException(status_code=400, detail="Program must be a .js file")
 
     # Read the program
     js_content = await program.read()
@@ -178,17 +224,12 @@ async def upload_js_program(program: UploadFile = File(...), x_authorization: Op
 
 
 @router.get("/sensitive/javascript-program")
-async def get_js_program(
-    x_authorization: Optional[str] = Header(None),
-):
+async def get_js_program(x_authorization: Optional[str] = Header(None)):
     """Get the current JavaScript monitoring program."""
     s3_client = boto3.client("s3")
 
     try:
-        response = s3_client.get_object(
-            Bucket=BUCKET_NAME,
-            Key="monitoring-program.js"
-        )
+        response = s3_client.get_object(Bucket=BUCKET_NAME, Key="monitoring-program.js")
         js_content = response['Body'].read().decode('utf-8')
 
         return {
@@ -203,9 +244,7 @@ async def get_js_program(
 
 
 @router.delete("/sensitive/javascript-program")
-async def delete_js_program(
-    x_authorization: Optional[str] = Header(None),
-):
+async def delete_js_program(x_authorization: Optional[str] = Header(None)):
     """Delete the JavaScript monitoring program."""
 
     # Optional: Check if user is admin
@@ -216,38 +255,51 @@ async def delete_js_program(
     s3_client = boto3.client("s3")
 
     try:
-        s3_client.delete_object(
-            Bucket=BUCKET_NAME,
-            Key="monitoring-program.js"
-        )
+        s3_client.delete_object(Bucket=BUCKET_NAME, Key="monitoring-program.js")
         return {"message": "JavaScript program deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 # TEST JAVASCRIPT TO UPLOAD
-# // test-monitor-keywords.js
-# // Rejects models with suspicious keywords
 
+# // simple-monitor.js
+# const fs = require('fs');
 # const [modelName, uploader, downloader, zipPath] = process.argv.slice(2);
 
-# // List of banned keywords
-# const bannedKeywords = ['malicious', 'virus', 'hack', 'exploit', 'backdoor'];
+# console.log(`Checking model: ${modelName}`);
+# console.log(`Uploader: ${uploader}`);
 
-# // Check model name
+# // Basic checks without parsing the ZIP
+# // (Your Python code already extracted the metadata)
+
+# // Check 1: Model name patterns
+# const bannedKeywords = ['malicious', 'virus', 'exploit', 'nsfw', 'illegal'];
 # for (const keyword of bannedKeywords) {
 #     if (modelName.toLowerCase().includes(keyword)) {
-#         console.log(`REJECTED: Model name contains banned keyword: "${keyword}"`);
-#         process.exit(1);  // Non-zero = reject
+#         console.log(`REJECTED: Model name contains: ${keyword}`);
+#         process.exit(1);
 #     }
 # }
 
-# // Check uploader
-# const bannedUsers = ['hacker123', 'malicious_user'];
+# // Check 2: Banned uploaders
+# const bannedUsers = ['known_bad_actor', 'spam_account'];
 # if (bannedUsers.includes(uploader)) {
-#     console.log(`REJECTED: User "${uploader}" is banned`);
+#     console.log(`REJECTED: Uploader is banned`);
 #     process.exit(1);
 # }
 
-# console.log('APPROVED: Model passed all security checks');
+# // Check 3: ZIP file exists and has reasonable size
+# if (!fs.existsSync(zipPath)) {
+#     console.log('REJECTED: ZIP file missing');
+#     process.exit(1);
+# }
+
+# const stats = fs.statSync(zipPath);
+# if (stats.size < 100) {
+#     console.log('REJECTED: ZIP file too small (likely empty)');
+#     process.exit(1);
+# }
+
+# console.log('APPROVED: Basic checks passed');
 # process.exit(0);
