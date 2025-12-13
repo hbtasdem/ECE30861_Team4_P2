@@ -175,6 +175,7 @@ sys.path.insert(0, str(project_root))
 import pytest  # noqa: E402
 from sqlalchemy import create_engine  # noqa: E402
 from sqlalchemy.orm import Session, sessionmaker  # noqa: E402
+
 from src.crud.upload.auth import create_access_token  # noqa: E402
 from src.database_models import Base, User  # noqa: E402
 
@@ -232,6 +233,7 @@ def test_token() -> str:
 def client(test_db: Session) -> Generator[Any, None, None]:
     """Create a FastAPI TestClient with dependency overrides."""
     from fastapi.testclient import TestClient
+
     from src.crud.app import app
     from src.crud.upload.auth import get_current_user
     from src.database import get_db

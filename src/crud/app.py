@@ -195,8 +195,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.authentication_routes import router as auth_router  # noqa: E402
 from src.crud.rate_route import router as rate_router  # noqa: E402
-from src.crud.upload.artifact_routes import \
-    router as artifact_router  # noqa: E402
+from src.crud.upload.artifact_routes import router as artifact_router  # noqa: E402
 from src.database import init_db  # noqa: E402
 from src.health_monitor import HealthComponentCollection  # noqa: E402
 from src.health_monitor import health_monitor  # noqa: E402

@@ -104,7 +104,6 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
     response_model=Artifact,
     status_code=status.HTTP_201_CREATED,
 )
-
 @router.post(
     "/artifact/{artifact_type}",
     response_model=Artifact,
