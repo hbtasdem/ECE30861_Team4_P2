@@ -640,8 +640,11 @@ async def get_artifact_cost(
         )
 
     try:
+        # Get artifact metadata
         key = _get_artifact_key(artifact_type, artifact_id)
-        s3_client.head_object(Bucket=BUCKET_NAME, Key=key)
+        response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)
+        artifact_envelope = json.loads(response["Body"].read().decode("utf-8"))
+        artifact_url = artifact_envelope["data"]["url"]
     except ClientError as e:
         if e.response["Error"]["Code"] == "404":
             raise HTTPException(
@@ -653,11 +656,81 @@ async def get_artifact_cost(
             detail=f"Failed to retrieve artifact: {str(e)}",
         )
 
-    # For now, return placeholder cost
-    cost_data = {artifact_id: {"total_cost": 100.0}}
+    # Calculate artifact size in MB
+    try:
+        from src.size_cost import get_model_size_gb
 
-    if dependency:
-        cost_data[artifact_id]["standalone_cost"] = 100.0
+        # Extract model ID from URL
+        model_id = artifact_url
+        if "huggingface.co/" in artifact_url:
+            parts = artifact_url.split("huggingface.co/")[-1].split("/")
+            if len(parts) >= 2:
+                model_id = f"{parts[0]}/{parts[1]}"
+
+        # Get size in GB, convert to MB
+        size_gb = get_model_size_gb(model_id)
+        size_mb = round(size_gb * 1024, 2)
+    except Exception:
+        # Fallback to default size if calculation fails
+        size_mb = 100.0
+
+    # Build response per spec
+    if not dependency:
+        # Per spec: When dependency=false, return ONLY total_cost (no standalone_cost)
+        cost_data = {artifact_id: {"total_cost": size_mb}}
+    else:
+        # Per spec: When dependency=true, include standalone_cost + all dependencies
+        # Get dependencies from lineage (if available)
+        dependencies = {}
+        try:
+            # Try to get lineage data
+            from src.lineage_tree import extract_lineage_graph
+
+            lineage = extract_lineage_graph(artifact_url, artifact_id)
+
+            # Calculate cost for each dependency node
+            for node in lineage.get("nodes", []):
+                dep_id = node.get("artifact_id")
+                if dep_id and dep_id != artifact_id:
+                    # Try to get dependency artifact
+                    try:
+                        dep_key = f"model/{dep_id}.json"  # Assume model type for dependencies
+                        dep_response = s3_client.get_object(Bucket=BUCKET_NAME, Key=dep_key)
+                        dep_envelope = json.loads(dep_response["Body"].read().decode("utf-8"))
+                        dep_url = dep_envelope["data"]["url"]
+
+                        # Calculate dependency size
+                        dep_model_id = dep_url
+                        if "huggingface.co/" in dep_url:
+                            parts = dep_url.split("huggingface.co/")[-1].split("/")
+                            if len(parts) >= 2:
+                                dep_model_id = f"{parts[0]}/{parts[1]}"
+
+                        dep_size_gb = get_model_size_gb(dep_model_id)
+                        dep_size_mb = round(dep_size_gb * 1024, 2)
+
+                        dependencies[dep_id] = {
+                            "standalone_cost": dep_size_mb,
+                            "total_cost": dep_size_mb
+                        }
+                    except Exception:
+                        # If dependency not found, skip it
+                        pass
+        except Exception:
+            # If lineage extraction fails, continue without dependencies
+            pass
+
+        # Calculate total_cost as sum of all dependencies + standalone
+        total_cost = size_mb + sum(dep.get("total_cost", 0) for dep in dependencies.values())
+
+        # Build response with main artifact + all dependencies
+        cost_data = {
+            artifact_id: {
+                "standalone_cost": size_mb,
+                "total_cost": total_cost
+            }
+        }
+        cost_data.update(dependencies)
 
     return cost_data
 
