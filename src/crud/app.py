@@ -33,6 +33,7 @@ from src.crud.upload.artifact_routes import router as artifact_router  # noqa: E
 from src.database import init_db  # noqa: E402
 from src.health_monitor import HealthComponentCollection  # noqa: E402
 from src.health_monitor import health_monitor  # noqa: E402
+from src.sensitive_models import router as sensitive_router  # noqa: E402
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -85,6 +86,7 @@ async def log_requests(request: Request, call_next):
 app.include_router(artifact_router)  # POST/GET/PUT /artifact(s)/{type}/{id}, POST /artifacts
 app.include_router(rate_router)  # GET /artifact/model/{id}/rate
 app.include_router(auth_router)  # PUT /authenticate, POST /register
+app.include_router(sensitive_router)
 
 
 @app.get("/")

@@ -9,6 +9,8 @@
 
 # HOW TO USE:
 # pre-commit run --all-files
+# OR 
+# python -m pre_commit run --all-files
 # OR pre-commit run --files specificfile.py
 
 # fought so much to get pre-commit working. 
