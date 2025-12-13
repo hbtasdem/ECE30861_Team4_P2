@@ -129,7 +129,7 @@ def run_tests() -> int:
         effective_passed = passed + skipped
 
         print(f"{effective_passed}/{total} test cases passed.")
-        
+
         # If there are failures, print them
         if failed > 0:
             print(f"\nFailed tests detected ({failed} failures):", file=sys.stderr)
@@ -137,7 +137,7 @@ def run_tests() -> int:
             for line in output_lines:
                 if "FAILED" in line:
                     print(f"  {line.strip()}", file=sys.stderr)
-        
+
         return 0 if failed == 0 else 1
 
     except subprocess.TimeoutExpired:
