@@ -487,7 +487,7 @@ async def enumerate_artifacts(
                         results.append(artifact)
 
         # Apply pagination
-        paginated_results = results[offset_int:offset_int + page_size]
+        paginated_results = results[offset_int:offset_int + page_size]  # noqa: E203
 
         # Convert to metadata
         metadata_list = [
