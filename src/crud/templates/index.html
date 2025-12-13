@@ -267,8 +267,74 @@
 
     <!-- Main Content -->
     <main id="main-content" role="main">
+      <!-- Authentication Section -->
+      <section aria-labelledby="auth-heading" class="card" id="authSection">
+        <h2 id="auth-heading">Authentication</h2>
+        <form id="authForm" onsubmit="authenticate(event)">
+          <div class="form-group">
+            <label for="username">
+              Username:
+              <span class="visually-hidden">(Required)</span>
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Enter username"
+              required
+              aria-required="true"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">
+              Password:
+              <span class="visually-hidden">(Required)</span>
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter password"
+              required
+              aria-required="true"
+            />
+          </div>
+
+          <button
+            type="submit"
+            id="authBtn"
+            aria-label="Authenticate and get access token"
+          >
+            Login
+          </button>
+
+          <button
+            type="button"
+            id="skipAuthBtn"
+            onclick="skipAuth()"
+            aria-label="Skip authentication and try without token"
+            style="margin-left: 1rem; background: #6b7280"
+          >
+            Skip (Try Without Auth)
+          </button>
+        </form>
+
+        <div
+          id="authStatus"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        ></div>
+      </section>
+
       <!-- Upload Form Section -->
-      <section aria-labelledby="upload-heading" class="card">
+      <section
+        aria-labelledby="upload-heading"
+        class="card"
+        id="uploadSection"
+        style="display: none"
+      >
         <h2 id="upload-heading">Upload Artifact</h2>
         <form id="uploadForm" onsubmit="uploadArtifact(event)">
           <div class="form-group">
@@ -375,6 +441,95 @@
     </main>
 
     <script>
+      // Check if user is already authenticated on page load
+      window.addEventListener("DOMContentLoaded", function () {
+        const authToken = localStorage.getItem("authToken");
+        if (authToken) {
+          showUploadSection();
+        }
+      });
+
+      async function authenticate(event) {
+        event.preventDefault();
+
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+        const authBtn = document.getElementById("authBtn");
+        const authStatus = document.getElementById("authStatus");
+
+        authStatus.innerHTML = "";
+        authBtn.disabled = true;
+
+        authStatus.innerHTML = `
+                <div class="status-message loading">
+                    <span class="spinner" role="img" aria-label="Loading"></span>
+                    Authenticating...
+                </div>
+            `;
+
+        try {
+          const res = await fetch("/authenticate", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user: {
+                name: username,
+                is_admin: false,
+              },
+              secret: {
+                password: password,
+              },
+            }),
+          });
+
+          if (res.status === 501) {
+            // Authentication not implemented - proceed without token
+            authStatus.innerHTML = `
+                        <div class="status-message success">
+                            <strong>Notice:</strong> Authentication not implemented on server. Proceeding without token.
+                        </div>
+                    `;
+            setTimeout(showUploadSection, 1500);
+          } else if (res.ok) {
+            const token = await res.json();
+            localStorage.setItem("authToken", token);
+
+            authStatus.innerHTML = `
+                        <div class="status-message success">
+                            <strong>Success:</strong> Authenticated successfully!
+                        </div>
+                    `;
+            setTimeout(showUploadSection, 1500);
+          } else {
+            const error = await res.json();
+            authStatus.innerHTML = `
+                        <div class="status-message error" role="alert">
+                            <strong>Error:</strong> ${escapeHtml(
+                              error.detail || "Authentication failed"
+                            )}
+                        </div>
+                    `;
+          }
+        } catch (err) {
+          authStatus.innerHTML = `
+                    <div class="status-message error" role="alert">
+                        <strong>Error:</strong> ${escapeHtml(err.message)}
+                    </div>
+                `;
+        } finally {
+          authBtn.disabled = false;
+        }
+      }
+
+      function skipAuth() {
+        showUploadSection();
+      }
+
+      function showUploadSection() {
+        document.getElementById("authSection").style.display = "none";
+        document.getElementById("uploadSection").style.display = "block";
+      }
+
       async function uploadArtifact(event) {
         event.preventDefault();
 
@@ -421,12 +576,23 @@
             `;
 
         try {
+          // Get auth token from localStorage if exists
+          const authToken = localStorage.getItem("authToken");
+
+          // Build headers
+          const headers = {
+            "Content-Type": "application/json",
+          };
+
+          // Add auth header if token exists
+          if (authToken) {
+            headers["X-Authorization"] = authToken;
+          }
+
           // Call the correct endpoint: POST /artifact/{artifact_type}
           const res = await fetch(`/artifact/${artifactType}`, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: headers,
             body: JSON.stringify({ url }),
           });
 
@@ -440,7 +606,7 @@
               errorMessage = "Invalid artifact data: " + errorMessage;
             } else if (res.status === 403) {
               errorMessage =
-                "Authentication required. Please authenticate first.";
+                "Authentication required. Your system requires authentication. Please check your backend configuration or contact administrator.";
             } else if (res.status === 409) {
               errorMessage = "This artifact already exists in the registry.";
             } else if (res.status === 424) {
