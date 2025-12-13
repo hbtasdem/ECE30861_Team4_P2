@@ -8,10 +8,12 @@ from typing import Tuple, Optional
 import sys
 import os
 
-# Add parent directory to path to import lineage_tree
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(
+    0,
+    os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+)
 
-from src import lineage_tree
+from lineage_tree import check_lineage
 
 # Initialize S3 client
 s3_client = boto3.client('s3')
@@ -64,7 +66,7 @@ def treescore_calc(model_name: str) -> Tuple[float, float]:
     start_time = time.time()
     
     # Get lineage info from lineage_tree module
-    parent_lineage, _ = lineage_tree.check_lineage(model_name)
+    parent_lineage, _ = check_lineage(model_name)
     
     if not parent_lineage or not parent_lineage.get("has_lineage"):
         # No parents = base model, tree_score is 0
