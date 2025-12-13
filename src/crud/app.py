@@ -178,15 +178,23 @@ ENDPOINTS PROVIDED (11/11 BASELINE):
 import logging
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
 
-# Load environment variables from .env file
-# Use absolute path to ensure .env is found regardless of working directory
+import boto3
 from dotenv import find_dotenv, load_dotenv
 from fastapi import FastAPI, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from health_logs_helper import fetch_cloudwatch_logs
+
+cloudwatch_logs = boto3.client('logs', region_name=os.getenv('AWS_REGION', 'us-east-2'))
+LOG_GROUP_NAME = os.getenv('CLOUDWATCH_LOG_GROUP', '/aws/ec2/fastapi-logs')
+
+
+# Load environment variables from .env file
+# Use absolute path to ensure .env is found regardless of working directory
 
 # Add src and parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
@@ -327,10 +335,31 @@ async def index(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-@app.get("/health")
-def health_check() -> Dict[str, str]:
-    """Health check endpoint (BASELINE)"""
-    return {"status": "ok"}
+# Add these two new endpoints
+@app.get("/health", response_class=HTMLResponse)
+async def health_check_ui(request: Request):
+    """Health check endpoint with CloudWatch logs UI"""
+    return templates.TemplateResponse("health.html", {"request": request})
+
+
+@app.get("/health/logs")
+async def get_health_logs(hours: int = 1, limit: int = 100):
+    """API endpoint to fetch logs as JSON"""
+    try:
+        logs = fetch_cloudwatch_logs(hours=hours, limit=limit)
+        return {
+            'status': 'healthy',
+            'timestamp': datetime.now().isoformat(),
+            'log_group': LOG_GROUP_NAME,
+            'logs': logs,
+            'total': len(logs)
+        }
+    except Exception as e:
+        return {
+            'status': 'error',
+            'message': str(e),
+            'logs': []
+        }
 
 
 @app.get("/health/components", response_model=HealthComponentCollection)
