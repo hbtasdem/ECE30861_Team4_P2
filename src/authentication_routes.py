@@ -97,8 +97,10 @@ async def register_user(
     }
     access_token = create_access_token(token_data)
 
-    # Per spec: Return just the token string, not wrapped in an object
-    return access_token
+    # Per spec: Return just the token string, as a JSON string (with quotes)
+    import json
+    from fastapi.responses import Response
+    return Response(content=json.dumps(access_token), media_type="application/json")
 
 
 @router.put("/authenticate")
@@ -164,5 +166,7 @@ async def authenticate_user(
     }
     access_token = create_access_token(token_data)
 
-    # Per spec: Return just the token string, not wrapped in an object
-    return access_token
+    # Per spec: Return just the token string, as a JSON string (with quotes)
+    import json
+    from fastapi.responses import Response
+    return Response(content=json.dumps(access_token), media_type="application/json")

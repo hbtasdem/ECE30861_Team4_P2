@@ -480,11 +480,17 @@ async def enumerate_artifacts(
         results = []
         seen_ids = set()
 
+        # Check if S3 is empty for all types; if so, return []
+        s3_empty = True
+        for artifact_type in ["model", "dataset", "code"]:
+            if _get_artifacts_by_type(artifact_type):
+                s3_empty = False
+                break
+        if s3_empty:
+            return []
+
         for query in queries:
             # Determine types to search
-            types_to_search = (
-                query.types if query.types else ["model", "dataset", "code"]
-            )
             types_to_search = (
                 query.types if query.types else ["model", "dataset", "code"]
             )
@@ -556,26 +562,26 @@ async def reset_registry(
     Raises:
         HTTPException: 401 if not admin, 403 if auth fails
     """
-    # if not x_authorization:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN,
-    #         detail="Missing X-Authorization header",
-    #     )
+    if not x_authorization:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Missing X-Authorization header",
+        )
 
-    # try:
-    #     current_user = get_current_user(x_authorization, None)
-    # except HTTPException:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN,
-    #         detail="Authentication failed: Invalid or expired token",
-    #     )
+    try:
+        current_user = get_current_user(x_authorization, None)
+    except HTTPException:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Authentication failed: Invalid or expired token",
+        )
 
     # Check if user is admin
-    # if not current_user.is_admin:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_401_UNAUTHORIZED,
-    #         detail="You do not have permission to reset the registry",
-    #     )
+    if not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You do not have permission to reset the registry",
+        )
 
     try:
         # Delete all artifacts from S3
@@ -594,10 +600,27 @@ async def reset_registry(
         # Delete all audit entries from database
         db.query(AuditEntry).delete()
 
+        # Delete all users from database
+        from src.database_models import User as DBUser
+        db.query(DBUser).delete()
+
+        # Recreate default admin user (required for autograder login)
+        admin_username = "ece30861defaultadminuser"
+        admin_password = "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
+        from src.crud.upload.auth import hash_password
+        hashed = hash_password(admin_password)
+        admin_user = DBUser(
+            username=admin_username,
+            email="admin@registry.local",
+            hashed_password=hashed,
+            is_admin=True,
+        )
+        db.add(admin_user)
+
         # Commit the database changes
         db.commit()
 
-        return {"message": "Registry is reset."}
+        return {"message": "Registry is reset and default admin user recreated."}
     except Exception as e:
         db.rollback()
         raise HTTPException(
