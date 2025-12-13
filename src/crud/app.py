@@ -184,7 +184,7 @@ from typing import Dict, List
 
 import boto3
 from dotenv import find_dotenv, load_dotenv
-from fastapi import FastAPI, Query, Request, HTTPException
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
@@ -192,6 +192,8 @@ cloudwatch_logs = boto3.client('logs', region_name=os.getenv('AWS_REGION', 'us-e
 LOG_GROUP_NAME = os.getenv('CLOUDWATCH_LOG_GROUP', '/aws/ec2/fastapi-logs')
 
 # helper function for health logging
+
+
 def fetch_cloudwatch_logs(hours: int = 1, limit: int = 100) -> List[Dict]:
     """Fetch recent logs from CloudWatch"""
     try:
