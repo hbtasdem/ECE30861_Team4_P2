@@ -42,8 +42,7 @@ from fastapi import APIRouter, Header, HTTPException, Query, status
 from ulid import ULID
 
 from src.crud.rate_route import rateOnUpload
-from src.crud.upload.artifacts import (Artifact, ArtifactData, ArtifactLineageGraph, ArtifactLineageNode,
-                                       ArtifactMetadata, ArtifactQuery)
+from src.crud.upload.artifacts import Artifact, ArtifactData, ArtifactMetadata, ArtifactQuery
 from src.crud.upload.auth import get_current_user
 from src.crud.upload.download_artifact import get_download_url
 from src.metrics.license_check import license_check
@@ -666,71 +665,73 @@ async def get_artifact_cost(
 # ============================================================================
 # GET /artifact/model/{artifact_id}/lineage - GET ARTIFACT LINEAGE (BASELINE)
 # ============================================================================
+# NOTE: This endpoint is now implemented in src/lineage_tree.py with full functionality
+# The lineage_router is included in app.py instead of this basic implementation
 
 
-@router.get(
-    "/artifact/model/{artifact_id}/lineage", response_model=ArtifactLineageGraph
-)
-async def get_artifact_lineage(
-    artifact_id: str,
-    x_authorization: Optional[str] = Header(None),
-) -> ArtifactLineageGraph:
-    """Retrieve the lineage graph for an artifact.
+# @router.get(
+#     "/artifact/model/{artifact_id}/lineage", response_model=ArtifactLineageGraph
+# )
+# async def get_artifact_lineage(
+#     artifact_id: str,
+#     x_authorization: Optional[str] = Header(None),
+# ) -> ArtifactLineageGraph:
+#     """Retrieve the lineage graph for an artifact.
 
-    Per OpenAPI v3.4.4 spec:
-    - Returns lineage graph extracted from structured metadata
-    - Returns 404 if artifact not found
+#     Per OpenAPI v3.4.7 spec:
+#     - Returns lineage graph extracted from structured metadata
+#     - Returns 404 if artifact not found
 
-    Args:
-        artifact_id: Unique artifact identifier
-        x_authorization: Bearer token for authentication
+#     Args:
+#         artifact_id: Unique artifact identifier
+#         x_authorization: Bearer token for authentication
 
-    Returns:
-        ArtifactLineageGraph with nodes and edges
+#     Returns:
+#         ArtifactLineageGraph with nodes and edges
 
-    Raises:
-        HTTPException: 403 if auth fails, 404 if not found
-    """
-    if not x_authorization:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header",
-        )
+#     Raises:
+#         HTTPException: 403 if auth fails, 404 if not found
+#     """
+#     if not x_authorization:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Missing X-Authorization header",
+#         )
 
-    try:
-        get_current_user(x_authorization, None)
-    except HTTPException:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token",
-        )
+#     try:
+#         get_current_user(x_authorization, None)
+#     except HTTPException:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Authentication failed: Invalid or expired token",
+#         )
 
-    try:
-        key = _get_artifact_key("model", artifact_id)
-        response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)
-        artifact_envelope = json.loads(response["Body"].read().decode("utf-8"))
+#     try:
+#         key = _get_artifact_key("model", artifact_id)
+#         response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)
+#         artifact_envelope = json.loads(response["Body"].read().decode("utf-8"))
 
-        # For now, return self as a single node with no edges
-        nodes = [
-            ArtifactLineageNode(
-                artifact_id=artifact_id,
-                name=artifact_envelope["metadata"]["name"],
-                source="metadata",
-            )
-        ]
+#         # For now, return self as a single node with no edges
+#         nodes = [
+#             ArtifactLineageNode(
+#                 artifact_id=artifact_id,
+#                 name=artifact_envelope["metadata"]["name"],
+#                 source="metadata",
+#             )
+#         ]
 
-        return ArtifactLineageGraph(nodes=nodes, edges=[])
+#         return ArtifactLineageGraph(nodes=nodes, edges=[])
 
-    except ClientError as e:
-        if e.response["Error"]["Code"] == "NoSuchKey":
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Artifact does not exist.",
-            )
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to retrieve artifact: {str(e)}",
-        )
+#     except ClientError as e:
+#         if e.response["Error"]["Code"] == "NoSuchKey":
+#             raise HTTPException(
+#                 status_code=status.HTTP_404_NOT_FOUND,
+#                 detail="Artifact does not exist.",
+#             )
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST,
+#             detail=f"Failed to retrieve artifact: {str(e)}",
+#         )
 
 
 # ============================================================================
