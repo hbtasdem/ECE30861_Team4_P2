@@ -1,5 +1,5 @@
 # test phase 2 license check functions
-from src.metrics.license_check import get_github_license, get_model_license
+from src.license_check import get_github_license, get_model_license
 
 
 def test_get_github_license() -> None:
