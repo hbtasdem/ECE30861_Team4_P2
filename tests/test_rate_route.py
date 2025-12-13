@@ -7,7 +7,6 @@ import boto3
 import pytest
 from fastapi.testclient import TestClient
 from moto import mock_aws
-
 from src.crud.app import app
 from src.crud.rate_route import findDatasetAndCode  # , rateOnUpload
 from src.main import calculate_all_scores

@@ -13,7 +13,6 @@ from typing import Generator
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
-
 # Setup
 from src.crud.app import app
 from src.crud.upload.auth import create_access_token
