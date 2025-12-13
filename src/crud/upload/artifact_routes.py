@@ -38,18 +38,18 @@ from typing import Any, Dict, List, Optional
 
 import boto3
 from botocore.exceptions import ClientError
-from fastapi import APIRouter, Header, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from sqlalchemy.orm import Session
 from ulid import ULID
 
 from src.crud.rate_route import rateOnUpload
 from src.crud.upload.artifacts import Artifact, ArtifactData, ArtifactMetadata, ArtifactQuery
 from src.crud.upload.auth import get_current_user
 from src.crud.upload.download_artifact import get_download_url
+from src.database import get_db
+from src.database_models import Artifact as ArtifactModel
+from src.database_models import AuditEntry
 from src.metrics.license_check import license_check
-
-# from src.database import get_db
-# from src.database_models import Artifact as ArtifactModel
-# from src.database_models import AuditEntry
 
 router = APIRouter(tags=["artifacts"])
 
@@ -537,16 +537,18 @@ async def enumerate_artifacts(
 @router.delete("/reset")
 async def reset_registry(
     x_authorization: Optional[str] = Header(None),
+    db: Session = Depends(get_db),
 ) -> Dict[str, str]:
     """Reset the registry to system default state (admin only).
 
     Per OpenAPI v3.4.4 spec:
     - Requires admin authorization
-    - Deletes all artifacts
+    - Deletes all artifacts from S3 and database
     - Returns 200 on success, 401 if not admin
 
     Args:
         x_authorization: Bearer token for authentication
+        db: Database session
 
     Returns:
         Dict with success message
@@ -576,7 +578,7 @@ async def reset_registry(
     #     )
 
     try:
-        # Delete all artifacts
+        # Delete all artifacts from S3
         paginator = s3_client.get_paginator("list_objects_v2")
         pages = paginator.paginate(Bucket=BUCKET_NAME)
 
@@ -586,8 +588,18 @@ async def reset_registry(
             for obj in page["Contents"]:
                 s3_client.delete_object(Bucket=BUCKET_NAME, Key=obj["Key"])
 
+        # Delete all artifacts from database
+        db.query(ArtifactModel).delete()
+
+        # Delete all audit entries from database
+        db.query(AuditEntry).delete()
+
+        # Commit the database changes
+        db.commit()
+
         return {"message": "Registry is reset."}
     except Exception as e:
+        db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to reset registry: {str(e)}",
