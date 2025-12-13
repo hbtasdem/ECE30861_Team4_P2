@@ -139,8 +139,7 @@ def init_db() -> None:
     """
     # Import models to register them with SQLAlchemy Base
     # IMPORTANT: This must import Artifact (not Model!) for spec compliance
-    from src.database_models import (Artifact, AuditEntry, Base,  # noqa: F401
-                                     User)
+    from src.database_models import Artifact, AuditEntry, Base, User  # noqa: F401
 
     # from src.phase3_models import FileStorage  # noqa: F401
     # Create all tables defined in src.models
@@ -148,28 +147,81 @@ def init_db() -> None:
     # Includes Phase 2 tables (User, Artifact, AuditEntry)
     Base.metadata.create_all(bind=engine)
 
-    # Create default admin user (per OpenAPI spec example)
-    # The spec example shows: ece30861defaultadminuser with password correcthorsebatterystaple123(!__+@**(A'"`;DROP TABLE artifacts;
+    # Create default admin user with credentials from environment/parameter store
+    # Security: Credentials should be stored in environment variables or AWS Parameter Store
+    # Environment variables:
+    #   DEFAULT_ADMIN_USERNAME (default: ece30861defaultadminuser)
+    #   DEFAULT_ADMIN_PASSWORD (required, no default for security)
+    # AWS Parameter Store (fallback):
+    #   /ece30861/DEFAULT_ADMIN_USERNAME
+    #   /ece30861/DEFAULT_ADMIN_PASSWORD
     db = SessionLocal()
     try:
-        existing_admin = (
-            db.query(User).filter(User.username == "ece30861defaultadminuser").first()
-        )
-        if not existing_admin:
-            from src.crud.upload.auth import hash_password
+        # Get credentials from environment or parameter store
+        import os
 
-            default_password = (
-                "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
-            )
-            hashed = hash_password(default_password)
+        admin_username = os.getenv("DEFAULT_ADMIN_USERNAME")
+        admin_password = os.getenv("DEFAULT_ADMIN_PASSWORD")
 
-            admin_user = User(
-                username="ece30861defaultadminuser",
-                email="admin@registry.local",
-                hashed_password=hashed,
-                is_admin=True,
+        # Fallback to AWS Systems Manager Parameter Store if env vars not set
+        if not admin_username or not admin_password:
+            try:
+                import boto3
+
+                ssm = boto3.client("ssm", region_name="us-east-2")
+
+                if not admin_username:
+                    try:
+                        response = ssm.get_parameter(
+                            Name="/ece30861/DEFAULT_ADMIN_USERNAME",
+                            WithDecryption=False,
+                        )
+                        admin_username = response["Parameter"]["Value"]
+                    except Exception:
+                        # Use default if parameter store fails
+                        admin_username = "ece30861defaultadminuser"
+
+                if not admin_password:
+                    try:
+                        response = ssm.get_parameter(
+                            Name="/ece30861/DEFAULT_ADMIN_PASSWORD",
+                            WithDecryption=True,
+                        )
+                        admin_password = response["Parameter"]["Value"]
+                    except Exception:
+                        # No default password for security - will skip admin creation
+                        admin_password = None
+
+            except Exception:
+                # boto3 not available or AWS not configured
+                admin_username = "ece30861defaultadminuser"
+                admin_password = None
+
+        # Only create admin user if we have valid credentials
+        if admin_username and admin_password:
+            existing_admin = (
+                db.query(User).filter(User.username == admin_username).first()
             )
-            db.add(admin_user)
-            db.commit()
+            if not existing_admin:
+                from src.crud.upload.auth import hash_password
+
+                hashed = hash_password(admin_password)
+
+                admin_user = User(
+                    username=admin_username,
+                    email="admin@registry.local",
+                    hashed_password=hashed,
+                    is_admin=True,
+                )
+                db.add(admin_user)
+                db.commit()
+                print(f" Created default admin user: {admin_username}")
+            else:
+                print(f" Default admin user already exists: {admin_username}")
+        else:
+            print(
+                " WARNING: No admin credentials configured. Set DEFAULT_ADMIN_USERNAME "
+                "and DEFAULT_ADMIN_PASSWORD environment variables or configure AWS Parameter Store."
+            )
     finally:
         db.close()

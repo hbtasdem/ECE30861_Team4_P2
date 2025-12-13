@@ -104,7 +104,6 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
     response_model=Artifact,
     status_code=status.HTTP_201_CREATED,
 )
-
 @router.post(
     "/artifact/{artifact_type}",
     response_model=Artifact,
@@ -510,7 +509,7 @@ async def enumerate_artifacts(
                         results.append(artifact)
 
         # Apply pagination
-        paginated_results = results[offset_int: offset_int + page_size]
+        paginated_results = results[offset_int:offset_int + page_size]  # noqa: E203
 
         # Convert to metadata
         metadata_list = [
