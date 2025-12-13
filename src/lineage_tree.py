@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
+import hashlib
 import json
 import time
-import hashlib
 from typing import Any, Dict, List, Optional, Tuple, cast
 
 import requests
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, Header, HTTPException
 
 # Create router
 router = APIRouter()

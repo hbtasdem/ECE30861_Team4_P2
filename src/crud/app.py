@@ -174,14 +174,14 @@ ENDPOINTS PROVIDED (10/10 BASELINE):
 # app.py
 
 import logging
-import sys
 import os
+import sys
 from pathlib import Path
 from typing import Dict, List
 
 # Load environment variables from .env file
 # Use absolute path to ensure .env is found regardless of working directory
-from dotenv import load_dotenv, find_dotenv
+from dotenv import find_dotenv, load_dotenv
 
 # Try to find .env file starting from current file's directory
 dotenv_path = find_dotenv(usecwd=True)
@@ -211,7 +211,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.authentication_routes import router as auth_router  # noqa: E402
 from src.crud.rate_route import router as rate_router  # noqa: E402
-from src.crud.upload.artifact_routes import router as artifact_router  # noqa: E402
+from src.crud.upload.artifact_routes import \
+    router as artifact_router  # noqa: E402
 from src.database import init_db  # noqa: E402
 from src.health_monitor import HealthComponentCollection  # noqa: E402
 from src.health_monitor import health_monitor  # noqa: E402
