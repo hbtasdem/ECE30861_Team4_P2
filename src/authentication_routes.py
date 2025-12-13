@@ -10,16 +10,18 @@ Per OpenAPI v3.4.7:
 - POST /register: User registration (custom addition for user creation)
 
 ENDPOINTS IMPLEMENTED:
-1. PUT /authenticate - Authenticate user and return JWT token
-2. POST /register - Register new user account
-"""
+1. PUT /authenticate - Authenticate user and return JWT token (returns plain string)
+2. POST /register - Register new user account (returns plain string)
 
-from typing import Dict
+SPEC COMPLIANCE NOTE:
+Per OpenAPI spec, /authenticate returns AuthenticationToken as a plain JSON string,
+not wrapped in an object. Example: "bearer eyJhbGc..." not {"token": "bearer..."}
+"""
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from src.crud.upload.artifacts import AuthenticationRequest, AuthenticationToken
+from src.crud.upload.artifacts import AuthenticationRequest
 from src.crud.upload.auth import create_access_token, hash_password, verify_password
 from src.database import get_db
 from src.database_models import User as DBUser
@@ -27,11 +29,11 @@ from src.database_models import User as DBUser
 router = APIRouter(tags=["authentication"])
 
 
-@router.post("/register", response_model=AuthenticationToken)
+@router.post("/register")
 async def register_user(
     request: AuthenticationRequest,
     db: Session = Depends(get_db),
-) -> Dict[str, str]:
+) -> str:
     """Register a new user account.
 
     Creates a new user with hashed password and returns JWT authentication token.
@@ -41,7 +43,8 @@ async def register_user(
         db: Database session
 
     Returns:
-        AuthenticationToken: JWT bearer token for authenticated access
+        str: JWT bearer token string in format "bearer <jwt>"
+             Per spec: Returned as plain JSON string, not wrapped in object
 
     Raises:
         HTTPException:
@@ -94,19 +97,20 @@ async def register_user(
     }
     access_token = create_access_token(token_data)
 
-    return AuthenticationToken(token=access_token)
+    # Per spec: Return just the token string, not wrapped in an object
+    return access_token
 
 
-@router.put("/authenticate", response_model=AuthenticationToken)
+@router.put("/authenticate")
 async def authenticate_user(
     request: AuthenticationRequest,
     db: Session = Depends(get_db),
-) -> Dict[str, str]:
+) -> str:
     """Authenticate user and return access token (NON-BASELINE per spec).
 
     Per OpenAPI v3.4.7 spec PUT /authenticate endpoint:
     - Takes AuthenticationRequest with user credentials
-    - Returns AuthenticationToken with JWT bearer token
+    - Returns AuthenticationToken as plain JSON string (not wrapped in object)
     - Token should be provided in X-Authorization header for other endpoints
 
     Args:
@@ -114,7 +118,9 @@ async def authenticate_user(
         db: Database session
 
     Returns:
-        AuthenticationToken: JWT bearer token in format "bearer <jwt>"
+        str: JWT bearer token string in format "bearer <jwt>"
+             Per spec: Returned as plain JSON string, not wrapped in object
+             Example: "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 
     Raises:
         HTTPException:
@@ -158,4 +164,5 @@ async def authenticate_user(
     }
     access_token = create_access_token(token_data)
 
-    return AuthenticationToken(token=access_token)
+    # Per spec: Return just the token string, not wrapped in an object
+    return access_token
