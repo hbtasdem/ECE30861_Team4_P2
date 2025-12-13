@@ -82,6 +82,9 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
                         artifact_data = json.loads(
                             response["Body"].read().decode("utf-8")
                         )
+                        artifact_data = json.loads(
+                            response["Body"].read().decode("utf-8")
+                        )
                         artifacts.append(artifact_data)
                     except Exception:
                         pass
@@ -95,6 +98,12 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
 # POST /artifact/{artifact_type} - CREATE ARTIFACT (BASELINE)
 # ============================================================================
 
+
+@router.post(
+    "/artifact/{artifact_type}",
+    response_model=Artifact,
+    status_code=status.HTTP_201_CREATED,
+)
 
 @router.post(
     "/artifact/{artifact_type}",
@@ -175,6 +184,10 @@ async def create_artifact(
                     status_code=424,
                     detail="Artifact is not registered due to the disqualified rating.",
                 )
+                raise HTTPException(
+                    status_code=424,
+                    detail="Artifact is not registered due to the disqualified rating.",
+                )
 
         # Get download_url
         download_url = get_download_url(artifact_data.url, artifact_id, artifact_type)
@@ -192,6 +205,12 @@ async def create_artifact(
 
         # Store in S3
         key = f"{artifact_type}/{artifact_id}.json"
+        s3_client.put_object(
+            Bucket=BUCKET_NAME,
+            Key=key,
+            Body=json.dumps(artifact_envelope, indent=2),
+            ContentType="application/json",
+        )
         s3_client.put_object(
             Bucket=BUCKET_NAME,
             Key=key,
@@ -297,6 +316,7 @@ async def get_artifact(
 # ============================================================================
 
 
+@router.put("/artifacts/{artifact_type}/{artifact_id}", response_model=Artifact)
 @router.put("/artifacts/{artifact_type}/{artifact_id}", response_model=Artifact)
 async def update_artifact(
     artifact_type: str,
@@ -464,6 +484,9 @@ async def enumerate_artifacts(
 
         for query in queries:
             # Determine types to search
+            types_to_search = (
+                query.types if query.types else ["model", "dataset", "code"]
+            )
             types_to_search = (
                 query.types if query.types else ["model", "dataset", "code"]
             )
