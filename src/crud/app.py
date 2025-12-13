@@ -182,7 +182,6 @@ from typing import Dict, List
 # Load environment variables from .env file
 # Use absolute path to ensure .env is found regardless of working directory
 from dotenv import find_dotenv, load_dotenv
-
 from fastapi import FastAPI, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
