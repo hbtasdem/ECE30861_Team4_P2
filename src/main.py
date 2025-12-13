@@ -9,6 +9,8 @@ import time
 from io import StringIO
 from typing import Any, Dict
 
+# import src.net_score_calculator
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "metrics"))
 
 # Import scoring modules
@@ -139,6 +141,9 @@ def calculate_all_scores(
         size_scores, net_size_score, size_score_latency = size_score.size_score(
             model_link
         )
+        size_scores, net_size_score, size_score_latency = size_score.size_score(
+            model_link
+        )
         result["size_score"] = size_scores
         result["size_score_latency"] = size_score_latency
     except Exception as e:
@@ -171,8 +176,14 @@ def calculate_all_scores(
         print(
             f"Error calculating dataset quality for {model_name}: {e}", file=sys.stderr
         )
+        print(
+            f"Error calculating dataset quality for {model_name}: {e}", file=sys.stderr
+        )
     # Code Quality
     try:
+        code_q_score, code_q_latency = code_quality_score.code_quality_score(
+            model_name
+        )  # noqa: F823
         code_q_score, code_q_latency = code_quality_score.code_quality_score(
             model_name
         )  # noqa: F823
@@ -183,6 +194,9 @@ def calculate_all_scores(
 
     # Reviewedness
     try:
+        reviewedness, reviewedness_latency = reviewedness_score.reviewedness_score(
+            code_link
+        )
         reviewedness, reviewedness_latency = reviewedness_score.reviewedness_score(
             code_link
         )

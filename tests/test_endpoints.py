@@ -38,10 +38,13 @@ def test_register() -> tuple[Any, str, str]:
     print("\n=== Testing POST /register ===")
     import time
 
+
     timestamp = int(time.time())
     username = f"testuser{timestamp}"
     password = "testpass123"
     payload = {
+        "user": {"name": username, "isAdmin": False},
+        "secret": {"password": password},
         "user": {"name": username, "isAdmin": False},
         "secret": {"password": password},
     }
@@ -63,6 +66,9 @@ def test_register() -> tuple[Any, str, str]:
         raise AssertionError(f"Registration failed: {response.text}")
 
 
+def test_authenticate(
+    username: str = "testuser123", password: str = "testpass123"
+) -> Any:
 def test_authenticate(
     username: str = "testuser123", password: str = "testpass123"
 ) -> Any:
@@ -178,5 +184,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\nTEST FAILED: {e}")
         import traceback
+
 
         traceback.print_exc()
