@@ -414,7 +414,7 @@ def download_code(code_url: str, artifact_id: str) -> str:
         tree_index = parts.index("tree")
         branch = parts[tree_index + 1]
         subdir = (
-            "/".join(parts[tree_index + 2 :]) if len(parts) > tree_index + 2 else ""
+            "/".join(parts[tree_index + 2:]) if len(parts) > tree_index + 2 else ""
         )
     else:
         branch = None
