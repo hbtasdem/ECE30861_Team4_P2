@@ -215,12 +215,12 @@ def init_db() -> None:
                 )
                 db.add(admin_user)
                 db.commit()
-                print(f"✓ Created default admin user: {admin_username}")
+                print(f" Created default admin user: {admin_username}")
             else:
-                print(f"✓ Default admin user already exists: {admin_username}")
+                print(f" Default admin user already exists: {admin_username}")
         else:
             print(
-                "⚠ WARNING: No admin credentials configured. Set DEFAULT_ADMIN_USERNAME "
+                " WARNING: No admin credentials configured. Set DEFAULT_ADMIN_USERNAME "
                 "and DEFAULT_ADMIN_PASSWORD environment variables or configure AWS Parameter Store."
             )
     finally:
