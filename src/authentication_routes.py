@@ -19,8 +19,10 @@ from typing import Dict
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from src.crud.upload.artifacts import AuthenticationRequest, AuthenticationToken
-from src.crud.upload.auth import create_access_token, hash_password, verify_password
+from src.crud.upload.artifacts import (AuthenticationRequest,
+                                       AuthenticationToken)
+from src.crud.upload.auth import (create_access_token, hash_password,
+                                  verify_password)
 from src.database import get_db
 from src.database_models import User as DBUser
 
@@ -62,7 +64,9 @@ async def register_user(
         )
 
     # Check if user already exists
-    existing_user = db.query(DBUser).filter(DBUser.username == request.user.name).first()
+    existing_user = (
+        db.query(DBUser).filter(DBUser.username == request.user.name).first()
+    )
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

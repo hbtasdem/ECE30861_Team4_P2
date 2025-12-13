@@ -40,7 +40,9 @@ def get_genai_token() -> Any:
     token = ""
     try:
         ssm = boto3.client("ssm", region_name="us-east-2")
-        response = ssm.get_parameter(Name="/ece30861/GEN_AI_STUDIO_API_KEY", WithDecryption=True)
+        response = ssm.get_parameter(
+            Name="/ece30861/GEN_AI_STUDIO_API_KEY", WithDecryption=True
+        )
         token = response["Parameter"]["Value"]
         if token:
             return token

@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import lineage_tree  # noqa: E402
 
 
-def treescore_calc(model_name: str) -> Tuple[float, float]:  # pragma: no cover
+def treescore_calc(model_name: str) -> Tuple[float, float]:
     """
     Calculate tree score based on model lineage depth and quality.
     Score is based on:

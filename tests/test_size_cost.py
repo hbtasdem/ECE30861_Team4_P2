@@ -6,7 +6,9 @@ from src.size_cost import get_model_size_gb
 TOLERANCE_PERCENT = 0.05
 
 
-def is_within_tolerance(actual: float, expected: float, pct_tol: float = TOLERANCE_PERCENT) -> bool:
+def is_within_tolerance(
+    actual: float, expected: float, pct_tol: float = TOLERANCE_PERCENT
+) -> bool:
     """
     Return True if the % difference between actual & expected is <= tolerance.
     % difference = abs(actual - expected) / expected

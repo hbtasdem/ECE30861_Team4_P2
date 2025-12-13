@@ -40,6 +40,7 @@ class TestAuthenticationErrors:
     def test_register_duplicate_user(self):
         """Test registering a user that already exists."""
         import time
+
         unique_name = f"duplicate_user_{int(time.time() * 1000)}"
 
         # First registration
@@ -328,7 +329,9 @@ class TestCostEndpoint:
             assert response.status_code in [400, 404]
         except Exception as e:
             # S3 credential errors are acceptable in CI/CD environment
-            assert "Unable to locate credentials" in str(e) or "NoCredentialsError" in str(e)
+            assert "Unable to locate credentials" in str(
+                e
+            ) or "NoCredentialsError" in str(e)
 
 
 class TestLineageEndpoint:
@@ -361,7 +364,9 @@ class TestLineageEndpoint:
             assert response.status_code in [400, 404]
         except Exception as e:
             # Accept AWS credential errors in CI/CD environment
-            assert "Unable to locate credentials" in str(e) or "NoCredentialsError" in str(e)
+            assert "Unable to locate credentials" in str(
+                e
+            ) or "NoCredentialsError" in str(e)
 
 
 class TestTracksEndpoint:

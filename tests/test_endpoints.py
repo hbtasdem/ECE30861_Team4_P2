@@ -37,22 +37,15 @@ def test_register() -> tuple[Any, str, str]:
     """Test POST /register endpoint"""
     print("\n=== Testing POST /register ===")
     import time
+
     timestamp = int(time.time())
     username = f"testuser{timestamp}"
     password = "testpass123"
     payload = {
-        "user": {
-            "name": username,
-            "isAdmin": False
-        },
-        "secret": {
-            "password": password
-        }
+        "user": {"name": username, "isAdmin": False},
+        "secret": {"password": password},
     }
-    response = client.post(
-        "/register",
-        json=payload
-    )
+    response = client.post("/register", json=payload)
     print(f"Status: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
@@ -70,7 +63,9 @@ def test_register() -> tuple[Any, str, str]:
         raise AssertionError(f"Registration failed: {response.text}")
 
 
-def test_authenticate(username: str = "testuser123", password: str = "testpass123") -> Any:
+def test_authenticate(
+    username: str = "testuser123", password: str = "testpass123"
+) -> Any:
     """Test PUT /authenticate endpoint"""
     print("\n=== Testing PUT /authenticate ===")
     payload = {
@@ -121,9 +116,7 @@ def test_regex_search(token: Optional[str] = None) -> None:
     headers = {}
     if token:
         headers["X-Authorization"] = token
-    response = client.post(
-        "/artifact/byRegEx", json=payload, headers=headers
-    )
+    response = client.post("/artifact/byRegEx", json=payload, headers=headers)
     print(f"Status: {response.status_code}")
     if response.status_code == 404:
         print("PASSED - No artifacts match (expected for empty registry)")
@@ -137,9 +130,7 @@ def test_regex_search(token: Optional[str] = None) -> None:
     # Test 2: Malicious regex (ReDoS protection)
     print("\nTest 2: Malicious regex (should be rejected)")
     payload = {"regex": "(a+)+b"}  # Classic ReDoS pattern
-    response = client.post(
-        "/artifact/byRegEx", json=payload, headers=headers
-    )
+    response = client.post("/artifact/byRegEx", json=payload, headers=headers)
     print(f"Status: {response.status_code}")
     if response.status_code == 400:
         print("PASSED - Malicious regex rejected (DoS protection working)")
@@ -150,9 +141,7 @@ def test_regex_search(token: Optional[str] = None) -> None:
     # Test 3: Too long regex
     print("\nTest 3: Excessively long regex (should be rejected)")
     payload = {"regex": "a" * 250}  # Exceeds 200 char limit
-    response = client.post(
-        "/artifact/byRegEx", json=payload, headers=headers
-    )
+    response = client.post("/artifact/byRegEx", json=payload, headers=headers)
     print(f"Status: {response.status_code}")
     if response.status_code == 400:
         print("PASSED - Long regex rejected")

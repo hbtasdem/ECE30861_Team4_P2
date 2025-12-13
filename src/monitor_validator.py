@@ -1,6 +1,4 @@
-"""Monitoring program validation for artifact downloads.  # pragma: no cover
-
-FILE PURPOSE:
+"""Monitoring program validation for artifact downloads.FILE PURPOSE:
 Implements download rejection if external monitoring program exits with code 0 and outputs to stdout.
 Per requirement: reject model downloads if monitoring program returns 0 (success indicates "no go").
 
@@ -31,7 +29,7 @@ from typing import Optional, Tuple
 logger = logging.getLogger(__name__)
 
 
-def run_monitoring_program(artifact_id: str, artifact_type: str) -> Tuple[bool, str]:  # pragma: no cover
+def run_monitoring_program(artifact_id: str, artifact_type: str) -> Tuple[bool, str]:
     """Run external monitoring program to validate artifact download.
 
     Args:
@@ -78,7 +76,9 @@ def run_monitoring_program(artifact_id: str, artifact_type: str) -> Tuple[bool, 
 
         # Exit code 0 means security concern found - REJECT download
         if result.returncode == 0:
-            message = f"Download rejected by monitoring program. Output: {stdout_output}"
+            message = (
+                f"Download rejected by monitoring program. Output: {stdout_output}"
+            )
             logger.warning(
                 f"Download REJECTED for {artifact_type}/{artifact_id}: {message}"
             )
@@ -94,9 +94,7 @@ def run_monitoring_program(artifact_id: str, artifact_type: str) -> Tuple[bool, 
         return True, message
 
     except subprocess.TimeoutExpired:
-        logger.error(
-            f"Monitoring program timeout for {artifact_type}/{artifact_id}"
-        )
+        logger.error(f"Monitoring program timeout for {artifact_type}/{artifact_id}")
         return False, "Monitoring program timeout"
 
     except Exception as e:
@@ -104,7 +102,7 @@ def run_monitoring_program(artifact_id: str, artifact_type: str) -> Tuple[bool, 
         raise
 
 
-def validate_download(artifact_id: str, artifact_type: str) -> Optional[str]:  # pragma: no cover
+def validate_download(artifact_id: str, artifact_type: str) -> Optional[str]:
     """Validate if artifact download should be allowed.
 
     Args:

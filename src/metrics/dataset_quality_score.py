@@ -5,7 +5,7 @@ from typing import Optional, Set, Tuple
 from license_score import fetch_readme
 
 
-def _get_ai_score(readme_text: str, model_id: str, aspect: str) -> float:  # pragma: no cover
+def _get_ai_score(readme_text: str, model_id: str, aspect: str) -> float:
     """
     Get AI score for a specific aspect of dataset quality.
 
@@ -66,7 +66,7 @@ Respond with only a number (e.g., 0.80):""",
         return 0.0
 
 
-def evaluate_dataset_documentation(readme_text: Optional[str]) -> float:  # pragma: no cover
+def evaluate_dataset_documentation(readme_text: Optional[str]) -> float:
     """
     Evaluate dataset documentation quality based on README content.
 
@@ -172,7 +172,7 @@ def evaluate_dataset_documentation(readme_text: Optional[str]) -> float:  # prag
     return min(1.0, score)
 
 
-def evaluate_license_clarity(readme_text: Optional[str]) -> float:  # pragma: no cover
+def evaluate_license_clarity(readme_text: Optional[str]) -> float:
     """
     Evaluate license clarity for the dataset (different from license
     compatibility).
@@ -245,7 +245,7 @@ def evaluate_license_clarity(readme_text: Optional[str]) -> float:  # pragma: no
     return min(1.0, score)
 
 
-def evaluate_safety_privacy(readme_text: Optional[str]) -> float:  # pragma: no cover
+def evaluate_safety_privacy(readme_text: Optional[str]) -> float:
     """
     Evaluate safety and privacy considerations mentioned in the dataset.
 
@@ -324,7 +324,7 @@ def evaluate_safety_privacy(readme_text: Optional[str]) -> float:  # pragma: no 
     return min(1.0, score)
 
 
-def evaluate_curation_quality(readme_text: Optional[str]) -> float:  # pragma: no cover
+def evaluate_curation_quality(readme_text: Optional[str]) -> float:
     """
     Evaluate curation and quality control measures mentioned.
 
@@ -401,7 +401,7 @@ def evaluate_curation_quality(readme_text: Optional[str]) -> float:  # pragma: n
     return min(1.0, score)
 
 
-def evaluate_reproducibility(readme_text: Optional[str]) -> float:  # pragma: no cover
+def evaluate_reproducibility(readme_text: Optional[str]) -> float:
     """
     Evaluate reproducibility aspects of the dataset.
 
@@ -473,7 +473,7 @@ def evaluate_reproducibility(readme_text: Optional[str]) -> float:  # pragma: no
     return min(1.0, score)
 
 
-def extract_dataset_identifier(dataset_link: str) -> str:  # pragma: no cover
+def extract_dataset_identifier(dataset_link: str) -> str:
     """Extract a unique identifier from a dataset link."""
     if not dataset_link:
         return ""

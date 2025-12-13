@@ -5,7 +5,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src", "metrics"))
+sys.path.insert(
+    0, os.path.join(os.path.dirname(__file__), "..", "..", "src", "metrics")
+)
 
 import size_score  # noqa: E402
 

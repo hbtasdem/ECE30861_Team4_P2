@@ -241,7 +241,9 @@ class HealthMonitor:
                 s3 = boto3.client("s3")
                 response = s3.head_bucket(Bucket="phase2-s3-bucket")
                 metrics["bucket_accessible"] = True
-                metrics["response_code"] = response["ResponseMetadata"]["HTTPStatusCode"]
+                metrics["response_code"] = response["ResponseMetadata"][
+                    "HTTPStatusCode"
+                ]
             except Exception as e:
                 metrics["bucket_accessible"] = False
                 metrics["error"] = str(e)

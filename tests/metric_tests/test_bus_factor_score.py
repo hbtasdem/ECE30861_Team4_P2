@@ -45,8 +45,8 @@ class TestBusFactorScore(unittest.TestCase):
 
         return commits
 
-    @patch('bus_factor_score.HF_HUB_AVAILABLE', True)
-    @patch('bus_factor_score.list_repo_commits')
+    @patch("bus_factor_score.HF_HUB_AVAILABLE", True)
+    @patch("bus_factor_score.list_repo_commits")
     def test_bus_factor_score_timing(self, mock_list_commits: MagicMock) -> None:
         """Test bus_factor_score function and measure execution time."""
         print("\n" + "=" * 60)
@@ -80,8 +80,8 @@ class TestBusFactorScore(unittest.TestCase):
                 execution_time, 10.0, f"Function took too long: {execution_time:.3f}s"
             )
 
-    @patch('bus_factor_score.HF_HUB_AVAILABLE', True)
-    @patch('bus_factor_score.list_repo_commits')
+    @patch("bus_factor_score.HF_HUB_AVAILABLE", True)
+    @patch("bus_factor_score.list_repo_commits")
     def test_bus_factor_score_correctness(self, mock_list_commits: MagicMock) -> None:
         """Test that bus_factor_score returns correct contributor counts."""
         print("\n" + "=" * 60)
@@ -119,9 +119,11 @@ class TestBusFactorScore(unittest.TestCase):
             self.assertIsInstance(latency, float)
             self.assertGreaterEqual(latency, 0)
 
-    @patch('bus_factor_score.HF_HUB_AVAILABLE', True)
-    @patch('bus_factor_score.list_repo_commits')
-    def test_get_huggingface_contributors_timing(self, mock_list_commits: MagicMock) -> None:
+    @patch("bus_factor_score.HF_HUB_AVAILABLE", True)
+    @patch("bus_factor_score.list_repo_commits")
+    def test_get_huggingface_contributors_timing(
+        self, mock_list_commits: MagicMock
+    ) -> None:
         """Test get_huggingface_contributors function and measure execution."""
         print("\n" + "=" * 60)
         print("HUGGING FACE CONTRIBUTORS TIMING TESTS")
@@ -145,8 +147,8 @@ class TestBusFactorScore(unittest.TestCase):
             self.assertIsInstance(result, int)
             self.assertGreaterEqual(result, 0)
 
-    @patch('bus_factor_score.HF_HUB_AVAILABLE', True)
-    @patch('bus_factor_score.list_repo_commits')
+    @patch("bus_factor_score.HF_HUB_AVAILABLE", True)
+    @patch("bus_factor_score.list_repo_commits")
     def test_invalid_model(self, mock_list_commits: MagicMock) -> None:
         """Test that invalid model IDs return 0."""
         print("\n" + "=" * 60)
@@ -180,8 +182,8 @@ class TestBusFactorScore(unittest.TestCase):
             # Reset side_effect for next iteration
             mock_list_commits.side_effect = None
 
-    @patch('bus_factor_score.HF_HUB_AVAILABLE', True)
-    @patch('bus_factor_score.list_repo_commits')
+    @patch("bus_factor_score.HF_HUB_AVAILABLE", True)
+    @patch("bus_factor_score.list_repo_commits")
     def test_performance_benchmark(self, mock_list_commits: MagicMock) -> None:
         """Run a performance benchmark with multiple iterations."""
         print("\n" + "=" * 60)
@@ -243,14 +245,14 @@ class TestBusFactorScore(unittest.TestCase):
                 mock_get.return_value = mock_response
 
                 # Patch to force using scrape method
-                with patch('bus_factor_score.HF_HUB_AVAILABLE', False):
+                with patch("bus_factor_score.HF_HUB_AVAILABLE", False):
                     result = get_huggingface_contributors("fake/model")
                     self.assertEqual(result, expected)
 
     def test_requests_exception(self) -> None:
         """Simulate a requests exception and ensure 0 is returned."""
         with patch("requests.get", side_effect=Exception("Network error")):
-            with patch('bus_factor_score.HF_HUB_AVAILABLE', False):
+            with patch("bus_factor_score.HF_HUB_AVAILABLE", False):
                 result = get_huggingface_contributors("any/model")
                 self.assertEqual(result, 0)
 
@@ -262,7 +264,7 @@ class TestBusFactorScore(unittest.TestCase):
             mock_response.text = "no contributors here"
             mock_get.return_value = mock_response
 
-            with patch('bus_factor_score.HF_HUB_AVAILABLE', False):
+            with patch("bus_factor_score.HF_HUB_AVAILABLE", False):
                 result = get_huggingface_contributors("fake/model")
                 self.assertEqual(result, 0)
 
@@ -274,7 +276,7 @@ class TestBusFactorScore(unittest.TestCase):
             mock_response.text = "Not Found"
             mock_get.return_value = mock_response
 
-            with patch('bus_factor_score.HF_HUB_AVAILABLE', False):
+            with patch("bus_factor_score.HF_HUB_AVAILABLE", False):
                 result = get_huggingface_contributors("fake/model")
                 self.assertEqual(result, 0)
 
@@ -286,12 +288,12 @@ class TestBusFactorScore(unittest.TestCase):
             mock_response.text = '<span>"contributors": notanumber</span>'
             mock_get.return_value = mock_response
 
-            with patch('bus_factor_score.HF_HUB_AVAILABLE', False):
+            with patch("bus_factor_score.HF_HUB_AVAILABLE", False):
                 result = get_huggingface_contributors("fake/model")
                 self.assertEqual(result, 0)
 
-    @patch('bus_factor_score.HF_HUB_AVAILABLE', True)
-    @patch('bus_factor_score.list_repo_commits')
+    @patch("bus_factor_score.HF_HUB_AVAILABLE", True)
+    @patch("bus_factor_score.list_repo_commits")
     def test_api_method_with_empty_commits(self, mock_list_commits: MagicMock) -> None:
         """Test API method when no commits are returned."""
         mock_list_commits.return_value = []
@@ -299,8 +301,8 @@ class TestBusFactorScore(unittest.TestCase):
         result = get_huggingface_contributors("empty/model")
         self.assertEqual(result, 0)
 
-    @patch('bus_factor_score.HF_HUB_AVAILABLE', True)
-    @patch('bus_factor_score.list_repo_commits')
+    @patch("bus_factor_score.HF_HUB_AVAILABLE", True)
+    @patch("bus_factor_score.list_repo_commits")
     def test_api_method_fallback_to_scrape(self, mock_list_commits: MagicMock) -> None:
         """Test that API method falls back to scraping on failure."""
         # API raises exception

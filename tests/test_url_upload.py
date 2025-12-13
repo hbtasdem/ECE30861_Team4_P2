@@ -33,6 +33,7 @@ SPEC SECTIONS REFERENCED:
     Section 3.2: Model registration endpoint
     Section 3.1: Authentication requirements
 """
+
 import argparse
 import sys
 from typing import Optional

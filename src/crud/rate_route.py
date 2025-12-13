@@ -54,13 +54,13 @@ class ModelRating(BaseModel):  # type: ignore[misc]
     size_score: rating_sizescore
     size_score_latency: float
 
+
 # ---------------------------------------------
 
 
 @router.get("/artifact/model/{artifact_id}/rate")
 async def get_model_rating(
-    artifact_id: str,
-    x_authorization: Optional[str] = Header(None)
+    artifact_id: str, x_authorization: Optional[str] = Header(None)
 ) -> Any:
     """
     Return the stored ModelRating for a given artifact ID.
@@ -105,6 +105,7 @@ async def get_model_rating(
 # Rate functions called on upload to rate model
 # ---------------------------------------------
 
+
 def findDatasetAndCode(model_url: str) -> Tuple[str, str]:
     """
     Use ai to find code and dataset associated with hf model
@@ -133,15 +134,15 @@ def findDatasetAndCode(model_url: str) -> Tuple[str, str]:
             metadata = response.json()
 
             # Check for dataset in cardData or tags
-            if 'cardData' in metadata:
-                card_data = metadata['cardData']
+            if "cardData" in metadata:
+                card_data = metadata["cardData"]
                 # Look for datasets in cardData
-                if 'datasets' in card_data and card_data['datasets']:
-                    dataset_name = card_data['datasets'][0]
+                if "datasets" in card_data and card_data["datasets"]:
+                    dataset_name = card_data["datasets"][0]
                     # Handle both full URLs and dataset names
-                    if dataset_name.startswith('http'):
+                    if dataset_name.startswith("http"):
                         dataset_url = dataset_name
-                    elif '/' in dataset_name:
+                    elif "/" in dataset_name:
                         # Already has namespace (e.g., "bookcorpus/bookcorpus")
                         dataset_url = f"https://huggingface.co/datasets/{dataset_name}"
                     else:
@@ -149,10 +150,10 @@ def findDatasetAndCode(model_url: str) -> Tuple[str, str]:
                         dataset_url = f"https://huggingface.co/datasets/{dataset_name}/{dataset_name}"
 
             # Check for code repository links, HuggingFace models often have a "library_name" or links in tags/cardData
-            if 'tags' in metadata:
-                for tag in metadata['tags']:
-                    if isinstance(tag, str) and 'github.com' in tag:
-                        code_url = tag if tag.startswith('http') else f"https://{tag}"
+            if "tags" in metadata:
+                for tag in metadata["tags"]:
+                    if isinstance(tag, str) and "github.com" in tag:
+                        code_url = tag if tag.startswith("http") else f"https://{tag}"
                         break
 
             # Also check model card for GitHub links if not found
@@ -163,14 +164,16 @@ def findDatasetAndCode(model_url: str) -> Tuple[str, str]:
                     readme_text = card_response.text
                     # Look for GitHub links in README
                     if not code_url:
-                        github_pattern = r'https://github\.com/[^\s\)\]\,]+'
+                        github_pattern = r"https://github\.com/[^\s\)\]\,]+"
                         github_matches = re.findall(github_pattern, readme_text)
                         if github_matches:
                             code_url = github_matches[0]
 
                     # Also look for dataset links if not found yet
                     if not dataset_url:
-                        dataset_pattern = r'https://huggingface\.co/datasets/[^\s\)\]\,]+'
+                        dataset_pattern = (
+                            r"https://huggingface\.co/datasets/[^\s\)\]\,]+"
+                        )
                         dataset_matches = re.findall(dataset_pattern, readme_text)
                         if dataset_matches:
                             dataset_url = dataset_matches[0]
@@ -180,31 +183,33 @@ def findDatasetAndCode(model_url: str) -> Tuple[str, str]:
 
     # If didn't find both, use LLM to search README
     if (not dataset_url) or (not code_url):
-        prompt = ("Given a link to a HuggingFace model, analyze the metadata and README to find the links to the"
-                  "associated dataset and code for the model."
-                  "It is expected that the dataset will be a huggingface dataset and the code with be a GitHub repo."
-                  "Teturn ONLY the actual links, including http://. If only one is found, return one. If none are found, return None."
-                  "DO NOT return any other explanation, only the links."
-                  "An example of the expected response I want: Given model_url = https://huggingface.co/google-bert/bert-base-uncased."
-                  "Output https://github.com/google-research/bert,https://huggingface.co/datasets/bookcorpus/bookcorpus. Notice that the link is"
-                  " to the actual dataset folder/ code folder, since I will be using github and hugginface api calls with it, "
-                  "I need it to be exact. For example, something like https://huggingface.co/datasets/bookcorpus/bookcorpus is correct,"
-                  "https://huggingface.co/datasets/bookcorpus is wrong."
-                  "\n\nFind and tell me the dataset and code for " + model_url)
+        prompt = (
+            "Given a link to a HuggingFace model, analyze the metadata and README to find the links to the"
+            "associated dataset and code for the model."
+            "It is expected that the dataset will be a huggingface dataset and the code with be a GitHub repo."
+            "Teturn ONLY the actual links, including http://. If only one is found, return one. If none are found, return None."
+            "DO NOT return any other explanation, only the links."
+            "An example of the expected response I want: Given model_url = https://huggingface.co/google-bert/bert-base-uncased."
+            "Output https://github.com/google-research/bert,https://huggingface.co/datasets/bookcorpus/bookcorpus. Notice that the link is"
+            " to the actual dataset folder/ code folder, since I will be using github and hugginface api calls with it, "
+            "I need it to be exact. For example, something like https://huggingface.co/datasets/bookcorpus/bookcorpus is correct,"
+            "https://huggingface.co/datasets/bookcorpus is wrong."
+            "\n\nFind and tell me the dataset and code for " + model_url
+        )
 
         client = PurdueGenAI()
         response = client.chat(prompt)
         # Find all URLs in the response using regex
-        url_pattern = r'https?://[^\s,]+'
+        url_pattern = r"https?://[^\s,]+"
         urls = re.findall(url_pattern, response)
 
         for url in urls:
             # Only update the dataset/code url if it wasn't previously found
             if not code_url:
-                if 'github.com' in url.lower():
+                if "github.com" in url.lower():
                     code_url = url
             if not dataset_url:
-                if 'huggingface.co/datasets' in url.lower():
+                if "huggingface.co/datasets" in url.lower():
                     dataset_url = url
 
     return dataset_url, code_url

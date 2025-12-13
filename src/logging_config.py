@@ -9,7 +9,6 @@ This module provides a comprehensive logging system with:
 - Structured logging with correlation IDs
 """
 
-# pragma: no cover - logging utility module, tested via integration
 import logging
 import logging.handlers
 import os
@@ -20,7 +19,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 
-class LogLevel(Enum):  # pragma: no cover
+class LogLevel(Enum):
     """Log level enumeration for better type safety."""
 
     DEBUG = "DEBUG"
@@ -30,7 +29,7 @@ class LogLevel(Enum):  # pragma: no cover
     CRITICAL = "CRITICAL"
 
 
-class LoggingConfig:  # pragma: no cover
+class LoggingConfig:
     """Centralized logging configuration manager."""
 
     def __init__(self) -> None:
@@ -51,7 +50,7 @@ class LoggingConfig:  # pragma: no cover
         self.max_file_size = int(os.getenv("MAX_LOG_FILE_SIZE", "10485760"))
         self.backup_count = int(os.getenv("LOG_BACKUP_COUNT", "5"))
 
-    def _get_verbosity_from_env(self, env_var: str, default: str) -> int:  # pragma: no cover
+    def _get_verbosity_from_env(self, env_var: str, default: str) -> int:
         """Get verbosity level from environment variable with fallback."""
         verbosity_str = os.getenv(env_var, default)
         try:
@@ -62,7 +61,7 @@ class LoggingConfig:  # pragma: no cover
         except ValueError:
             return 0  # Default to silent
 
-    def _verbosity_to_log_level(self, verbosity: int) -> int:  # pragma: no cover
+    def _verbosity_to_log_level(self, verbosity: int) -> int:
         """Convert verbosity level to logging level."""
         if verbosity == 0:
             return logging.CRITICAL  # Silent - no output
@@ -73,7 +72,7 @@ class LoggingConfig:  # pragma: no cover
         else:
             return logging.CRITICAL  # Default to silent
 
-    def get_formatter(self, format_type: str = "detailed") -> logging.Formatter:  # pragma: no cover
+    def get_formatter(self, format_type: str = "detailed") -> logging.Formatter:
         """Get appropriate formatter based on type."""
         if format_type == "simple":
             return logging.Formatter(
@@ -91,7 +90,7 @@ class LoggingConfig:  # pragma: no cover
         else:
             return logging.Formatter("%(message)s")
 
-    def setup_logger(  # pragma: no cover
+    def setup_logger(
         self, name: str, correlation_id: Optional[str] = None
     ) -> logging.Logger:
         """Set up a logger with console and file handlers."""
@@ -123,7 +122,7 @@ class LoggingConfig:  # pragma: no cover
         # Add correlation ID to log records if provided
         if correlation_id:
 
-            def record_factory(*args: Any, **kwargs: Any) -> logging.LogRecord:  # pragma: no cover
+            def record_factory(*args: Any, **kwargs: Any) -> logging.LogRecord:
                 record = old_factory(*args, **kwargs)
                 record.correlation_id = correlation_id
                 return record
@@ -134,10 +133,10 @@ class LoggingConfig:  # pragma: no cover
         return logger
 
 
-class JsonFormatter(logging.Formatter):  # pragma: no cover
+class JsonFormatter(logging.Formatter):
     """JSON formatter for structured logging."""
 
-    def format(self, record: logging.LogRecord) -> str:  # pragma: no cover
+    def format(self, record: logging.LogRecord) -> str:
         """Format log record as JSON."""
         log_entry = {
             "timestamp": datetime.fromtimestamp(record.created).isoformat(),
@@ -160,7 +159,7 @@ class JsonFormatter(logging.Formatter):  # pragma: no cover
         return str(log_entry)
 
 
-class LoggerManager:  # pragma: no cover
+class LoggerManager:
     """Singleton logger manager to ensure consistent logging."""
 
     _instance: Optional["LoggerManager"] = None
@@ -173,7 +172,7 @@ class LoggerManager:  # pragma: no cover
             cls._instance._config = LoggingConfig()
         return cls._instance
 
-    def get_logger(  # pragma: no cover
+    def get_logger(
         self, name: str, correlation_id: Optional[str] = None
     ) -> logging.Logger:
         """Get or create a logger with the given name."""
@@ -187,10 +186,10 @@ class LoggerManager:  # pragma: no cover
         self._loggers[name] = self._config.setup_logger(name, correlation_id)
         return self._loggers[name]
 
-    def set_correlation_id(self, correlation_id: str) -> None:  # pragma: no cover
+    def set_correlation_id(self, correlation_id: str) -> None:
         """Set correlation ID for all future log records."""
 
-        def record_factory(*args: Any, **kwargs: Any) -> logging.LogRecord:  # pragma: no cover
+        def record_factory(*args: Any, **kwargs: Any) -> logging.LogRecord:
             record = old_factory(*args, **kwargs)
             record.correlation_id = correlation_id
             return record
@@ -203,7 +202,7 @@ class LoggerManager:  # pragma: no cover
 logger_manager = LoggerManager()
 
 
-def get_logger(name: str, correlation_id: Optional[str] = None) -> logging.Logger:  # pragma: no cover
+def get_logger(name: str, correlation_id: Optional[str] = None) -> logging.Logger:
     """
     Get a logger instance.
 
@@ -217,7 +216,7 @@ def get_logger(name: str, correlation_id: Optional[str] = None) -> logging.Logge
     return logger_manager.get_logger(name, correlation_id)
 
 
-def set_log_level(level: str) -> None:  # pragma: no cover
+def set_log_level(level: str) -> None:
     """
     Set the global log level for console output.
 
@@ -234,7 +233,7 @@ def set_log_level(level: str) -> None:  # pragma: no cover
                 handler.setLevel(level_int)
 
 
-def log_function_call(  # pragma: no cover
+def log_function_call(
     func_name: str,
     args: Optional[Dict[str, Any]] = None,
     logger: Optional[logging.Logger] = None,
@@ -256,7 +255,7 @@ def log_function_call(  # pragma: no cover
         logger.debug(f"Calling {func_name}")
 
 
-def log_performance(  # pragma: no cover
+def log_performance(
     operation: str, duration: float, logger: Optional[logging.Logger] = None
 ) -> None:
     """
@@ -273,7 +272,7 @@ def log_performance(  # pragma: no cover
     logger.info(f"Performance: {operation} completed in {duration:.3f}s")
 
 
-def log_error_with_context(  # pragma: no cover
+def log_error_with_context(
     error: Exception, context: str = "", logger: Optional[logging.Logger] = None
 ) -> None:
     """
@@ -294,7 +293,7 @@ def log_error_with_context(  # pragma: no cover
 
 
 # Convenience function for backward compatibility
-def setup_logging() -> None:  # pragma: no cover
+def setup_logging() -> None:
     """Set up logging for the entire application."""
     # This function can be called at application startup
     # to ensure logging is properly configured

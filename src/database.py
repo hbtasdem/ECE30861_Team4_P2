@@ -139,7 +139,8 @@ def init_db() -> None:
     """
     # Import models to register them with SQLAlchemy Base
     # IMPORTANT: This must import Artifact (not Model!) for spec compliance
-    from src.database_models import Artifact, AuditEntry, Base, User  # noqa: F401
+    from src.database_models import (Artifact, AuditEntry, Base,  # noqa: F401
+                                     User)
 
     # from src.phase3_models import FileStorage  # noqa: F401
     # Create all tables defined in src.models
@@ -151,18 +152,22 @@ def init_db() -> None:
     # The spec example shows: ece30861defaultadminuser with password correcthorsebatterystaple123(!__+@**(A'"`;DROP TABLE artifacts;
     db = SessionLocal()
     try:
-        existing_admin = db.query(User).filter(User.username == "ece30861defaultadminuser").first()
+        existing_admin = (
+            db.query(User).filter(User.username == "ece30861defaultadminuser").first()
+        )
         if not existing_admin:
             from src.crud.upload.auth import hash_password
 
-            default_password = "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
+            default_password = (
+                "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
+            )
             hashed = hash_password(default_password)
 
             admin_user = User(
                 username="ece30861defaultadminuser",
                 email="admin@registry.local",
                 hashed_password=hashed,
-                is_admin=True
+                is_admin=True,
             )
             db.add(admin_user)
             db.commit()
