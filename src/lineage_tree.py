@@ -35,7 +35,9 @@ def get_model_config(model_identifier: str) -> Optional[Dict[str, Any]]:
 
         # Better error handling
         if resp.status_code == 401:
-            print(f"Lineage tree: Model '{model_path}' requires authentication or doesn't exist")
+            print(
+                f"Lineage tree: Model '{model_path}' requires authentication or doesn't exist"
+            )
             return None
         elif resp.status_code == 404:
             print(f"Lineage tree: Model '{model_path}' not found on Hugging Face")
@@ -48,7 +50,9 @@ def get_model_config(model_identifier: str) -> Optional[Dict[str, Any]]:
         return cast(Dict[str, Any], resp.json())
 
     except Exception as e:
-        print(f"ERROR Lineage tree: Could not fetch HF API metadata for model {model_path}: {e}")
+        print(
+            f"ERROR Lineage tree: Could not fetch HF API metadata for model {model_path}: {e}"
+        )
         return None
 
 

@@ -11,6 +11,7 @@ BUCKET_NAME = "phase2-s3-bucket"
 
 class LicenseCategory(Enum):
     """License categories based on permissiveness"""
+
     PERMISSIVE = 1  # MIT, Apache-2.0, BSD
     WEAK_COPYLEFT = 2  # LGPL, MPL
     STRONG_COPYLEFT = 3  # GPL, AGPL
@@ -28,25 +29,21 @@ LICENSE_COMPATIBILITY: Dict[Tuple[LicenseCategory, LicenseCategory], bool] = {
     (LicenseCategory.PERMISSIVE, LicenseCategory.STRONG_COPYLEFT): True,
     (LicenseCategory.PERMISSIVE, LicenseCategory.RESTRICTED): True,
     (LicenseCategory.PERMISSIVE, LicenseCategory.RAIL): True,
-
     (LicenseCategory.WEAK_COPYLEFT, LicenseCategory.PERMISSIVE): True,
     (LicenseCategory.WEAK_COPYLEFT, LicenseCategory.WEAK_COPYLEFT): True,
     (LicenseCategory.WEAK_COPYLEFT, LicenseCategory.STRONG_COPYLEFT): False,
     (LicenseCategory.WEAK_COPYLEFT, LicenseCategory.RESTRICTED): True,
     (LicenseCategory.WEAK_COPYLEFT, LicenseCategory.RAIL): False,
-
     (LicenseCategory.STRONG_COPYLEFT, LicenseCategory.PERMISSIVE): True,
     (LicenseCategory.STRONG_COPYLEFT, LicenseCategory.WEAK_COPYLEFT): False,
     (LicenseCategory.STRONG_COPYLEFT, LicenseCategory.STRONG_COPYLEFT): True,
     (LicenseCategory.STRONG_COPYLEFT, LicenseCategory.RESTRICTED): False,
     (LicenseCategory.STRONG_COPYLEFT, LicenseCategory.RAIL): False,
-
     (LicenseCategory.RESTRICTED, LicenseCategory.PERMISSIVE): False,
     (LicenseCategory.RESTRICTED, LicenseCategory.WEAK_COPYLEFT): False,
     (LicenseCategory.RESTRICTED, LicenseCategory.STRONG_COPYLEFT): False,
     (LicenseCategory.RESTRICTED, LicenseCategory.RESTRICTED): True,
     (LicenseCategory.RESTRICTED, LicenseCategory.RAIL): False,
-
     (LicenseCategory.RAIL, LicenseCategory.PERMISSIVE): True,
     (LicenseCategory.RAIL, LicenseCategory.WEAK_COPYLEFT): False,
     (LicenseCategory.RAIL, LicenseCategory.STRONG_COPYLEFT): False,
@@ -82,7 +79,9 @@ def categorize_license(license_name: str) -> LicenseCategory:
         return LicenseCategory.STRONG_COPYLEFT
 
     # Restricted (non-commercial, no-derivatives)
-    if any(x in license_lower for x in ["cc-by-nc", "cc-by-nd", "proprietary", "custom"]):
+    if any(
+        x in license_lower for x in ["cc-by-nc", "cc-by-nd", "proprietary", "custom"]
+    ):
         return LicenseCategory.RESTRICTED
 
     # Responsible AI Licenses

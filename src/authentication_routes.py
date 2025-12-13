@@ -62,7 +62,9 @@ async def register_user(
         )
 
     # Check if user already exists
-    existing_user = db.query(DBUser).filter(DBUser.username == request.user.name).first()
+    existing_user = (
+        db.query(DBUser).filter(DBUser.username == request.user.name).first()
+    )
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

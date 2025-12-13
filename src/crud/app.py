@@ -5,15 +5,17 @@ Creates and configures the main FastAPI application with all 11 BASELINE endpoin
 managing artifacts from URLs. Initializes the database connection and includes
 all BASELINE route handlers.
 
-ENDPOINTS PROVIDED (10/10 BASELINE):
+ENDPOINTS PROVIDED (11/11 BASELINE):
 1-4. POST /artifact, GET/PUT /artifacts (in artifact_routes.py)
 5. DELETE /reset (in artifact_routes.py)
 6. GET /artifact/{type}/{id}/cost (in artifact_routes.py)
 7. GET /artifact/model/{id}/lineage (in artifact_routes.py)
-8. POST /artifact/byRegEx (in artifact_routes.py)
-9. GET /health (defined below)
-10. GET /artifact/model/{id}/rate (in rate/routes.py)
+8. POST /artifact/model/{id}/license-check (in artifact_routes.py)
+9. POST /artifact/byRegEx (in artifact_routes.py)
+10. GET /health (defined below)
+11. GET /artifact/model/{id}/rate (in rate/routes.py)
 """
+
 # app.py
 
 import logging
@@ -82,7 +84,9 @@ async def log_requests(request: Request, call_next):
 
 
 # --------------- Include routers ---------------
-app.include_router(artifact_router)  # POST/GET/PUT /artifact(s)/{type}/{id}, POST /artifacts
+app.include_router(
+    artifact_router
+)  # POST/GET/PUT /artifact(s)/{type}/{id}, POST /artifacts
 app.include_router(rate_router)  # GET /artifact/model/{id}/rate
 app.include_router(auth_router)  # PUT /authenticate, POST /register
 
@@ -103,7 +107,7 @@ def root() -> Dict[str, Any]:
 
 @app.get("/health")
 def health_check() -> Dict[str, str]:
-    """Health check endpoint"""
+    """Health check endpoint (BASELINE)"""
     return {"status": "ok"}
 
 
@@ -126,7 +130,9 @@ def get_health_components(
     Returns:
         HealthComponentCollection with all component details
     """
-    return health_monitor.get_health_components(window_minutes=windowMinutes, include_timeline=includeTimeline)
+    return health_monitor.get_health_components(
+        window_minutes=windowMinutes, include_timeline=includeTimeline
+    )
 
 
 @app.get("/tracks")

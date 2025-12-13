@@ -73,3 +73,7 @@ venv.bak/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Database files
+test.db
+*.db-journal

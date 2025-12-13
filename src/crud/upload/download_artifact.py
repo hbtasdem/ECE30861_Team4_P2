@@ -63,7 +63,9 @@ def generate_index_html(artifact_id: str, file_paths: list[str]):
 
     # Upload index.html to S3
     index_key = f"downloads/{artifact_id}/index.html"
-    s3.put_object(Bucket=BUCKET_NAME, Key=index_key, Body=html_content, ContentType="text/html")
+    s3.put_object(
+        Bucket=BUCKET_NAME, Key=index_key, Body=html_content, ContentType="text/html"
+    )
 
     return f"https://{BUCKET_NAME}.s3.amazonaws.com/{index_key}"
 
@@ -86,9 +88,20 @@ def download_model(model_url: str, artifact_id: str) -> str:
     s3 = boto3.client("s3")
 
     # List all files and filter by allowed patterns
-    ALLOWED_PATTERNS = [".bin", ".safetensors", "config.json", "tokenizer", ".json", ".txt"]
+    ALLOWED_PATTERNS = [
+        ".bin",
+        ".safetensors",
+        "config.json",
+        "tokenizer",
+        ".json",
+        ".txt",
+    ]
     files = api.list_repo_files(repo_id=model_id)
-    files = [f for f in files if any(f.endswith(p.replace("*", "")) or p in f for p in ALLOWED_PATTERNS)]
+    files = [
+        f
+        for f in files
+        if any(f.endswith(p.replace("*", "")) or p in f for p in ALLOWED_PATTERNS)
+    ]
 
     for file_path in files:
         file_url = f"https://huggingface.co/{model_id}/resolve/main/{file_path}"
@@ -100,14 +113,14 @@ def download_model(model_url: str, artifact_id: str) -> str:
 
             # boto3 upload_fileobj accepts any file-like object with a read() method
             class StreamWrapper:
-                def __init__(self, stream, chunk_size=1024*1024):
+                def __init__(self, stream, chunk_size=1024 * 1024):
                     self.stream = stream.iter_bytes(chunk_size)
 
                 def read(self, size=-1):
                     try:
                         return next(self.stream)
                     except StopIteration:
-                        return b''
+                        return b""
 
             s3.upload_fileobj(StreamWrapper(response), BUCKET_NAME, s3_key)
 
@@ -159,11 +172,15 @@ def download_dataset_huggingface(dataset_url: str, artifact_id: str) -> List[str
 
     # No pattern filtering for datasets — download everything in the repo
     for file_path in files:
-        file_url = f"https://huggingface.co/datasets/{dataset_id}/resolve/main/{file_path}"
+        file_url = (
+            f"https://huggingface.co/datasets/{dataset_id}/resolve/main/{file_path}"
+        )
         s3_key = f"downloads/{artifact_id}/{file_path}"
 
         # Stream the file in chunks
-        with httpx.stream("GET", file_url, headers=headers, follow_redirects=True) as response:
+        with httpx.stream(
+            "GET", file_url, headers=headers, follow_redirects=True
+        ) as response:
             if response.status_code in [401, 403]:
                 raise Exception(
                     f"Access denied for dataset '{dataset_id}'. "
@@ -173,14 +190,14 @@ def download_dataset_huggingface(dataset_url: str, artifact_id: str) -> List[str
             response.raise_for_status()
 
             class StreamWrapper:
-                def __init__(self, stream, chunk_size=1024*1024):
+                def __init__(self, stream, chunk_size=1024 * 1024):
                     self.stream = stream.iter_bytes(chunk_size)
 
                 def read(self, size=-1):
                     try:
                         return next(self.stream)
                     except StopIteration:
-                        return b''
+                        return b""
 
             s3.upload_fileobj(StreamWrapper(response), BUCKET_NAME, s3_key)
 
@@ -196,7 +213,7 @@ def download_dataset_kaggle(dataset_url: str, artifact_id: str) -> List[str]:
     s3 = boto3.client("s3")
 
     # Minimal disk space check
-    stat = shutil.disk_usage('/tmp')
+    stat = shutil.disk_usage("/tmp")
     free_gb = stat.free / (1024**3)
 
     if free_gb < 0.1:
@@ -204,7 +221,7 @@ def download_dataset_kaggle(dataset_url: str, artifact_id: str) -> List[str]:
 
     # Parse URL
     if "/datasets/" in dataset_url:
-        match = re.search(r'kaggle\.com/datasets/([^/]+/[^/?]+)', dataset_url)
+        match = re.search(r"kaggle\.com/datasets/([^/]+/[^/?]+)", dataset_url)
         if not match:
             raise ValueError(f"Invalid Kaggle dataset URL: {dataset_url}")
         dataset_ref = match.group(1)
@@ -219,8 +236,8 @@ def download_dataset_kaggle(dataset_url: str, artifact_id: str) -> List[str]:
     download_url = f"https://www.kaggle.com/api/v1/datasets/download/{dataset_ref}"
 
     # Get credentials
-    username = api.get_config_value('username')
-    key = api.get_config_value('key')
+    username = api.get_config_value("username")
+    key = api.get_config_value("key")
     credentials = base64.b64encode(f"{username}:{key}".encode()).decode()
     headers = {"Authorization": f"Basic {credentials}"}
 
@@ -233,19 +250,21 @@ def download_dataset_kaggle(dataset_url: str, artifact_id: str) -> List[str]:
                 if response.status_code == 401:
                     raise Exception("Authentication failed - check Kaggle credentials")
                 elif response.status_code == 403:
-                    raise Exception("Access forbidden. You may need to accept the dataset's terms on Kaggle website first.")
+                    raise Exception(
+                        "Access forbidden. You may need to accept the dataset's terms on Kaggle website first."
+                    )
                 elif response.status_code == 404:
                     raise Exception(f"Dataset not found: {dataset_ref}")
 
                 response.raise_for_status()
 
                 # Extract dataset name for a clean filename
-                dataset_name = dataset_ref.split('/')[-1]
+                dataset_name = dataset_ref.split("/")[-1]
                 s3_key = f"downloads/{artifact_id}/{dataset_name}.zip"
 
                 # Stream directly to S3 as a zip file
                 class StreamWrapper:
-                    def __init__(self, stream, chunk_size=1024*1024):  # 1MB chunks
+                    def __init__(self, stream, chunk_size=1024 * 1024):  # 1MB chunks
                         self.stream = stream.iter_bytes(chunk_size)
                         self.total_mb = 0
 
@@ -255,7 +274,7 @@ def download_dataset_kaggle(dataset_url: str, artifact_id: str) -> List[str]:
                             self.total_mb += len(chunk) / (1024 * 1024)
                             return chunk
                         except StopIteration:
-                            return b''
+                            return b""
 
                 wrapper = StreamWrapper(response)
                 s3.upload_fileobj(wrapper, BUCKET_NAME, s3_key)
@@ -291,18 +310,18 @@ def download_dataset_github(dataset_url: str, artifact_id: str) -> List[str]:
     dataset_url = dataset_url.rstrip("/")
 
     # Remove trailing .git if present
-    if dataset_url.endswith('.git'):
+    if dataset_url.endswith(".git"):
         dataset_url = dataset_url[:-4]
 
     # Extract owner and repo from URL
-    match = re.match(r'https://github\.com/([^/]+)/([^/]+)(?:/.*)?', dataset_url)
+    match = re.match(r"https://github\.com/([^/]+)/([^/]+)(?:/.*)?", dataset_url)
     if not match:
         raise ValueError(f"Invalid GitHub URL: {dataset_url}")
 
     owner, repo = match.groups()
 
     # Remove any path segments from repo name
-    repo = repo.split('/')[0]
+    repo = repo.split("/")[0]
 
     with httpx.Client(follow_redirects=True, timeout=30.0) as client:
         # Get default branch of repo
@@ -325,7 +344,7 @@ def download_dataset_github(dataset_url: str, artifact_id: str) -> List[str]:
 
     for file_path in files:
         # URL-encode the file path
-        encoded_path = quote(file_path, safe='/')
+        encoded_path = quote(file_path, safe="/")
         file_url = f"https://raw.githubusercontent.com/{owner}/{repo}/{default_branch}/{encoded_path}"
         s3_key = f"downloads/{artifact_id}/{file_path}"
 
@@ -388,13 +407,15 @@ def download_code(code_url: str, artifact_id: str) -> str:
     repo = parts[1]
 
     # Remove .git from repo name if it somehow got through
-    if repo.endswith('.git'):
+    if repo.endswith(".git"):
         repo = repo[:-4]
 
     if "tree" in parts:
         tree_index = parts.index("tree")
         branch = parts[tree_index + 1]
-        subdir = "/".join(parts[tree_index + 2:]) if len(parts) > tree_index + 2 else ""
+        subdir = (
+            "/".join(parts[tree_index + 2:]) if len(parts) > tree_index + 2 else ""
+        )
     else:
         branch = None
         subdir = ""
@@ -415,7 +436,9 @@ def download_code(code_url: str, artifact_id: str) -> str:
 
                     # Handle rate limiting
                     if repo_resp.status_code == 403:
-                        raise Exception("GitHub API rate limit exceeded. Please try again later.")
+                        raise Exception(
+                            "GitHub API rate limit exceeded. Please try again later."
+                        )
 
                     repo_resp.raise_for_status()
                     branch = repo_resp.json()["default_branch"]
@@ -423,12 +446,14 @@ def download_code(code_url: str, artifact_id: str) -> str:
 
                 except httpx.TimeoutException:
                     if attempt == max_retries - 1:
-                        raise Exception(f"Timeout fetching repository info after {max_retries} attempts")
-                    time.sleep(2 ** attempt)  # Exponential backoff
+                        raise Exception(
+                            f"Timeout fetching repository info after {max_retries} attempts"
+                        )
+                    time.sleep(2**attempt)  # Exponential backoff
                 except httpx.HTTPError as e:
                     if attempt == max_retries - 1:
                         raise Exception(f"Failed to fetch repository info: {str(e)}")
-                    time.sleep(2 ** attempt)
+                    time.sleep(2**attempt)
 
         # Recursively fetch entire tree
         tree_api = f"https://api.github.com/repos/{owner}/{repo}/git/trees/{branch}?recursive=1"
@@ -439,7 +464,9 @@ def download_code(code_url: str, artifact_id: str) -> str:
 
                 # Handle rate limiting
                 if tree_resp.status_code == 403:
-                    raise Exception("GitHub API rate limit exceeded. Please try again later.")
+                    raise Exception(
+                        "GitHub API rate limit exceeded. Please try again later."
+                    )
 
                 tree_resp.raise_for_status()
                 tree = tree_resp.json().get("tree", [])
@@ -447,12 +474,14 @@ def download_code(code_url: str, artifact_id: str) -> str:
 
             except httpx.TimeoutException:
                 if attempt == max_retries - 1:
-                    raise Exception(f"Timeout fetching file tree after {max_retries} attempts")
-                time.sleep(2 ** attempt)
+                    raise Exception(
+                        f"Timeout fetching file tree after {max_retries} attempts"
+                    )
+                time.sleep(2**attempt)
             except httpx.HTTPError as e:
                 if attempt == max_retries - 1:
                     raise Exception(f"Failed to fetch file tree: {str(e)}")
-                time.sleep(2 ** attempt)
+                time.sleep(2**attempt)
 
     # --- Filter to files (blobs) -------------------------------------------
     all_files = [item["path"] for item in tree if item["type"] == "blob"]
@@ -463,7 +492,9 @@ def download_code(code_url: str, artifact_id: str) -> str:
         files = all_files
 
     if not files:
-        raise Exception(f"No files found in repository{' at path: ' + subdir if subdir else ''}")
+        raise Exception(
+            f"No files found in repository{' at path: ' + subdir if subdir else ''}"
+        )
 
     # --- Limit number of files to prevent overwhelming the system ----------
     MAX_FILES = 100
@@ -477,12 +508,16 @@ def download_code(code_url: str, artifact_id: str) -> str:
 
     for file_path in files:
         encoded_path = quote(file_path, safe="/")
-        file_url = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{encoded_path}"
+        file_url = (
+            f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{encoded_path}"
+        )
         s3_key = f"downloads/{artifact_id}/{file_path}"
 
         try:
             # Stream with timeout
-            with httpx.stream("GET", file_url, follow_redirects=True, timeout=timeout) as response:
+            with httpx.stream(
+                "GET", file_url, follow_redirects=True, timeout=timeout
+            ) as response:
                 if response.status_code == 404:
                     print(f"Skipping missing file: {file_path}")
                     continue
@@ -514,7 +549,9 @@ def download_code(code_url: str, artifact_id: str) -> str:
             continue
 
     if not downloaded_files:
-        raise Exception(f"Failed to download any files. Errors: {len(failed_files)} files failed")
+        raise Exception(
+            f"Failed to download any files. Errors: {len(failed_files)} files failed"
+        )
 
     # Generate index.html only for successfully downloaded files
     url = generate_index_html(artifact_id, downloaded_files)

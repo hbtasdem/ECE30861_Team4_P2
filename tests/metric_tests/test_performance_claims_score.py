@@ -5,7 +5,10 @@ from unittest.mock import patch
 
 import pytest
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src/metrics"))
+# Add both src/metrics and src to path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src/metrics"))
+
 import performance_claims_score as performance  # noqa: E402
 
 

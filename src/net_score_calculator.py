@@ -10,7 +10,6 @@ Note: Only uses existing implemented scoring functions.
 Missing functions (Size, CodeQuality) are set to 0.5 as defaults.
 """
 
-
 import os
 import sys
 import time
