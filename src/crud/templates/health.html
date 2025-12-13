@@ -388,19 +388,6 @@
         <!-- Controls -->
         <div class="controls">
           <div class="control-group">
-            <label for="timeRange">Time Range:</label>
-            <select id="timeRange">
-              <option value="0.25">Last 15 minutes</option>
-              <option value="0.5">Last 30 minutes</option>
-              <option value="1" selected>Last 1 hour</option>
-              <option value="3">Last 3 hours</option>
-              <option value="6">Last 6 hours</option>
-              <option value="12">Last 12 hours</option>
-              <option value="24">Last 24 hours</option>
-            </select>
-          </div>
-
-          <div class="control-group">
             <label for="logLimit">Limit:</label>
             <select id="logLimit">
               <option value="50">50 logs</option>
@@ -447,15 +434,22 @@
       // Fetch logs on page load
       window.addEventListener('DOMContentLoaded', () => {
         fetchLogs();
+        
+        // Add event listeners to dropdowns to auto-fetch when changed
+        document.getElementById('timeRange').addEventListener('change', fetchLogs);
+        document.getElementById('logLimit').addEventListener('change', fetchLogs);
       });
 
       async function fetchLogs() {
-        const timeRange = document.getElementById('timeRange').value;
+        const timeRange = 1;
         const logLimit = document.getElementById('logLimit').value;
         const logsContainer = document.getElementById('logsContainer');
         const refreshBtn = document.getElementById('refreshBtn');
         const errorContainer = document.getElementById('errorContainer');
         const statusBadge = document.getElementById('statusBadge');
+
+        // Show what we're fetching in console for debugging
+        console.log(`Fetching logs: hours=${timeRange}, limit=${logLimit}`);
 
         // Disable refresh button and show loading
         refreshBtn.disabled = true;
@@ -464,6 +458,8 @@
         try {
           const response = await fetch(`/health/logs?hours=${timeRange}&limit=${logLimit}`);
           const data = await response.json();
+
+          console.log('Received data:', data); // Debug log
 
           if (!response.ok) {
             throw new Error(data.detail || 'Failed to fetch logs');
