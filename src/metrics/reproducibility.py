@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 purdue_api = None
 possible_paths = [
     os.path.join(os.path.dirname(__file__), "../.."),  # ../../purdue_api
-    os.path.join(os.path.dirname(__file__), ".."),      # ../purdue_api
+    os.path.join(os.path.dirname(__file__), ".."),  # ../purdue_api
     os.path.join(os.path.dirname(__file__), "../../src"),  # ../../src/purdue_api
     os.path.join(os.path.dirname(__file__), "../src"),  # ../src/purdue_api
 ]
@@ -22,6 +22,7 @@ for path in possible_paths:
     sys.path.insert(0, path)
     try:
         import purdue_api
+
         print(f"purdue_api imported successfully from {path}")
         break
     except ImportError:
@@ -91,11 +92,11 @@ class ReproducibilityChecker:
         """
         Extract Python code blocks from model card (README.md).
         """
-        pattern = r'```python\n(.*?)```'
+        pattern = r"```python\n(.*?)```"
         matches = re.findall(pattern, model_card_content, re.DOTALL)
 
         if not matches:
-            pattern = r'```\n(.*?)```'
+            pattern = r"```\n(.*?)```"
             matches = re.findall(pattern, model_card_content, re.DOTALL)
 
         for code in matches:
@@ -114,10 +115,12 @@ class ReproducibilityChecker:
         # Debug: print what we're parsing
         print("  Parsing code for pip installs...")
 
-        for line in code.split('\n'):
+        for line in code.split("\n"):
             stripped_line = line.strip()
-            if stripped_line.startswith('pip install') or stripped_line.startswith('!pip install'):
-                clean_line = stripped_line.lstrip('!')
+            if stripped_line.startswith("pip install") or stripped_line.startswith(
+                "!pip install"
+            ):
+                clean_line = stripped_line.lstrip("!")
                 install_steps.append(clean_line)
                 print(f"    Found install: {clean_line}")
             else:
@@ -125,7 +128,7 @@ class ReproducibilityChecker:
 
         print(f"  Total pip install commands found: {len(install_steps)}")
 
-        code_to_execute = '\n'.join(exec_lines)
+        code_to_execute = "\n".join(exec_lines)
 
         install_block = ""
         if install_steps:
@@ -133,7 +136,7 @@ class ReproducibilityChecker:
             for step in install_steps:
                 # Parse: "pip install transformers torch" -> ['pip', 'install', 'transformers', 'torch']
                 parts = step.split()
-                if len(parts) >= 3 and parts[0] == 'pip' and parts[1] == 'install':
+                if len(parts) >= 3 and parts[0] == "pip" and parts[1] == "install":
                     # Get just the package names: ['transformers', 'torch']
                     packages = parts[2:]
                     print(f"  Will install packages: {packages}")
@@ -176,7 +179,9 @@ except Exception as e:
         indent = " " * spaces
         return "\n".join(indent + line for line in code.split("\n"))
 
-    def run_code_in_docker(self, code: str, image: str = "python:3.9-slim") -> Tuple[bool, str]:
+    def run_code_in_docker(
+        self, code: str, image: str = "python:3.9-slim"
+    ) -> Tuple[bool, str]:
         """
         Run code in isolated Docker container.
         """
@@ -184,7 +189,9 @@ except Exception as e:
         container_name = f"repro_test_{int(time.time())}"
 
         try:
-            print("  Starting Docker container (this may take a while for pip installs)...")
+            print(
+                "  Starting Docker container (this may take a while for pip installs)..."
+            )
             start_time = time.time()
 
             container = self.client.containers.run(
@@ -203,20 +210,22 @@ except Exception as e:
             elapsed = time.time() - start_time
             print(f"  Container finished in {elapsed:.1f}s")
 
-            output = container.decode('utf-8')
+            output = container.decode("utf-8")
             success = "CODE EXECUTED SUCCESSFULLY" in output
             return success, output
 
         except docker.errors.ContainerError as e:
             elapsed = time.time() - start_time
             print(f"  Container failed after {elapsed:.1f}s")
-            return False, e.stderr.decode('utf-8')
+            return False, e.stderr.decode("utf-8")
         except Exception as e:
             elapsed = time.time() - start_time
             print(f"  Container error after {elapsed:.1f}s: {type(e).__name__}")
             return False, str(e)
 
-    def get_ai_fix(self, code: str, error_output: str, attempt: int = 1) -> Optional[str]:
+    def get_ai_fix(
+        self, code: str, error_output: str, attempt: int = 1
+    ) -> Optional[str]:
         """
         Use Purdue GenAI to debug and fix the code.
         """
@@ -264,12 +273,12 @@ Now output ONLY the fixed code with NO markdown (attempt {attempt}/5):"""
 
             # Extract code from markdown if present
             if "```python" in fixed_code:
-                match = re.search(r'```python\n(.*?)```', fixed_code, re.DOTALL)
+                match = re.search(r"```python\n(.*?)```", fixed_code, re.DOTALL)
                 if match:
                     fixed_code = match.group(1).strip()
                     print("  Extracted from ```python block")
             elif "```" in fixed_code:
-                match = re.search(r'```\n(.*?)```', fixed_code, re.DOTALL)
+                match = re.search(r"```\n(.*?)```", fixed_code, re.DOTALL)
                 if match:
                     fixed_code = match.group(1).strip()
                     print("  Extracted from ``` block")
@@ -284,6 +293,7 @@ Now output ONLY the fixed code with NO markdown (attempt {attempt}/5):"""
         except Exception as e:
             print(f"   API error: {e}")
             import traceback
+
             traceback.print_exc()
             return None
 
@@ -293,7 +303,7 @@ Now output ONLY the fixed code with NO markdown (attempt {attempt}/5):"""
         """
         print("\n{'='*60}")
         print(f"Checking: {model_identifier}")
-        print('='*60)
+        print("=" * 60)
 
         # Fetch model card
         print("\n[1/4] Fetching README from HuggingFace...")
@@ -323,14 +333,20 @@ Now output ONLY the fixed code with NO markdown (attempt {attempt}/5):"""
 
         # Check if the ONLY issue is missing packages (no actual code bugs)
         is_only_missing_packages = (
-            ('ModuleNotFoundError' in output or 'ImportError' in output) and
-            not any(err in output for err in [
-                'SyntaxError', 'NameError', 'AttributeError',
-                'TypeError', 'ValueError', 'IndentationError'
-            ])
+            "ModuleNotFoundError" in output or "ImportError" in output
+        ) and not any(
+            err in output
+            for err in [
+                "SyntaxError",
+                "NameError",
+                "AttributeError",
+                "TypeError",
+                "ValueError",
+                "IndentationError",
+            ]
         )
 
-        if is_only_missing_packages and len(code.split('\n')) > 3:
+        if is_only_missing_packages and len(code.split("\n")) > 3:
             print("  → Only issue appears to be missing packages")
             print("  → Will try adding packages to verify code is correct")
         else:
@@ -348,19 +364,25 @@ Now output ONLY the fixed code with NO markdown (attempt {attempt}/5):"""
                 continue
 
             # Check if the fix looks reasonable (has pip install for missing packages)
-            has_pip_install = 'pip install' in fixed_code
-            if has_pip_install and 'ModuleNotFoundError' in output:
+            has_pip_install = "pip install" in fixed_code
+            if has_pip_install and "ModuleNotFoundError" in output:
                 print("   AI added pip install commands to fix ModuleNotFoundError")
                 # This is a valid fix even if we can't fully test it
                 # (testing would require downloading large ML models which takes too long)
-                return 0.5, "Code appears fixable with AI debugging (added package installations)"
+                return (
+                    0.5,
+                    "Code appears fixable with AI debugging (added package installations)",
+                )
 
             print("  Testing fixed code in Docker...")
             success, output = self.run_code_in_docker(fixed_code)
 
             if success:
                 print(" Fixed code works!")
-                return 0.5, f"Code runs after AI debugging (attempt {attempt}/{max_attempts})"
+                return (
+                    0.5,
+                    f"Code runs after AI debugging (attempt {attempt}/{max_attempts})",
+                )
 
             # Show more of the error output
             print("  Still failing. Full output:")
@@ -388,7 +410,7 @@ if __name__ == "__main__":
     # Print results
     print(f"\n{'='*60}")
     print("FINAL RESULT")
-    print('='*60)
+    print("=" * 60)
     print(f"Score: {score}")
     print(f"Explanation: {explanation}")
-    print('='*60)
+    print("=" * 60)

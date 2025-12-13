@@ -8,7 +8,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src/metrics"))
 
 # Import after path modification
 from available_dataset_code_score import (  # noqa: E402
-    available_dataset_code_score, detect_code_examples, detect_dataset_links)
+    available_dataset_code_score,
+    detect_code_examples,
+    detect_dataset_links,
+)
 
 # Test data for different README scenarios
 README_EMPTY = ""

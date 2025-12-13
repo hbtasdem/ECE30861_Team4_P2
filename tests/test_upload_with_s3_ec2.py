@@ -155,7 +155,10 @@ class TestUploadWithStorageIntegration:
             assert response.status_code == 201
             data: Dict[str, Any] = response.json()
             actual_name: str = data["metadata"]["name"]
-            assert expected_name_segment.lower() in actual_name.lower() or len(actual_name) > 0
+            assert (
+                expected_name_segment.lower() in actual_name.lower()
+                or len(actual_name) > 0
+            )
 
     def test_upload_with_query_params_in_url(
         self,

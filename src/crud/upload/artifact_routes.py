@@ -42,10 +42,15 @@ from fastapi import APIRouter, Header, HTTPException, Query, status
 from ulid import ULID
 
 from src.crud.rate_route import rateOnUpload
-from src.crud.upload.artifacts import (Artifact, ArtifactData,
-                                       ArtifactLineageGraph,
-                                       ArtifactLineageNode, ArtifactMetadata,
-                                       ArtifactQuery, ArtifactRegEx)
+from src.crud.upload.artifacts import (
+    Artifact,
+    ArtifactData,
+    ArtifactLineageGraph,
+    ArtifactLineageNode,
+    ArtifactMetadata,
+    ArtifactQuery,
+    ArtifactRegEx,
+)
 from src.crud.upload.auth import get_current_user
 from src.crud.upload.download_artifact import get_download_url
 from src.metrics.license_check import license_check
@@ -81,7 +86,9 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
                 if key.endswith(".json") and not key.endswith(".rate.json"):
                     try:
                         response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)
-                        artifact_data = json.loads(response["Body"].read().decode("utf-8"))
+                        artifact_data = json.loads(
+                            response["Body"].read().decode("utf-8")
+                        )
                         artifacts.append(artifact_data)
                     except Exception:
                         pass
@@ -89,6 +96,7 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
         pass
 
     return artifacts
+
 
 # ============================================================================
 # POST /artifact/byRegEx - QUERY BY REGULAR EXPRESSION (BASELINE)
@@ -140,11 +148,11 @@ async def get_artifacts_by_regex(
     # Check for malicious patterns (ReDoS)
     # Detect catastrophic backtracking patterns
     dangerous_patterns = [
-        r'\(.*\+.*\)\+',  # Nested quantifiers like (a+)+
-        r'\(.*\*.*\)\*',  # Nested quantifiers like (a*)*
-        r'\(.*\+.*\)\*',  # Mixed nested quantifiers
-        r'\(.*\{.*,.*\}.*\)\+',  # Nested bounded quantifiers
-        r'(\(.*\|.*){3,}',  # Excessive alternation
+        r"\(.*\+.*\)\+",  # Nested quantifiers like (a+)+
+        r"\(.*\*.*\)\*",  # Nested quantifiers like (a*)*
+        r"\(.*\+.*\)\*",  # Mixed nested quantifiers
+        r"\(.*\{.*,.*\}.*\)\+",  # Nested bounded quantifiers
+        r"(\(.*\|.*){3,}",  # Excessive alternation
     ]
 
     for pattern in dangerous_patterns:
@@ -204,7 +212,12 @@ async def get_artifacts_by_regex(
 # POST /artifact/{artifact_type} - CREATE ARTIFACT (BASELINE)
 # ============================================================================
 
-@router.post("/artifact/{artifact_type}", response_model=Artifact, status_code=status.HTTP_201_CREATED)
+
+@router.post(
+    "/artifact/{artifact_type}",
+    response_model=Artifact,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_artifact(
     artifact_type: str,
     artifact_data: ArtifactData,
@@ -283,7 +296,10 @@ async def create_artifact(
         # RATE MODEL: if model ingestible will store rating in s3 and return True
         if artifact_type == "model":
             if not rateOnUpload(artifact_data.url, artifact_id):
-                raise HTTPException(status_code=424, detail="Artifact is not registered due to the disqualified rating.")
+                raise HTTPException(
+                    status_code=424,
+                    detail="Artifact is not registered due to the disqualified rating.",
+                )
 
         # Get download_url
         download_url = get_download_url(artifact_data.url, artifact_id, artifact_type)
@@ -301,7 +317,12 @@ async def create_artifact(
 
         # Store in S3
         key = f"{artifact_type}/{artifact_id}.json"
-        s3_client.put_object(Bucket=BUCKET_NAME, Key=key, Body=json.dumps(artifact_envelope, indent=2), ContentType="application/json")
+        s3_client.put_object(
+            Bucket=BUCKET_NAME,
+            Key=key,
+            Body=json.dumps(artifact_envelope, indent=2),
+            ContentType="application/json",
+        )
 
         return artifact_envelope
 
@@ -401,9 +422,7 @@ async def get_artifact(
 # ============================================================================
 
 
-@router.put(
-    "/artifacts/{artifact_type}/{artifact_id}", response_model=Artifact
-)
+@router.put("/artifacts/{artifact_type}/{artifact_id}", response_model=Artifact)
 async def update_artifact(
     artifact_type: str,
     artifact_id: str,
@@ -576,7 +595,9 @@ async def delete_artifact(
         # Delete the artifact
         s3_client.delete_object(Bucket=BUCKET_NAME, Key=key)
 
-        return {"message": f"Artifact {artifact_type}/{artifact_id} deleted successfully"}
+        return {
+            "message": f"Artifact {artifact_type}/{artifact_id} deleted successfully"
+        }
 
     except HTTPException:
         raise
@@ -661,7 +682,9 @@ async def enumerate_artifacts(
 
         for query in queries:
             # Determine types to search
-            types_to_search = query.types if query.types else ["model", "dataset", "code"]
+            types_to_search = (
+                query.types if query.types else ["model", "dataset", "code"]
+            )
 
             for artifact_type in types_to_search:
                 artifacts = _get_artifacts_by_type(artifact_type)
@@ -682,7 +705,7 @@ async def enumerate_artifacts(
                         results.append(artifact)
 
         # Apply pagination
-        paginated_results = results[offset_int:offset_int + page_size]
+        paginated_results = results[offset_int : offset_int + page_size]
 
         # Convert to metadata
         metadata_list = [

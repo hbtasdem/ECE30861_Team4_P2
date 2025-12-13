@@ -78,7 +78,9 @@ def get_pull_requests(
         }
         r = requests.get(url, headers=headers, params=params)
         if r.status_code != 200:
-            print(f"Reviewedness: Error fetching PRs for {owner}/{repo}: {r.status_code}, {r.text}")
+            print(
+                f"Reviewedness: Error fetching PRs for {owner}/{repo}: {r.status_code}, {r.text}"
+            )
             break
         data = r.json()
         if not data:
@@ -152,7 +154,7 @@ def reviewedness_score(code_url: str) -> tuple[float, float]:
         latency = (end - start) * 1000
         return -1, latency
 
-    if 'github.com' not in code_url.lower():
+    if "github.com" not in code_url.lower():
         print(f"ERROR Reviewedness: not given github code url, {code_url}")
 
     # Extract owner and repo name from GitHub URL.

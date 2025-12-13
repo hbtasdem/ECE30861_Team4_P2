@@ -211,8 +211,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.authentication_routes import router as auth_router  # noqa: E402
 from src.crud.rate_route import router as rate_router  # noqa: E402
-from src.crud.upload.artifact_routes import \
-    router as artifact_router  # noqa: E402
+from src.crud.upload.artifact_routes import router as artifact_router  # noqa: E402
 from src.database import init_db  # noqa: E402
 from src.health_monitor import HealthComponentCollection  # noqa: E402
 from src.health_monitor import health_monitor  # noqa: E402
@@ -243,25 +242,25 @@ app = FastAPI(
 def startup_event():
     """Initialize database on application startup"""
     init_db()
-    
+
     # Verify credentials are loaded (optional - helpful for debugging)
     logger = logging.getLogger("uvicorn")
-    
+
     # Check if templates directory exists
     if TEMPLATE_DIR.exists():
         logger.info(f"✓ Templates directory found at: {TEMPLATE_DIR}")
     else:
         logger.error(f"✗ Templates directory NOT found! Looked at: {TEMPLATE_DIR}")
-    
+
     github_token = os.getenv("GITHUB_TOKEN")
     hf_token = os.getenv("HF_TOKEN")
-    
+
     if not github_token:
         logger.warning("⚠️  GITHUB_TOKEN not found in environment variables")
         logger.warning("   Set GITHUB_TOKEN in .env file or environment")
     else:
         logger.info("✓ GITHUB_TOKEN loaded successfully")
-    
+
     if not hf_token:
         logger.warning("⚠️  HF_TOKEN not found in environment variables")
         logger.warning("   Set HF_TOKEN in .env file or environment")
@@ -301,7 +300,9 @@ async def log_requests(request: Request, call_next):
 
 
 # --------------- Include routers ---------------
-app.include_router(artifact_router)  # POST/GET/PUT /artifact(s)/{type}/{id}, POST /artifacts
+app.include_router(
+    artifact_router
+)  # POST/GET/PUT /artifact(s)/{type}/{id}, POST /artifacts
 app.include_router(rate_router)  # GET /artifact/model/{id}/rate
 app.include_router(auth_router)  # PUT /authenticate, POST /register
 
@@ -318,6 +319,7 @@ app.include_router(auth_router)  # PUT /authenticate, POST /register
 #             "redoc": "/redoc",
 #         },
 #     }
+
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
@@ -349,7 +351,9 @@ def get_health_components(
     Returns:
         HealthComponentCollection with all component details
     """
-    return health_monitor.get_health_components(window_minutes=windowMinutes, include_timeline=includeTimeline)
+    return health_monitor.get_health_components(
+        window_minutes=windowMinutes, include_timeline=includeTimeline
+    )
 
 
 @app.get("/tracks")
