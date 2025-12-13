@@ -10,7 +10,6 @@ Note: Only uses existing implemented scoring functions.
 Missing functions (Size, CodeQuality) are set to 0.5 as defaults.
 """
 
-
 import os
 import sys
 import time
@@ -18,8 +17,7 @@ from typing import Dict, Literal, TypedDict
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "metrics"))
 
-from available_dataset_code_score import \
-    available_dataset_code_score  # noqa: E402
+from available_dataset_code_score import available_dataset_code_score  # noqa: E402
 from bus_factor_score import bus_factor_score  # noqa: E402
 from dataset_quality_score import dataset_quality_sub_score  # noqa: E402
 from license_score import license_sub_score  # noqa: E402

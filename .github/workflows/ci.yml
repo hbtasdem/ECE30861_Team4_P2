@@ -38,6 +38,13 @@ jobs:
           # Add any environment variables needed by tests
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: Run pytest verbose on failure
+        if: failure()
+        run: |
+          echo "Running pytest with verbose output to show failing tests:"
+          python -m pytest tests/ -v --tb=short --maxfail=5
+        continue-on-error: true
+      
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4

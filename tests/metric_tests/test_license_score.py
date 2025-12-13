@@ -5,7 +5,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src/metrics"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src/metrics"))
+
 import license_score as license  # noqa: E402
 
 README_YAML: str = """---

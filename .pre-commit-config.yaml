@@ -11,6 +11,12 @@
 # pre-commit run --all-files
 # OR pre-commit run --files specificfile.py
 
+# HELPFUL TOOL (black): 
+# if you are failing pre-commit (flake8) bc of whitespace blah blah
+# 1) pip install black
+# 2) python -m black .
+# PROBLEM SOLVED
+
 # fought so much to get pre-commit working. 
 # Conclusion: if you downloaded python from microsoft store pre-commit wont work.
 # have to uninstall, clear a bunch of stuff, then reinstall from python.org.

@@ -97,7 +97,7 @@ SECRET_KEY = os.getenv(
     "SECRET_KEY", "dev-secret-key-change-in-production"
 )  # NEW: JWT secret
 ALGORITHM = "HS256"  # NEW: JWT algorithm
-ACCESS_TOKEN_EXPIRE_MINUTES = 30  # NEW: Token expiration time
+ACCESS_TOKEN_EXPIRE_MINUTES = 600  # NEW: Token expiration time (10 hours)
 
 
 def hash_password(password: str) -> str:  # NEW: Hash password for storage
