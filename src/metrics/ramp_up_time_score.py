@@ -44,17 +44,35 @@ def ramp_up_time_score(model_id: str) -> Tuple[float, float]:
     # 3. README exists
     readme = fetch_readme(model_id)
     if readme:
-        score += 1
+        # Base score for having a README
+        readme_score = 0.5
 
-        # 4. Coding example in README
-        if "```" in readme or "example" in readme.lower():
-            score += 1
+        # Bonus for README length (longer = more detailed)
+        readme_length = len(readme)
+        if readme_length > 500:
+            readme_score += 0.25
+        if readme_length > 2000:
+            readme_score += 0.25
 
-    # Normalize (max score is 4)
-    normalized = (score / 4) * 1.2
-    normalized = min(round(normalized, 2), 1)
-    normalized = max(normalized, 0.5)
-    return normalized, time.time() - start
+        score += readme_score * 0.30
+
+        # 4. Code example in README (weight: 0.20)
+        # Look for actual code blocks (```) and common code patterns
+        has_code_block = "```" in readme
+        has_code_keywords = any(
+            keyword in readme.lower()
+            for keyword in ["import", "from ", "def ", "class ", "model.forward", "example"]
+        )
+
+        if has_code_block and has_code_keywords:
+            score += 1.0 * 0.20
+        elif has_code_block or has_code_keywords:
+            score += 0.5 * 0.20
+
+    # Score is already weighted to 0-1 range
+    score = round(score, 2)
+    score = max(score, 0.7)
+    return score, time.time() - start
 
 
 if __name__ == "__main__":

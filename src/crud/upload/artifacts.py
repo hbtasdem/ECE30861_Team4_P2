@@ -170,6 +170,14 @@ class ArtifactData(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+    name: Optional[str] = Field(
+        None,
+        description="Custom name for the artifact - "
+        "If not provided, will be extracted from URL",
+        min_length=1,
+        max_length=255,
+    )
+
     url: str = Field(
         ...,
         description="Source URL where artifact originated "

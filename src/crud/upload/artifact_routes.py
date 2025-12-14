@@ -46,13 +46,27 @@ from sqlalchemy.orm import Session
 from ulid import ULID
 
 from src.crud.rate_route import rateOnUpload
-from src.crud.upload.artifacts import Artifact, ArtifactData, ArtifactMetadata, ArtifactQuery, ArtifactRegEx, ArtifactLineageGraph
+from src.crud.upload.artifacts import Artifact, ArtifactData, ArtifactMetadata
 from src.crud.upload.auth import get_current_user
 from src.crud.upload.download_artifact import get_download_url
 from src.database import get_db
 from src.database_models import Artifact as ArtifactModel
 from src.database_models import AuditEntry
 from src.metrics.license_check import license_check
+
+router = APIRouter(tags=["artifacts"])
+
+# S3 Configuration
+BUCKET_NAME = "phase2-s3-bucket"
+s3_client = boto3.client("s3")
+
+
+router = APIRouter(tags=["artifacts"])
+
+# S3 Configuration
+BUCKET_NAME = "phase2-s3-bucket"
+s3_client = boto3.client("s3")
+
 
 router = APIRouter(tags=["artifacts"])
 
@@ -89,104 +103,27 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
         for page in pages:
             if "Contents" not in page:
                 continue
+
             for obj in page["Contents"]:
                 key = obj["Key"]
+
                 if key.endswith(".json") and not key.endswith(".rate.json"):
                     try:
                         response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)
-                        artifact_data = json.loads(
-                            response["Body"].read().decode("utf-8")
-                        )
+                        body_content = response["Body"].read().decode("utf-8")
+                        artifact_data = json.loads(body_content)
                         artifacts.append(artifact_data)
-                    except Exception:
-                        pass
-    except ClientError:
-        pass
+                    except Exception as e:
+                        print(f"Error loading {key}: {e}")
+
+    except ClientError as e:
+        print(f"S3 error listing {artifact_type}: {e}")
 
     return artifacts
 
 
 # ============================================================================
 # POST /artifact/byRegEx - QUERY BY REGULAR EXPRESSION (BASELINE)
-# ============================================================================
-# CRITICAL: This MUST come BEFORE /artifact/{artifact_type} to avoid route conflicts!
-
-@router.post("/artifact/byRegEx", response_model=List[ArtifactMetadata])
-async def get_artifacts_by_regex(
-    request: ArtifactRegEx,
-    x_authorization: Optional[str] = Header(None),
-) -> List[ArtifactMetadata]:
-    """Search for artifacts using regular expression over artifact names.
-    
-    Args:
-        request: Request body with regex pattern (ArtifactRegEx schema)
-        x_authorization: Bearer token for authentication
-    
-    Returns:
-        List[ArtifactMetadata]: Matching artifacts (name, id, type only)
-    
-    Raises:
-        HTTPException: 400 if invalid regex, 403 if auth fails, 404 if no matches
-    """
-    if not x_authorization:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header",
-        )
-    
-    try:
-        get_current_user(x_authorization, None)
-    except HTTPException:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token",
-        )
-    
-    try:
-        regex_pattern = re.compile(request.regex, re.IGNORECASE)
-    except re.error:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid",
-        )
-
-    matching = []
-    for artifact_type in ["model", "dataset", "code"]:
-        artifacts = _get_artifacts_by_type(artifact_type)
-        for artifact in artifacts:
-            name = artifact["metadata"]["name"]
-            url = artifact.get("data", {}).get("url", "")
-            matched = False
-
-            # Match name
-            if regex_pattern.search(name):
-                matched = True
-            # Match README (models only)
-            elif artifact["metadata"]["type"] == "model":
-                readme_text = try_fetch_readme_from_url(url)
-                if readme_text and regex_pattern.search(readme_text):
-                    matched = True
-
-            if matched:
-                matching.append(
-                    ArtifactMetadata(
-                        name=name,
-                        id=artifact["metadata"]["id"],
-                        type=artifact["metadata"]["type"],
-                    )
-                )
-
-    if not matching:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No artifact found under this regex.",
-        )
-
-    return matching
-
-
-# ============================================================================
-# POST /artifact/{artifact_type} - CREATE ARTIFACT (BASELINE)
 # ============================================================================
 
 @router.post(
@@ -199,7 +136,27 @@ async def create_artifact(
     artifact_data: ArtifactData,
     x_authorization: Optional[str] = Header(None),
 ) -> Artifact:
-    """Create new artifact from source URL per spec."""
+    """Create new artifact from source URL per spec.
+
+    Per OpenAPI v3.4.4 spec:
+    - Registers a new artifact by providing a downloadable source URL
+    - Artifacts may share a name; refer to id as unique identifier
+    - Returns HTTP 201 Created with full Artifact envelope
+
+    Args:
+        artifact_type: Artifact type (model, dataset, or code)
+        artifact_data: Request body with source URL and optional name
+        x_authorization: Bearer token for authentication
+
+    Returns:
+        Artifact: Full artifact with generated id and download_url
+
+    Raises:
+        HTTPException: 400 if invalid type, 403 if auth fails, 409 if duplicate
+    """
+    # ========================================================================
+    # AUTHENTICATION
+    # ========================================================================
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -214,7 +171,6 @@ async def create_artifact(
             detail="Authentication failed: Invalid or expired token",
         )
 
-    # Validate artifact type
     valid_types = {"model", "dataset", "code"}
     if artifact_type not in valid_types:
         raise HTTPException(
@@ -233,18 +189,20 @@ async def create_artifact(
         # Generate unique ID
         artifact_id = str(ULID())
 
-        # Extract name from URL
-        name = artifact_data.url.split("/")[-1]
-        if not name or name.startswith("http"):
-            name = f"{artifact_type}_{artifact_id[:8]}"
+        # Use provided name or extract from URL
+        if artifact_data.name:
+            name = artifact_data.name
+        else:
+            name = artifact_data.url.split("/")[-1]
+            if not name or name.startswith("http"):
+                name = f"{artifact_type}_{artifact_id[:8]}"
 
-       # SENSITIVE MODEL
-# need to figure out how to get the username from authentication
-# is_sensitive = detect_malicious_patterns(name, artifact_data.url, artifact_id, is_sensitive)
-# username = x_authorization
-# if is_sensitive and artifact_type == "model":
-#     log_sensitive_action(username, "upload", artifact_id)
-#     check_sensitive_model(name, artifact_data.url, username)
+        # SENSITIVE MODEL
+        is_sensitive = detect_malicious_patterns(name, artifact_data.url, artifact_id, is_sensitive)
+        username = x_authorization
+        if is_sensitive and artifact_type == "model":
+            log_sensitive_action(username, "upload", artifact_id)
+            check_sensitive_model(name, artifact_data.url, username)
 
         # RATE MODEL: if model ingestible will store rating in s3 and return True
         if artifact_type == "model":
@@ -412,12 +370,12 @@ async def update_artifact(
 # POST /artifacts - QUERY/ENUMERATE ARTIFACTS (BASELINE)
 # ============================================================================
 
-@router.post("/artifacts", response_model=List[ArtifactMetadata])
+@router.post("/artifacts")
 async def enumerate_artifacts(
-    queries: List[ArtifactQuery],
+    queries: List[dict],
     offset: Optional[int] = Query(None),
     x_authorization: Optional[str] = Header(None),
-) -> List[ArtifactMetadata]:
+):
     """Query and enumerate artifacts per spec."""
     if not x_authorization:
         raise HTTPException(
@@ -439,6 +397,37 @@ async def enumerate_artifacts(
             detail="At least one query is required",
         )
 
+    valid_types = {'model', 'dataset', 'code'}
+    for i, query in enumerate(queries):
+        if not isinstance(query, dict):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Query {i} must be an object",
+            )
+        if 'name' not in query:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Query {i} missing required field 'name'",
+            )
+
+        if not isinstance(query['name'], str) or not query['name']:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Query {i} 'name' must be a non-empty string",
+            )
+
+        if 'types' in query:
+            types = query['types']
+            if not isinstance(types, list):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Query {i} 'types' must be an array",
+                )
+            if not all(t in valid_types for t in types):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Query {i} 'types' must be subset of {valid_types}",
+                )
     try:
         offset_int = offset if offset is not None else 0
         page_size = 100
@@ -456,20 +445,18 @@ async def enumerate_artifacts(
             return []
 
         for query in queries:
-            # Determine types to search
-            types_to_search = (
-                query.types if query.types else ["model", "dataset", "code"]
-            )
+            name = query['name']
+            types_to_search = query.get('types', ["model", "dataset", "code"])
 
             for artifact_type in types_to_search:
                 artifacts = _get_artifacts_by_type(artifact_type)
 
                 # Filter by name if not wildcard
-                if query.name != "*":
+                if name != "*":
                     artifacts = [
                         a
                         for a in artifacts
-                        if query.name.lower() in a["metadata"]["name"].lower()
+                        if name.lower() in a["metadata"]["name"].lower()
                     ]
 
                 # Add to results, avoiding duplicates
@@ -478,7 +465,6 @@ async def enumerate_artifacts(
                     if artifact_id not in seen_ids:
                         seen_ids.add(artifact_id)
                         results.append(artifact)
-
         # Apply pagination
         paginated_results = results[offset_int:offset_int + page_size]
 
@@ -494,12 +480,13 @@ async def enumerate_artifacts(
 
         return metadata_list
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Query failed: {str(e)}",
         )
-
 
 # ============================================================================
 # GET /artifacts - GET ARTIFACTS BY NAME (QUERY PARAMETER)
