@@ -473,20 +473,25 @@ async def enumerate_artifacts(
     # ========================================================================
     # BUILD QUERY FROM S3
     # ========================================================================
+    import logging
+    logger = logging.getLogger("artifact_debug")
     try:
         offset_int = offset if offset is not None else 0
         page_size = 100
 
+        logger.info(f"enumerate_artifacts: queries={queries}")
         results = []
         seen_ids = set()
 
         # Check if S3 is empty for all types; if so, return []
         s3_empty = True
         for artifact_type in ["model", "dataset", "code"]:
-            if _get_artifacts_by_type(artifact_type):
+            artifacts = _get_artifacts_by_type(artifact_type)
+            logger.info(f"Found {len(artifacts)} artifacts for type {artifact_type}")
+            if artifacts:
                 s3_empty = False
-                break
         if s3_empty:
+            logger.info("S3 is empty for all types, returning []")
             return []
 
         for query in queries:
@@ -497,6 +502,7 @@ async def enumerate_artifacts(
 
             for artifact_type in types_to_search:
                 artifacts = _get_artifacts_by_type(artifact_type)
+                logger.info(f"Query {query.name} for type {artifact_type}: {len(artifacts)} artifacts before filtering")
 
                 # Filter by name if not wildcard
                 if query.name != "*":
@@ -505,6 +511,7 @@ async def enumerate_artifacts(
                         for a in artifacts
                         if query.name.lower() in a["metadata"]["name"].lower()
                     ]
+                    logger.info(f"After filtering by name '{query.name}': {len(artifacts)} artifacts")
 
                 # Add to results, avoiding duplicates
                 for artifact in artifacts:
@@ -526,9 +533,11 @@ async def enumerate_artifacts(
             for artifact in paginated_results
         ]
 
+        logger.info(f"Returning {len(metadata_list)} artifacts in response")
         return metadata_list
 
     except Exception as e:
+        logger.error(f"enumerate_artifacts exception: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Query failed: {str(e)}",
@@ -961,7 +970,10 @@ async def get_artifacts_by_regex(
             detail="Authentication failed: Invalid or expired token",
         )
 
+    import logging
+    logger = logging.getLogger("artifact_debug")
     if "regex" not in request:
+        logger.warning("Regex request missing 'regex' field: %s", request)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid",
@@ -969,7 +981,9 @@ async def get_artifacts_by_regex(
 
     try:
         regex_pattern = re.compile(request["regex"])
+        logger.info(f"Regex pattern received: {request['regex']}")
     except re.error as e:
+        logger.error(f"Regex compile error: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid: {str(e)}",
@@ -979,17 +993,22 @@ async def get_artifacts_by_regex(
     matching = []
     for artifact_type in ["model", "dataset", "code"]:
         artifacts = _get_artifacts_by_type(artifact_type)
+        logger.info(f"Regex search: {len(artifacts)} artifacts for type {artifact_type}")
         for artifact in artifacts:
-            if regex_pattern.search(artifact["metadata"]["name"]):
+            name = artifact["metadata"]["name"]
+            if regex_pattern.search(name):
+                logger.info(f"Regex match: {name}")
                 matching.append(
                     ArtifactMetadata(
-                        name=artifact["metadata"]["name"],
+                        name=name,
                         id=artifact["metadata"]["id"],
                         type=artifact["metadata"]["type"],
                     )
                 )
 
+    logger.info(f"Regex search found {len(matching)} matches")
     if not matching:
+        logger.warning("No artifact found under this regex.")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="No artifact found under this regex.",

@@ -176,9 +176,5 @@ async def authenticate_user(
     }
     access_token = create_access_token(token_data)
 
-    # Per spec: Return token as a JSON string with escaped quotes (double-encoded)
-    import json
-    from fastapi.responses import Response
-    # Return token with literal double quotes and backslashes
-    from fastapi.responses import Response
-    return Response(content='\\"' + access_token + '\\"', media_type="application/json")
+    from fastapi.responses import JSONResponse
+    return JSONResponse(content=f"bearer {access_token}")

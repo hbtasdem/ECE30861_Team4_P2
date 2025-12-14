@@ -139,13 +139,18 @@ def verify_password(
         True if passwords match, False otherwise
     """
     # Bcrypt has a 72-byte limit on passwords - truncate to match hash
+    import logging
+    logger = logging.getLogger("auth_debug")
     password_bytes = plain_password.encode("utf-8")[:72]
     password_truncated = password_bytes.decode("utf-8", errors="ignore")
     try:
-        return bcrypt.checkpw(
+        result = bcrypt.checkpw(
             password_truncated.encode("utf-8"), hashed_password.encode("utf-8")
         )
-    except Exception:
+        logger.info(f"verify_password: user input='{plain_password}', truncated='{password_truncated}', hash='{hashed_password[:10]}...', result={result}")
+        return result
+    except Exception as e:
+        logger.error(f"verify_password exception: {e}")
         return False
 
 
@@ -170,7 +175,7 @@ def create_access_token(
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     # Per OpenAPI spec: Return token with "bearer " prefix
  
- return Response(content=f"\"{access_token}\"", media_type="application/json")   
+ curl -X PUT http://localhost:8000/authenticate -H "Content-Type: application/json" -d "{\"user\": {\"name\": \"ece30861defaultadminuser\"}, \"secret\": {\"password\": \"correcthorsebatterystaple123(!__+@**(A'\\\"`;DROP TABLE artifacts;\"}}"return Response(content=f"\"{access_token}\"", media_type="application/json")   
 
 def decode_access_token(token: str) -> dict[str, Any]:  # NEW: JWT token validation
     """Decode and validate a JWT access token.
