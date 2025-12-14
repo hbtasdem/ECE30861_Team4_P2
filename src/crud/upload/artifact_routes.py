@@ -33,8 +33,10 @@ All responses follow:
 }
 """
 
+
 import json
 import re
+import requests
 from typing import Any, Dict, List, Optional
 
 import boto3
@@ -57,6 +59,19 @@ router = APIRouter(tags=["artifacts"])
 # S3 Configuration
 BUCKET_NAME = "phase2-s3-bucket"
 s3_client = boto3.client("s3")
+
+def try_fetch_readme_from_url(url: str) -> Optional[str]:
+    if "huggingface.co/" not in url:
+        return None
+    try:
+        model_id = url.split("huggingface.co/")[-1].split("/tree")[0]
+        readme_url = f"https://huggingface.co/{model_id}/resolve/main/README.md"
+        resp = requests.get(readme_url, timeout=5)
+        if resp.status_code == 200:
+            return resp.text
+    except Exception:
+        pass
+    return None
 
 
 def _get_artifact_key(artifact_type: str, artifact_id: str) -> str:
@@ -128,21 +143,31 @@ async def get_artifacts_by_regex(
         )
     
     try:
-        regex_pattern = re.compile(request.regex)
-    except re.error as e:
+        regex_pattern = re.compile(request.regex, re.IGNORECASE)
+    except re.error:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid",
         )
-    
-    # Search artifacts across all types
+
     matching = []
     for artifact_type in ["model", "dataset", "code"]:
         artifacts = _get_artifacts_by_type(artifact_type)
-        
         for artifact in artifacts:
             name = artifact["metadata"]["name"]
+            url = artifact.get("data", {}).get("url", "")
+            matched = False
+
+            # Match name
             if regex_pattern.search(name):
+                matched = True
+            # Match README (models only)
+            elif artifact["metadata"]["type"] == "model":
+                readme_text = try_fetch_readme_from_url(url)
+                if readme_text and regex_pattern.search(readme_text):
+                    matched = True
+
+            if matched:
                 matching.append(
                     ArtifactMetadata(
                         name=name,
@@ -150,13 +175,13 @@ async def get_artifacts_by_regex(
                         type=artifact["metadata"]["type"],
                     )
                 )
-    
+
     if not matching:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="No artifact found under this regex.",
         )
-    
+
     return matching
 
 
@@ -445,6 +470,9 @@ async def enumerate_artifacts(
                     if artifact_id not in seen_ids:
                         seen_ids.add(artifact_id)
                         results.append(artifact)
+            
+            if len(matching) >= 10:
+            return matching
 
         # Apply pagination
         paginated_results = results[offset_int:offset_int + page_size]
