@@ -31,6 +31,11 @@ def get_model_config(model_identifier: str) -> Optional[Dict[str, Any]]:
     - Full URL: https://huggingface.co/microsoft/DialoGPT-medium
     - Model path: microsoft/DialoGPT-medium
     """
+    # Handle empty or invalid input
+    if not model_identifier or not model_identifier.strip():
+        print("Empty model identifier provided")
+        return None
+    
     # Clean up the model identifier
     if "huggingface.co/" in model_identifier:
         # Extract path from URL
@@ -38,17 +43,28 @@ def get_model_config(model_identifier: str) -> Optional[Dict[str, Any]]:
         model_path = model_path.split("/tree")[0].split("/blob")[0].strip("/")
     else:
         model_path = model_identifier.strip()
+    
+    # Validate model_path is not empty after cleaning
+    if not model_path:
+        print("Model path is empty after cleaning")
+        return None
 
     api_url = f"https://huggingface.co/api/models/{model_path}"
 
     try:
         resp = requests.get(api_url, timeout=10)
         resp.raise_for_status()
-        return cast(Dict[str, Any], resp.json())
+        data = resp.json()
+        
+        # Ensure we got a dict, not a list
+        if not isinstance(data, dict):
+            print(f"Unexpected response type: {type(data)}")
+            return None
+            
+        return cast(Dict[str, Any], data)
     except Exception as e:
         print(f"Could not fetch HF API metadata for {model_path}: {e}")
         return None
-
 
 def check_lineage(model_identifier: str) -> Tuple[Optional[Dict[str, Any]], float]:
     """
