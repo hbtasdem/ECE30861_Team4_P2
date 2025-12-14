@@ -188,8 +188,8 @@ from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-cloudwatch_logs = boto3.client('logs', region_name=os.getenv('AWS_REGION', 'us-east-2'))
-LOG_GROUP_NAME = os.getenv('CLOUDWATCH_LOG_GROUP', '/aws/ec2/fastapi-logs')
+cloudwatch_logs = boto3.client("logs", region_name=os.getenv("AWS_REGION", "us-east-2"))
+LOG_GROUP_NAME = os.getenv("CLOUDWATCH_LOG_GROUP", "/aws/ec2/fastapi-logs")
 
 # helper function for health logging
 
@@ -204,29 +204,31 @@ def fetch_cloudwatch_logs(hours: int = 1, limit: int = 100) -> List[Dict]:
             logGroupName=LOG_GROUP_NAME,
             startTime=start_time,
             endTime=end_time,
-            limit=limit
+            limit=limit,
         )
 
         logs = []
-        for event in response.get('events', []):
-            ts = datetime.fromtimestamp(event['timestamp'] / 1000)
-            message = event['message'].strip()
+        for event in response.get("events", []):
+            ts = datetime.fromtimestamp(event["timestamp"] / 1000)
+            message = event["message"].strip()
 
             # Determine log level
-            level = 'INFO'
-            if 'ERROR' in message.upper() or 'EXCEPTION' in message.upper():
-                level = 'ERROR'
-            elif 'WARNING' in message.upper() or 'WARN' in message.upper():
-                level = 'WARNING'
-            elif 'DEBUG' in message.upper():
-                level = 'DEBUG'
+            level = "INFO"
+            if "ERROR" in message.upper() or "EXCEPTION" in message.upper():
+                level = "ERROR"
+            elif "WARNING" in message.upper() or "WARN" in message.upper():
+                level = "WARNING"
+            elif "DEBUG" in message.upper():
+                level = "DEBUG"
 
-            logs.append({
-                'timestamp': ts.strftime('%Y-%m-%d %H:%M:%S'),
-                'level': level,
-                'message': message,
-                'stream': event.get('logStreamName', 'unknown')
-            })
+            logs.append(
+                {
+                    "timestamp": ts.strftime("%Y-%m-%d %H:%M:%S"),
+                    "level": level,
+                    "message": message,
+                    "stream": event.get("logStreamName", "unknown"),
+                }
+            )
 
         return logs
     except Exception as e:
@@ -248,6 +250,7 @@ from src.database import init_db  # noqa: E402
 from src.health_monitor import HealthComponentCollection  # noqa: E402
 from src.health_monitor import health_monitor  # noqa: E402
 from src.lineage_tree import router as lineage_router  # noqa: E402
+from src.sensitive_models import router as sensitive_router  # noqa: E402
 
 # Try to find .env file starting from current file's directory
 dotenv_path = find_dotenv(usecwd=True)
@@ -355,6 +358,7 @@ app.include_router(
 )  # POST/GET/PUT /artifact(s)/{type}/{id}, POST /artifacts
 app.include_router(rate_router)  # GET /artifact/model/{id}/rate
 app.include_router(auth_router)  # PUT /authenticate, POST /register
+app.include_router(sensitive_router)
 app.include_router(lineage_router)  # GET /artifact/model/{id}/lineage
 
 
@@ -390,18 +394,14 @@ async def get_health_logs(hours: int = 1, limit: int = 100):
     try:
         logs = fetch_cloudwatch_logs(hours=hours, limit=limit)
         return {
-            'status': 'healthy',
-            'timestamp': datetime.now().isoformat(),
-            'log_group': LOG_GROUP_NAME,
-            'logs': logs,
-            'total': len(logs)
+            "status": "healthy",
+            "timestamp": datetime.now().isoformat(),
+            "log_group": LOG_GROUP_NAME,
+            "logs": logs,
+            "total": len(logs),
         }
     except Exception as e:
-        return {
-            'status': 'error',
-            'message': str(e),
-            'logs': []
-        }
+        return {"status": "error", "message": str(e), "logs": []}
 
 
 @app.get("/health/components", response_model=HealthComponentCollection)

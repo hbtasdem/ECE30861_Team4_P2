@@ -21,10 +21,10 @@ def normalize_sigmoid(value: int, mid: int, steepness: float) -> float:
 def ramp_up_time_score(model_id: str) -> Tuple[float, float]:
     """
     Scores ramp up time based on:
-    - Downloads > 0
-    - Likes > 0
-    - README exists
-    - Coding example in README (looks for '```' or 'example' keyword)
+    - Downloads (25% weight)
+    - Likes (25% weight)
+    - README exists and quality (30% weight)
+    - Code example in README (20% weight)
     Returns (score, elapsed_time)
     """
     start = time.time()
@@ -35,25 +35,49 @@ def ramp_up_time_score(model_id: str) -> Tuple[float, float]:
     if info is None:
         return 0.0, time.time() - start
 
-    # 1. Downloads
-    score += normalize_sigmoid(value=info.get("downloads", 0), mid=50, steepness=0.05)
+    # 1. Downloads (weight: 0.25)
+    downloads_score = normalize_sigmoid(
+        value=info.get("downloads", 0), mid=100, steepness=0.01
+    )
+    score += downloads_score * 0.25
 
-    # 2. Likes
-    score += normalize_sigmoid(value=info.get("likes", 0), mid=3, steepness=0.3)
+    # 2. Likes (weight: 0.25)
+    likes_score = normalize_sigmoid(
+        value=info.get("likes", 0), mid=5, steepness=0.2
+    )
+    score += likes_score * 0.25
 
-    # 3. README exists
+    # 3. README exists and quality (weight: 0.30)
     readme = fetch_readme(model_id)
     if readme:
-        score += 1
+        # Base score for having a README
+        readme_score = 0.5
 
-        # 4. Coding example in README
-        if "```" in readme or "example" in readme.lower():
-            score += 1
+        # Bonus for README length (longer = more detailed)
+        readme_length = len(readme)
+        if readme_length > 500:
+            readme_score += 0.25
+        if readme_length > 2000:
+            readme_score += 0.25
 
-    # Normalize (max score is 4)
-    normalized = (score / 4) * 1.2
-    normalized = min(round(normalized, 2), 1)
-    return normalized, time.time() - start
+        score += readme_score * 0.30
+
+        # 4. Code example in README (weight: 0.20)
+        # Look for actual code blocks (```) and common code patterns
+        has_code_block = "```" in readme
+        has_code_keywords = any(
+            keyword in readme.lower()
+            for keyword in ["import", "from ", "def ", "class ", "model.forward", "example"]
+        )
+
+        if has_code_block and has_code_keywords:
+            score += 1.0 * 0.20
+        elif has_code_block or has_code_keywords:
+            score += 0.5 * 0.20
+
+    # Score is already weighted to 0-1 range
+    score = round(score, 2)
+    return score, time.time() - start
 
 
 if __name__ == "__main__":

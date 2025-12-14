@@ -40,7 +40,10 @@ def mock_s3_bucket() -> Generator[tuple[boto3.client, Dict[str, Any]], None, Non
         pytest.skip("moto not available")
     with mock_aws():
         s3 = boto3.client("s3", region_name="us-east-2")
-        s3.create_bucket(Bucket="phase2-s3-bucket")
+        s3.create_bucket(
+            Bucket="phase2-s3-bucket",
+            CreateBucketConfiguration={"LocationConstraint": "us-east-2"},
+        )
 
         # upload a valid mock rating, id 01
         valid_rating = {

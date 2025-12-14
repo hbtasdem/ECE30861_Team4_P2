@@ -147,15 +147,17 @@ def init_db() -> None:
     # Includes Phase 2 tables (User, Artifact, AuditEntry)
     Base.metadata.create_all(bind=engine)
 
-
     # Always create default admin user with spec credentials if missing
     db = SessionLocal()
     try:
         admin_username = "ece30861defaultadminuser"
-        admin_password = "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
+        admin_password = (
+            "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
+        )
         existing_admin = db.query(User).filter(User.username == admin_username).first()
         if not existing_admin:
             from src.crud.upload.auth import hash_password
+
             hashed = hash_password(admin_password)
             admin_user = User(
                 username=admin_username,

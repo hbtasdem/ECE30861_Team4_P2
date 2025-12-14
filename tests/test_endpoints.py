@@ -52,7 +52,9 @@ def test_register() -> tuple[Any, str, str]:
         token = response.json()
         print(f"Response: {json.dumps(token, indent=2)}")
         assert isinstance(token, str), f"Token should be string, got {type(token)}"
-        assert token.startswith("bearer "), f"Token should start with 'bearer ', got: {token[:20]}"
+        assert token.startswith(
+            "bearer "
+        ), f"Token should start with 'bearer ', got: {token[:20]}"
         print("PASSED - JWT token received")
         # Store in global for next test to use
         global registered_user_token, registered_username, registered_password
@@ -80,7 +82,9 @@ def test_authenticate(
         token = response.json()
         print(f"Response: {json.dumps(token, indent=2)}")
         assert isinstance(token, str), f"Token should be string, got {type(token)}"
-        assert token.startswith("bearer "), f"Token should start with 'bearer ', got: {token[:20]}"
+        assert token.startswith(
+            "bearer "
+        ), f"Token should start with 'bearer ', got: {token[:20]}"
         print("PASSED - JWT token received")
     else:
         print(f"Response: {response.text}")

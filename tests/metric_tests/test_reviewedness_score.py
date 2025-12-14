@@ -31,7 +31,9 @@ def test_reviewedness_invalid_url():
     code_url = ""
     reviewedness, latency = reviewedness_score(code_url)
 
-    assert reviewedness == -1, f"Expected reviewedness of -1 for empty URL, got {reviewedness}"
+    assert (
+        reviewedness == -1
+    ), f"Expected reviewedness of -1 for empty URL, got {reviewedness}"
     assert latency >= 0, f"Expected non-negative latency, got {latency}"
 
 
@@ -40,5 +42,7 @@ def test_reviewedness_none_url():
     code_url = None
     reviewedness, latency = reviewedness_score(code_url)
 
-    assert reviewedness == -1, f"Expected reviewedness of -1 for None URL, got {reviewedness}"
+    assert (
+        reviewedness == -1
+    ), f"Expected reviewedness of -1 for None URL, got {reviewedness}"
     assert latency >= 0, f"Expected non-negative latency, got {latency}"
