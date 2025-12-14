@@ -58,26 +58,6 @@ router = APIRouter(tags=["artifacts"])
 BUCKET_NAME = "phase2-s3-bucket"
 s3_client = boto3.client("s3")
 
-def _resolve_artifact_identifier(artifact_type: str, identifier: str) -> str:
-    """
-    Resolve artifact identifier to a ULID.
-    If identifier is already a ULID, return it.
-    Otherwise, treat identifier as artifact name and resolve via S3 scan.
-    """
-    # ULID format: 26 chars, Crockford Base32
-    if re.fullmatch(r"[0-9A-HJKMNP-TV-Z]{26}", identifier):
-        return identifier
-
-    artifacts = _get_artifacts_by_type(artifact_type)
-
-    for artifact in artifacts:
-        if artifact["metadata"]["name"] == identifier:
-            return artifact["metadata"]["id"]
-
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Artifact not found: {artifact_type}/{identifier}",
-    )
 
 def _get_artifact_key(artifact_type: str, artifact_id: str) -> str:
     """Get S3 key for artifact object."""
@@ -266,7 +246,27 @@ async def get_artifact(
     artifact_id: str,
     x_authorization: Optional[str] = Header(None),
 ) -> Artifact:
+    """Retrieve artifact by type and ID per spec.
 
+    Per OpenAPI v3.4.4 spec:
+    - Returns the artifact with specified type and ID
+    - Returns 404 if artifact not found
+
+    Args:
+        artifact_type: Artifact type (model, dataset, or code)
+        artifact_id: Unique artifact identifier
+        x_authorization: Bearer token for authentication
+
+    Returns:
+        Artifact: Full artifact envelope with metadata and data
+
+    Raises:
+        HTTPException: 403 if auth fails, 404 if not found
+    """
+    # ========================================================================
+    # AUTHENTICATION
+    # ========================================================================
+    # Per OpenAPI spec: All endpoints require X-Authorization header
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -281,14 +281,26 @@ async def get_artifact(
             detail="Authentication failed: Invalid or expired token",
         )
 
+    # ========================================================================
+    # RETRIEVE ARTIFACT FROM S3
+    # ========================================================================
     try:
-        resolved_id = _resolve_artifact_identifier(artifact_type, artifact_id)
-        key = f"{artifact_type}/{resolved_id}.json"
-
+        key = f"{artifact_type}/{artifact_id}.json"
         response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)
         artifact_envelope = json.loads(response["Body"].read().decode("utf-8"))
 
         return artifact_envelope
+        # Artifact(
+        #     metadata=ArtifactMetadata(
+        #         name=artifact_envelope["metadata"]["name"],
+        #         id=artifact_envelope["metadata"]["id"],
+        #         type=artifact_envelope["metadata"]["type"],
+        #     ),
+        #     data=ArtifactData(
+        #         url=artifact_envelope["data"]["url"],
+        #         download_url=artifact_envelope["data"]["download_url"],
+        #     ),
+        # )
 
     except ClientError as e:
         if e.response["Error"]["Code"] == "NoSuchKey":
@@ -300,12 +312,19 @@ async def get_artifact(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to retrieve artifact: {str(e)}",
         )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to retrieve artifact: {str(e)}",
+        )
 
 
 # ============================================================================
 # PUT /artifacts/{artifact_type}/{artifact_id} - UPDATE ARTIFACT (BASELINE)
 # ============================================================================
 
+
+@router.put("/artifacts/{artifact_type}/{artifact_id}", response_model=Artifact)
 @router.put("/artifacts/{artifact_type}/{artifact_id}", response_model=Artifact)
 async def update_artifact(
     artifact_type: str,
@@ -313,7 +332,27 @@ async def update_artifact(
     artifact_data: ArtifactData,
     x_authorization: Optional[str] = Header(None),
 ) -> Artifact:
+    """Update artifact metadata and source URL per spec.
 
+    Per OpenAPI v3.4.4 spec:
+    - Updates the artifact source (from artifact_data)
+    - Returns 404 if artifact not found
+
+    Args:
+        artifact_type: Artifact type (model, dataset, or code)
+        artifact_id: Unique artifact identifier
+        artifact_data: New artifact data (url and optional download_url)
+        x_authorization: Bearer token for authentication
+
+    Returns:
+        Artifact: Updated artifact envelope
+
+    Raises:
+        HTTPException: 403 if auth fails, 404 if not found
+    """
+    # ========================================================================
+    # AUTHENTICATION
+    # ========================================================================
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -328,19 +367,25 @@ async def update_artifact(
             detail="Authentication failed: Invalid or expired token",
         )
 
+    # ========================================================================
+    # RETRIEVE AND UPDATE ARTIFACT IN S3
+    # ========================================================================
     try:
-        resolved_id = _resolve_artifact_identifier(artifact_type, artifact_id)
-        key = f"{artifact_type}/{resolved_id}.json"
+        key = _get_artifact_key(artifact_type, artifact_id)
 
+        # Get existing artifact
         response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)
         artifact_envelope = json.loads(response["Body"].read().decode("utf-8"))
 
+        # Update URL
         if artifact_data.url:
             artifact_envelope["data"]["url"] = artifact_data.url
+            # Update name if derived from URL
             name = artifact_data.url.split("/")[-1]
             if name and not name.startswith("http"):
                 artifact_envelope["metadata"]["name"] = name
 
+        # Save back to S3
         s3_client.put_object(
             Bucket=BUCKET_NAME,
             Key=key,
@@ -366,6 +411,11 @@ async def update_artifact(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Artifact not found: {artifact_type}/{artifact_id}",
             )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to update artifact: {str(e)}",
+        )
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to update artifact: {str(e)}",
