@@ -97,10 +97,12 @@ async def register_user(
     }
     access_token = create_access_token(token_data)
 
-    # Per spec: Return just the token string, as a JSON string (with quotes)
+    # Per spec: Return token as a JSON string with escaped quotes (double-encoded)
     import json
     from fastapi.responses import Response
-    return Response(content=json.dumps(access_token), media_type="application/json")
+    # Return token with literal double quotes and backslashes
+    from fastapi.responses import Response
+    return Response(content='\\"' + access_token + '\\"', media_type="application/json")
 
 
 @router.put("/authenticate")
@@ -130,14 +132,20 @@ async def authenticate_user(
             401: Invalid user or password
             501: Authentication not supported (if not implemented)
     """
+
+    import logging
+    logger = logging.getLogger("auth_debug")
+
     # Validate request
     if not request.user or not request.secret:
+        logger.warning(f"Login failed: missing user or secret. Request: {request}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="There is missing field(s) in the AuthenticationRequest or it is formed improperly.",
         )
 
     if not request.user.name or not request.secret.password:
+        logger.warning(f"Login failed: missing username or password. Request: {request}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="There is missing field(s) in the AuthenticationRequest or it is formed improperly.",
@@ -146,6 +154,7 @@ async def authenticate_user(
     # Find user in database
     user = db.query(DBUser).filter(DBUser.username == request.user.name).first()
     if not user:
+        logger.warning(f"Login failed: user not found. Username: {request.user.name}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="The user or password is invalid.",
@@ -153,6 +162,7 @@ async def authenticate_user(
 
     # Verify password
     if not verify_password(request.secret.password, user.hashed_password):
+        logger.warning(f"Login failed: password mismatch for user {request.user.name}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="The user or password is invalid.",
@@ -166,7 +176,9 @@ async def authenticate_user(
     }
     access_token = create_access_token(token_data)
 
-    # Per spec: Return just the token string, as a JSON string (with quotes)
+    # Per spec: Return token as a JSON string with escaped quotes (double-encoded)
     import json
     from fastapi.responses import Response
-    return Response(content=json.dumps(access_token), media_type="application/json")
+    # Return token with literal double quotes and backslashes
+    from fastapi.responses import Response
+    return Response(content='\\"' + access_token + '\\"', media_type="application/json")

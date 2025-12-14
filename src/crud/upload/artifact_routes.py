@@ -569,7 +569,7 @@ async def reset_registry(
         )
 
     try:
-        current_user = get_current_user(x_authorization, None)
+        current_user = get_current_user(x_authorization, db)
     except HTTPException:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

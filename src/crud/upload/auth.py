@@ -169,8 +169,8 @@ def create_access_token(
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     # Per OpenAPI spec: Return token with "bearer " prefix
-    return f"bearer {encoded_jwt}"
-
+ 
+ return Response(content=f"\"{access_token}\"", media_type="application/json")   
 
 def decode_access_token(token: str) -> dict[str, Any]:  # NEW: JWT token validation
     """Decode and validate a JWT access token.

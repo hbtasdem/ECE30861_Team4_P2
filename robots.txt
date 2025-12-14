@@ -1,0 +1,4 @@
+# robots.txt for ECE30861_Team4_P2
+# Allow all user agents full access
+User-agent: *
+Disallow:
