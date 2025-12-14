@@ -248,6 +248,7 @@ from src.database import init_db  # noqa: E402
 from src.health_monitor import HealthComponentCollection  # noqa: E402
 from src.health_monitor import health_monitor  # noqa: E402
 from src.lineage_tree import router as lineage_router  # noqa: E402
+from src.sensitive_models import router as sensitive_router  # noqa: E402
 
 # Try to find .env file starting from current file's directory
 dotenv_path = find_dotenv(usecwd=True)
@@ -355,6 +356,7 @@ app.include_router(
 )  # POST/GET/PUT /artifact(s)/{type}/{id}, POST /artifacts
 app.include_router(rate_router)  # GET /artifact/model/{id}/rate
 app.include_router(auth_router)  # PUT /authenticate, POST /register
+app.include_router(sensitive_router)
 app.include_router(lineage_router)  # GET /artifact/model/{id}/lineage
 
 

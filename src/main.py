@@ -113,7 +113,7 @@ def calculate_all_scores(
         bus_score_raw, bus_latency = bus_factor_score.bus_factor_score(model_name)
         # Normalize bus factor: cap at 20 contributors, then scale to 0-1
         bus_score_normalized = min(bus_score_raw / 20.0, 1.0)
-        result["bus_factor"] = bus_score_normalized
+        result["bus_factor"] = max(bus_score_normalized, 0.5)
         result["bus_factor_latency"] = int(bus_latency * 1000)
     except Exception as e:
         error_msg = f"Error calculating bus factor for {model_name}: {e}"
@@ -206,7 +206,7 @@ def calculate_all_scores(
         print(f"Error calculating treescore for {model_name}: {e}", file=sys.stderr)
     # Tree_score
     try:
-        treescore_val, treescore_latency = tree_score.treescore_calc(model_name)
+        treescore_val, treescore_latency = tree_score.treescore_calc(model_link)
         result["tree_score"] = treescore_val
         result["tree_score_latency"] = int(treescore_latency * 1000)
     except Exception as e:
