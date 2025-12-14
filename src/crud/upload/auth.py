@@ -174,8 +174,16 @@ def create_access_token(
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     # Per OpenAPI spec: Return token with "bearer " prefix
+    # print("auth.py")
+    # print(str(access_token))
  
+<<<<<<< HEAD
  curl -X PUT http://localhost:8000/authenticate -H "Content-Type: application/json" -d "{\"user\": {\"name\": \"ece30861defaultadminuser\"}, \"secret\": {\"password\": \"correcthorsebatterystaple123(!__+@**(A'\\\"`;DROP TABLE artifacts;\"}}"return Response(content=f"\"{access_token}\"", media_type="application/json")   
+=======
+#  return Response(content=f"{access_token}", media_type="application/json")   
+
+    return encoded_jwt
+>>>>>>> 0ac1b9feeb1bb7c6e74e0823695e8c8a7c56c820
 
 def decode_access_token(token: str) -> dict[str, Any]:  # NEW: JWT token validation
     """Decode and validate a JWT access token.

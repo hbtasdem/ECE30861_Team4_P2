@@ -220,7 +220,7 @@ def calculate_all_scores(
         print(f"Error calculating treescore for {model_name}: {e}", file=sys.stderr)
     # Tree_score
     try:
-        treescore_val, treescore_latency = tree_score.treescore_calc(model_name)
+        treescore_val, treescore_latency = tree_score.treescore_calc(model_link)
         result["tree_score"] = treescore_val
         result["tree_score_latency"] = int(treescore_latency * 1000)
     except Exception as e:

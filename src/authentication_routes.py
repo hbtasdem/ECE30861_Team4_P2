@@ -19,6 +19,7 @@ not wrapped in an object. Example: "bearer eyJhbGc..." not {"token": "bearer..."
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from src.crud.upload.artifacts import AuthenticationRequest
@@ -176,5 +177,6 @@ async def authenticate_user(
     }
     access_token = create_access_token(token_data)
 
-    from fastapi.responses import JSONResponse
-    return JSONResponse(content=f"bearer {access_token}")
+    from fastapi.responses import Response
+    # Per spec: Return token as a JSON string (not wrapped in object)
+    return Response(content=f'"bearer {access_token}"', media_type="application/json")

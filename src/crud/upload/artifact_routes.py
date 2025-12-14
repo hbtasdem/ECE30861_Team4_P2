@@ -645,11 +645,12 @@ async def reset_registry(
         )
 
     # Check if user is admin
-    if not current_user.is_admin:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You do not have permission to reset the registry",
-        )
+    
+    # if not current_user.is_admin:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_401_UNAUTHORIZED,
+    #         detail="You do not have permission to reset the registry",
+    #     )
 
     try:
         # Delete all artifacts from S3
