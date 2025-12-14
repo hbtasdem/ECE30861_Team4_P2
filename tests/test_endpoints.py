@@ -48,14 +48,15 @@ def test_register() -> tuple[Any, str, str]:
     response = client.post("/register", json=payload)
     print(f"Status: {response.status_code}")
     if response.status_code == 200:
-        data = response.json()
-        print(f"Response: {json.dumps(data, indent=2)}")
-        assert "token" in data
-        assert "bearer " in data["token"]
+        # Per spec: Response is plain string "bearer <jwt>", not {"token": "bearer..."}
+        token = response.json()
+        print(f"Response: {json.dumps(token, indent=2)}")
+        assert isinstance(token, str), f"Token should be string, got {type(token)}"
+        assert token.startswith("bearer "), f"Token should start with 'bearer ', got: {token[:20]}"
         print("PASSED - JWT token received")
         # Store in global for next test to use
         global registered_user_token, registered_username, registered_password
-        registered_user_token = data["token"]
+        registered_user_token = token
         registered_username = username
         registered_password = password
     else:
@@ -75,10 +76,11 @@ def test_authenticate(
     response = client.put("/authenticate", json=payload)
     print(f"Status: {response.status_code}")
     if response.status_code == 200:
-        data = response.json()
-        print(f"Response: {json.dumps(data, indent=2)}")
-        assert "token" in data
-        assert "bearer " in data["token"]
+        # Per spec: Response is plain string "bearer <jwt>", not {"token": "bearer..."}
+        token = response.json()
+        print(f"Response: {json.dumps(token, indent=2)}")
+        assert isinstance(token, str), f"Token should be string, got {type(token)}"
+        assert token.startswith("bearer "), f"Token should start with 'bearer ', got: {token[:20]}"
         print("PASSED - JWT token received")
     else:
         print(f"Response: {response.text}")
