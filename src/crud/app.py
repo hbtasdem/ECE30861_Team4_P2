@@ -1,3 +1,160 @@
+# """FastAPI application for Model Registry API - OpenAPI v3.4.4 BASELINE endpoints only.
+
+# FILE PURPOSE:
+# Creates and configures the main FastAPI application with all 11 BASELINE endpoints for
+# managing artifacts from URLs. Initializes the database connection and includes
+# all BASELINE route handlers.
+
+# ENDPOINTS PROVIDED (10/10 BASELINE):
+# 1-4. POST /artifact, GET/PUT /artifacts (in artifact_routes.py)
+# 5. DELETE /reset (in artifact_routes.py)
+# 6. GET /artifact/{type}/{id}/cost (in artifact_routes.py)
+# 7. GET /artifact/model/{id}/lineage (in artifact_routes.py)
+# 8. POST /artifact/byRegEx (in artifact_routes.py)
+# 9. GET /health (defined below)
+# 10. GET /artifact/model/{id}/rate (in rate/routes.py)
+# """
+# # app.py
+
+# import logging
+# import sys
+# from pathlib import Path
+# from typing import Dict, List
+
+# from dotenv import load_dotenv
+# load_dotenv()
+
+# from fastapi import FastAPI, Query, Request
+# from fastapi.responses import HTMLResponse
+# from fastapi.templating import Jinja2Templates
+
+# # Add src and parent to path for imports
+# sys.path.insert(0, str(Path(__file__).parent))
+# sys.path.insert(0, str(Path(__file__).parent.parent))
+# sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
+# from src.authentication_routes import router as auth_router  # noqa: E402
+# from src.crud.rate_route import router as rate_router  # noqa: E402
+# from src.crud.upload.artifact_routes import \
+#     router as artifact_router  # noqa: E402
+# from src.database import init_db  # noqa: E402
+# from src.health_monitor import HealthComponentCollection  # noqa: E402
+# from src.health_monitor import health_monitor  # noqa: E402
+
+# templates = Jinja2Templates(directory="templates")
+
+# # Initialize FastAPI app
+# app = FastAPI(
+#     title="Model Registry API",
+#     description="Registry for managing ML models, datasets, and code from URLs",
+#     version="1.0.0",
+# )
+
+
+# # Per spec Section 3.2.1: S3-based artifact storage
+# # Database tables are used for authentication and audit logging
+# @app.on_event("startup")
+# def startup_event():
+#     """Initialize database on application startup"""
+#     init_db()
+
+
+# # --------------- Configure logging ---------------
+# logging.basicConfig(level=logging.INFO)
+# logger = logging.getLogger("uvicorn")
+# # silence logs we don't want
+# logging.getLogger("botocore").setLevel(logging.WARNING)
+# logging.getLogger("httpx").setLevel(logging.WARNING)
+# logging.getLogger("httpcore").setLevel(logging.WARNING)
+
+
+# @app.middleware("http")
+# async def log_requests(request: Request, call_next):
+#     logger.info(f"Incoming request: {request.method} {request.url}")
+
+#     try:
+#         body = await request.json()
+#         logger.info(f"Request body: {body}")
+#     except Exception:
+#         body = None
+
+#     response = await call_next(request)
+
+#     logger.info(f"Response status: {response.status_code}")
+#     if hasattr(response, "body") and response.body is not None:
+#         try:
+#             logger.info(f"Response body: {response.body.decode('utf-8')}")
+#         except Exception:
+#             logger.info(f"Response body (binary or non-text): {response.body}")
+
+#     return response
+
+
+# # --------------- Include routers ---------------
+# app.include_router(artifact_router)  # POST/GET/PUT /artifact(s)/{type}/{id}, POST /artifacts
+# app.include_router(rate_router)  # GET /artifact/model/{id}/rate
+# app.include_router(auth_router)  # PUT /authenticate, POST /register
+
+
+# # @app.get("/")
+# # def root() -> Dict[str, Any]:
+# #     """API root - returns available endpoints"""
+# #     return {
+# #         "message": "Model Registry API",
+# #         "endpoints": {
+# #             "health": "/health",
+# #             "upload": "/api/models/upload",
+# #             "docs": "/docs",
+# #             "redoc": "/redoc",
+# #         },
+# #     }
+
+# @app.get("/", response_class=HTMLResponse)
+# async def index(request: Request):
+#     return templates.TemplateResponse("index.html", {"request": request})
+
+
+# @app.get("/health")
+# def health_check() -> Dict[str, str]:
+#     """Health check endpoint"""
+#     return {"status": "ok"}
+
+
+# @app.get("/health/components", response_model=HealthComponentCollection)
+# def get_health_components(
+#     windowMinutes: int = Query(60, ge=5, le=1440),
+#     includeTimeline: bool = Query(False),
+# ) -> HealthComponentCollection:
+#     """Get detailed health diagnostics for registry components (NON-BASELINE).
+
+#     Per OpenAPI v3.4.4 spec /health/components endpoint:
+#     - Returns per-component health diagnostics
+#     - Includes status, metrics, issues, and logs from observation window
+#     - Optional timeline sampling available
+
+#     Args:
+#         windowMinutes: Observation window in minutes (5-1440, default 60)
+#         includeTimeline: Include activity timelines if true (default false)
+
+#     Returns:
+#         HealthComponentCollection with all component details
+#     """
+#     return health_monitor.get_health_components(window_minutes=windowMinutes, include_timeline=includeTimeline)
+
+
+# @app.get("/tracks")
+# def extended_track() -> Dict[str, List]:
+#     return {"plannedTracks": ["Access control track"]}
+
+
+# # uvicorn src.crud.app:app --host 127.0.0.1 --port 8000 --reload
+# # go to local host website in browser
+
+# if __name__ == "__main__":
+#     import uvicorn
+
+#     uvicorn.run(app, host="127.0.0.1", port=8000)
+
 """FastAPI application for Model Registry API - OpenAPI v3.4.4 BASELINE endpoints only.
 
 FILE PURPOSE:
@@ -5,27 +162,84 @@ Creates and configures the main FastAPI application with all 11 BASELINE endpoin
 managing artifacts from URLs. Initializes the database connection and includes
 all BASELINE route handlers.
 
-ENDPOINTS PROVIDED (10/10 BASELINE):
+ENDPOINTS PROVIDED (11/11 BASELINE):
 1-4. POST /artifact, GET/PUT /artifacts (in artifact_routes.py)
 5. DELETE /reset (in artifact_routes.py)
 6. GET /artifact/{type}/{id}/cost (in artifact_routes.py)
 7. GET /artifact/model/{id}/lineage (in artifact_routes.py)
-8. POST /artifact/byRegEx (in artifact_routes.py)
-9. GET /health (defined below)
-10. GET /artifact/model/{id}/rate (in rate/routes.py)
+8. POST /artifact/model/{id}/license-check (in artifact_routes.py)
+9. POST /artifact/byRegEx (in artifact_routes.py)
+10. GET /health (defined below)
+11. GET /artifact/model/{id}/rate (in rate/routes.py)
 """
+
 # app.py
 
 import logging
+import os
 import sys
+from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Dict, List
 
-from fastapi import FastAPI, Query, Request
+import boto3
+from dotenv import find_dotenv, load_dotenv
+from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+
+cloudwatch_logs = boto3.client('logs', region_name=os.getenv('AWS_REGION', 'us-east-2'))
+LOG_GROUP_NAME = os.getenv('CLOUDWATCH_LOG_GROUP', '/aws/ec2/fastapi-logs')
+
+# helper function for health logging
+
+
+def fetch_cloudwatch_logs(hours: int = 1, limit: int = 100) -> List[Dict]:
+    """Fetch recent logs from CloudWatch"""
+    try:
+        start_time = int((datetime.now() - timedelta(hours=hours)).timestamp() * 1000)
+        end_time = int(datetime.now().timestamp() * 1000)
+
+        response = cloudwatch_logs.filter_log_events(
+            logGroupName=LOG_GROUP_NAME,
+            startTime=start_time,
+            endTime=end_time,
+            limit=limit
+        )
+
+        logs = []
+        for event in response.get('events', []):
+            ts = datetime.fromtimestamp(event['timestamp'] / 1000)
+            message = event['message'].strip()
+
+            # Determine log level
+            level = 'INFO'
+            if 'ERROR' in message.upper() or 'EXCEPTION' in message.upper():
+                level = 'ERROR'
+            elif 'WARNING' in message.upper() or 'WARN' in message.upper():
+                level = 'WARNING'
+            elif 'DEBUG' in message.upper():
+                level = 'DEBUG'
+
+            logs.append({
+                'timestamp': ts.strftime('%Y-%m-%d %H:%M:%S'),
+                'level': level,
+                'message': message,
+                'stream': event.get('logStreamName', 'unknown')
+            })
+
+        return logs
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching logs: {str(e)}")
+
+
+# Load environment variables from .env file
+# Use absolute path to ensure .env is found regardless of working directory
 
 # Add src and parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.authentication_routes import router as auth_router  # noqa: E402
 from src.crud.rate_route import router as rate_router  # noqa: E402
@@ -33,7 +247,37 @@ from src.crud.upload.artifact_routes import router as artifact_router  # noqa: E
 from src.database import init_db  # noqa: E402
 from src.health_monitor import HealthComponentCollection  # noqa: E402
 from src.health_monitor import health_monitor  # noqa: E402
+from src.lineage_tree import router as lineage_router  # noqa: E402
 from src.sensitive_models import router as sensitive_router  # noqa: E402
+
+# Try to find .env file starting from current file's directory
+dotenv_path = find_dotenv(usecwd=True)
+if dotenv_path:
+    load_dotenv(dotenv_path)
+    print(f"✓ Loaded .env from: {dotenv_path}")
+else:
+    # Fallback: look in parent directories
+    current_dir = Path(__file__).resolve().parent
+    for parent in [current_dir, current_dir.parent, current_dir.parent.parent]:
+        env_file = parent / ".env"
+        if env_file.exists():
+            load_dotenv(env_file)
+            print(f"✓ Loaded .env from: {env_file}")
+            break
+    else:
+        print("⚠️  No .env file found")
+
+# Set templates directory - since app.py is in src/crud/ and templates is src/crud/templates/
+# Use __file__ to get absolute path relative to this file
+TEMPLATE_DIR = Path(__file__).parent / "templates"
+
+# Verify template directory exists at import time
+if not TEMPLATE_DIR.exists():
+    print(f"⚠️  WARNING: Templates directory not found at {TEMPLATE_DIR}")
+    print(f"    Current file location: {Path(__file__).resolve()}")
+    print(f"    Looking for templates at: {TEMPLATE_DIR.resolve()}")
+
+templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -49,6 +293,30 @@ app = FastAPI(
 def startup_event():
     """Initialize database on application startup"""
     init_db()
+
+    # Verify credentials are loaded (optional - helpful for debugging)
+    logger = logging.getLogger("uvicorn")
+
+    # Check if templates directory exists
+    if TEMPLATE_DIR.exists():
+        logger.info(f"✓ Templates directory found at: {TEMPLATE_DIR}")
+    else:
+        logger.error(f"✗ Templates directory NOT found! Looked at: {TEMPLATE_DIR}")
+
+    github_token = os.getenv("GITHUB_TOKEN")
+    hf_token = os.getenv("HF_TOKEN")
+
+    if not github_token:
+        logger.warning("⚠️  GITHUB_TOKEN not found in environment variables")
+        logger.warning("   Set GITHUB_TOKEN in .env file or environment")
+    else:
+        logger.info("✓ GITHUB_TOKEN loaded successfully")
+
+    if not hf_token:
+        logger.warning("⚠️  HF_TOKEN not found in environment variables")
+        logger.warning("   Set HF_TOKEN in .env file or environment")
+    else:
+        logger.info("✓ HF_TOKEN loaded successfully")
 
 
 # --------------- Configure logging ---------------
@@ -83,30 +351,59 @@ async def log_requests(request: Request, call_next):
 
 
 # --------------- Include routers ---------------
-app.include_router(artifact_router)  # POST/GET/PUT /artifact(s)/{type}/{id}, POST /artifacts
+app.include_router(
+    artifact_router
+)  # POST/GET/PUT /artifact(s)/{type}/{id}, POST /artifacts
 app.include_router(rate_router)  # GET /artifact/model/{id}/rate
 app.include_router(auth_router)  # PUT /authenticate, POST /register
 app.include_router(sensitive_router)
+app.include_router(lineage_router)  # GET /artifact/model/{id}/lineage
 
 
-@app.get("/")
-def root() -> Dict[str, Any]:
-    """API root - returns available endpoints"""
-    return {
-        "message": "Model Registry API",
-        "endpoints": {
-            "health": "/health",
-            "upload": "/api/models/upload",
-            "docs": "/docs",
-            "redoc": "/redoc",
-        },
-    }
+# @app.get("/")
+# def root() -> Dict[str, Any]:
+#     """API root - returns available endpoints"""
+#     return {
+#         "message": "Model Registry API",
+#         "endpoints": {
+#             "health": "/health",
+#             "upload": "/api/models/upload",
+#             "docs": "/docs",
+#             "redoc": "/redoc",
+#         },
+#     }
 
 
-@app.get("/health")
-def health_check() -> Dict[str, str]:
-    """Health check endpoint"""
-    return {"status": "ok"}
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+# Add these two new endpoints
+@app.get("/health", response_class=HTMLResponse)
+async def health_check_ui(request: Request):
+    """Health check endpoint with CloudWatch logs UI"""
+    return templates.TemplateResponse("health.html", {"request": request})
+
+
+@app.get("/health/logs")
+async def get_health_logs(hours: int = 1, limit: int = 100):
+    """API endpoint to fetch logs as JSON"""
+    try:
+        logs = fetch_cloudwatch_logs(hours=hours, limit=limit)
+        return {
+            'status': 'healthy',
+            'timestamp': datetime.now().isoformat(),
+            'log_group': LOG_GROUP_NAME,
+            'logs': logs,
+            'total': len(logs)
+        }
+    except Exception as e:
+        return {
+            'status': 'error',
+            'message': str(e),
+            'logs': []
+        }
 
 
 @app.get("/health/components", response_model=HealthComponentCollection)
@@ -128,7 +425,9 @@ def get_health_components(
     Returns:
         HealthComponentCollection with all component details
     """
-    return health_monitor.get_health_components(window_minutes=windowMinutes, include_timeline=includeTimeline)
+    return health_monitor.get_health_components(
+        window_minutes=windowMinutes, include_timeline=includeTimeline
+    )
 
 
 @app.get("/tracks")

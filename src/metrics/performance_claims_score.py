@@ -4,9 +4,8 @@ import sys
 import time
 from typing import Tuple
 
-from src.hugging_face_api import get_model_info
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
+from src.hugging_face_api import get_model_info  # noqa: E402
 
 
 def normalize_sigmoid(value: int, mid: int, steepness: float) -> float:
@@ -37,7 +36,9 @@ def performance_claims_sub_score(model_id: str) -> Tuple[float, float]:
         return 0.0, time.time() - start
 
     # 1. Downloads
-    score += normalize_sigmoid(value=info.get("downloads", 0), mid=1000, steepness=0.0001)
+    score += normalize_sigmoid(
+        value=info.get("downloads", 0), mid=1000, steepness=0.0001
+    )
 
     # 2. Likes
     score += normalize_sigmoid(value=info.get("likes", 0), mid=10, steepness=0.01)

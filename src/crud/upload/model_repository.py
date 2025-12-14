@@ -1,6 +1,4 @@
-"""Database repository layer - Phase 2 artifact CRUD data access.
-
-Per OpenAPI v3.4.4 Section 3.2.1 - Artifact Object Management
+"""Database repository layer - Phase 2 artifact CRUD data access.Per OpenAPI v3.4.4 Section 3.2.1 - Artifact Object Management
 
 FILE PURPOSE:
 Provides abstraction layer for artifact database operations using SQLAlchemy ORM.
