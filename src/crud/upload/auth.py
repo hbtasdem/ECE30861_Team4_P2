@@ -97,7 +97,7 @@ SECRET_KEY = os.getenv(
     "SECRET_KEY", "dev-secret-key-change-in-production"
 )  # NEW: JWT secret
 ALGORITHM = "HS256"  # NEW: JWT algorithm
-ACCESS_TOKEN_EXPIRE_MINUTES = 30  # NEW: Token expiration time
+ACCESS_TOKEN_EXPIRE_MINUTES = 600  # NEW: Token expiration time (10 hours)
 
 
 def hash_password(password: str) -> str:  # NEW: Hash password for storage
@@ -169,8 +169,12 @@ def create_access_token(
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     # Per OpenAPI spec: Return token with "bearer " prefix
-    return f"bearer {encoded_jwt}"
+    # print("auth.py")
+    # print(str(access_token))
+ 
+#  return Response(content=f"{access_token}", media_type="application/json")   
 
+    return encoded_jwt
 
 def decode_access_token(token: str) -> dict[str, Any]:  # NEW: JWT token validation
     """Decode and validate a JWT access token.

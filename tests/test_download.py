@@ -29,15 +29,11 @@ class FakeResponse:
         pass
 
     def iter_bytes(self, chunk_size: int = 1024 * 1024) -> Iterator[bytes]:
-    def iter_bytes(self, chunk_size: int = 1024 * 1024) -> Iterator[bytes]:
         return self._stream
 
     def __enter__(self) -> "FakeResponse":
         return self
 
-    def __exit__(
-        self, exc_type: Type[BaseException], exc_val: BaseException, exc_tb: Any
-    ) -> None:
     def __exit__(
         self, exc_type: Type[BaseException], exc_val: BaseException, exc_tb: Any
     ) -> None:
@@ -47,9 +43,6 @@ class FakeResponse:
 @pytest.mark.skipif(not HAS_MOTO, reason="moto not available")
 @patch("src.crud.upload.download_artifact.HfApi")
 @patch("src.crud.upload.download_artifact.httpx.stream")
-def test_download_model(
-    mock_httpx_stream: MagicMock, mock_hfapi_class: MagicMock
-) -> None:
 def test_download_model(
     mock_httpx_stream: MagicMock, mock_hfapi_class: MagicMock
 ) -> None:
@@ -103,11 +96,6 @@ def test_download_model(
 @patch("src.crud.upload.download_artifact.HfApi")
 @patch("src.crud.upload.download_artifact.httpx.stream")
 @patch("src.crud.upload.download_artifact.get_hf_token")
-def test_download_dataset_huggingface(
-    mock_get_hf_token: MagicMock,
-    mock_httpx_stream: MagicMock,
-    mock_hfapi_class: MagicMock,
-) -> None:
 def test_download_dataset_huggingface(
     mock_get_hf_token: MagicMock,
     mock_httpx_stream: MagicMock,
@@ -188,21 +176,11 @@ def test_download_dataset_kaggle(
     mock_httpx_client_class: MagicMock,
     mock_kaggle_credentials: None,
 ) -> None:
-    mock_disk_usage: MagicMock,
-    mock_kaggle_class: MagicMock,
-    mock_httpx_client_class: MagicMock,
-    mock_kaggle_credentials: None,
-) -> None:
     # ----- Mock disk usage check -----
-    mock_disk_usage.return_value = MagicMock(free=1024 * 1024 * 1024)  # 1GB free
     mock_disk_usage.return_value = MagicMock(free=1024 * 1024 * 1024)  # 1GB free
 
     # ----- Mock Kaggle API -----
     mock_kaggle_api = MagicMock()
-    mock_kaggle_api.get_config_value.side_effect = lambda key: {
-        "username": "test_user",
-        "key": "test_key",
-    }[key]
     mock_kaggle_api.get_config_value.side_effect = lambda key: {
         "username": "test_user",
         "key": "test_key",
@@ -279,9 +257,6 @@ def test_download_dataset_kaggle(
 @pytest.mark.skipif(not HAS_MOTO, reason="moto not available")
 @patch("src.crud.upload.download_artifact.httpx.stream")
 @patch("src.crud.upload.download_artifact.httpx.Client")
-def test_download_dataset_github(
-    mock_httpx_client_class: MagicMock, mock_httpx_stream: MagicMock
-) -> None:
 def test_download_dataset_github(
     mock_httpx_client_class: MagicMock, mock_httpx_stream: MagicMock
 ) -> None:
@@ -405,9 +380,6 @@ def test_download_dataset_github(
 @pytest.mark.skipif(not HAS_MOTO, reason="moto not available")
 @patch("src.crud.upload.download_artifact.httpx.stream")
 @patch("src.crud.upload.download_artifact.httpx.Client")
-def test_download_code(
-    mock_httpx_client: MagicMock, mock_httpx_stream: MagicMock
-) -> None:
 def test_download_code(
     mock_httpx_client: MagicMock, mock_httpx_stream: MagicMock
 ) -> None:

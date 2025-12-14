@@ -38,19 +38,18 @@ from typing import Any, Dict, List, Optional
 
 import boto3
 from botocore.exceptions import ClientError
-from fastapi import APIRouter, Header, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from sqlalchemy.orm import Session
 from ulid import ULID
 
 from src.crud.rate_route import rateOnUpload
-from src.crud.upload.artifacts import (Artifact, ArtifactData, ArtifactLineageGraph, ArtifactLineageNode,
-                                       ArtifactMetadata, ArtifactQuery)
+from src.crud.upload.artifacts import Artifact, ArtifactData, ArtifactMetadata, ArtifactQuery
 from src.crud.upload.auth import get_current_user
 from src.crud.upload.download_artifact import get_download_url
+from src.database import get_db
+from src.database_models import Artifact as ArtifactModel
+from src.database_models import AuditEntry
 from src.metrics.license_check import license_check
-
-# from src.database import get_db
-# from src.database_models import Artifact as ArtifactModel
-# from src.database_models import AuditEntry
 
 router = APIRouter(tags=["artifacts"])
 
@@ -124,7 +123,6 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
     response_model=Artifact,
     status_code=status.HTTP_201_CREATED,
 )
-
 @router.post(
     "/artifact/{artifact_type}",
     response_model=Artifact,
@@ -432,11 +430,17 @@ async def enumerate_artifacts(
         results = []
         seen_ids = set()
 
+        # Check if S3 is empty for all types; if so, return []
+        s3_empty = True
+        for artifact_type in ["model", "dataset", "code"]:
+            if _get_artifacts_by_type(artifact_type):
+                s3_empty = False
+                break
+        if s3_empty:
+            return []
+
         for query in queries:
             # Determine types to search
-            types_to_search = (
-                query.types if query.types else ["model", "dataset", "code"]
-            )
             types_to_search = (
                 query.types if query.types else ["model", "dataset", "code"]
             )
@@ -460,7 +464,7 @@ async def enumerate_artifacts(
                         results.append(artifact)
 
         # Apply pagination
-        paginated_results = results[offset_int: offset_int + page_size]
+        paginated_results = results[offset_int:offset_int + page_size]  # noqa: E203
 
         # Convert to metadata
         metadata_list = [
@@ -489,16 +493,18 @@ async def enumerate_artifacts(
 @router.delete("/reset")
 async def reset_registry(
     x_authorization: Optional[str] = Header(None),
+    db: Session = Depends(get_db),
 ) -> Dict[str, str]:
     """Reset the registry to system default state (admin only).
 
     Per OpenAPI v3.4.4 spec:
     - Requires admin authorization
-    - Deletes all artifacts
+    - Deletes all artifacts from S3 and database
     - Returns 200 on success, 401 if not admin
 
     Args:
         x_authorization: Bearer token for authentication
+        db: Database session
 
     Returns:
         Dict with success message
@@ -506,21 +512,22 @@ async def reset_registry(
     Raises:
         HTTPException: 401 if not admin, 403 if auth fails
     """
-    # if not x_authorization:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN,
-    #         detail="Missing X-Authorization header",
-    #     )
+    if not x_authorization:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Missing X-Authorization header",
+        )
 
-    # try:
-    #     current_user = get_current_user(x_authorization, None)
-    # except HTTPException:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN,
-    #         detail="Authentication failed: Invalid or expired token",
-    #     )
+    try:
+        current_user = get_current_user(x_authorization, db)
+    except HTTPException:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Authentication failed: Invalid or expired token",
+        )
 
     # Check if user is admin
+    
     # if not current_user.is_admin:
     #     raise HTTPException(
     #         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -528,7 +535,7 @@ async def reset_registry(
     #     )
 
     try:
-        # Delete all artifacts
+        # Delete all artifacts from S3
         paginator = s3_client.get_paginator("list_objects_v2")
         pages = paginator.paginate(Bucket=BUCKET_NAME)
 
@@ -538,8 +545,35 @@ async def reset_registry(
             for obj in page["Contents"]:
                 s3_client.delete_object(Bucket=BUCKET_NAME, Key=obj["Key"])
 
-        return {"message": "Registry is reset."}
+        # Delete all artifacts from database
+        db.query(ArtifactModel).delete()
+
+        # Delete all audit entries from database
+        db.query(AuditEntry).delete()
+
+        # Delete all users from database
+        from src.database_models import User as DBUser
+        db.query(DBUser).delete()
+
+        # Recreate default admin user (required for autograder login)
+        admin_username = "ece30861defaultadminuser"
+        admin_password = "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
+        from src.crud.upload.auth import hash_password
+        hashed = hash_password(admin_password)
+        admin_user = DBUser(
+            username=admin_username,
+            email="admin@registry.local",
+            hashed_password=hashed,
+            is_admin=True,
+        )
+        db.add(admin_user)
+
+        # Commit the database changes
+        db.commit()
+
+        return {"message": "Registry is reset and default admin user recreated."}
     except Exception as e:
+        db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Failed to reset registry: {str(e)}",
@@ -592,8 +626,11 @@ async def get_artifact_cost(
         )
 
     try:
+        # Get artifact metadata
         key = _get_artifact_key(artifact_type, artifact_id)
-        s3_client.head_object(Bucket=BUCKET_NAME, Key=key)
+        response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)
+        artifact_envelope = json.loads(response["Body"].read().decode("utf-8"))
+        artifact_url = artifact_envelope["data"]["url"]
     except ClientError as e:
         if e.response["Error"]["Code"] == "404":
             raise HTTPException(
@@ -605,11 +642,81 @@ async def get_artifact_cost(
             detail=f"Failed to retrieve artifact: {str(e)}",
         )
 
-    # For now, return placeholder cost
-    cost_data = {artifact_id: {"total_cost": 100.0}}
+    # Calculate artifact size in MB
+    try:
+        from src.size_cost import get_model_size_gb
 
-    if dependency:
-        cost_data[artifact_id]["standalone_cost"] = 100.0
+        # Extract model ID from URL
+        model_id = artifact_url
+        if "huggingface.co/" in artifact_url:
+            parts = artifact_url.split("huggingface.co/")[-1].split("/")
+            if len(parts) >= 2:
+                model_id = f"{parts[0]}/{parts[1]}"
+
+        # Get size in GB, convert to MB
+        size_gb = get_model_size_gb(model_id)
+        size_mb = round(size_gb * 1024, 2)
+    except Exception:
+        # Fallback to default size if calculation fails
+        size_mb = 100.0
+
+    # Build response per spec
+    if not dependency:
+        # Per spec: When dependency=false, return ONLY total_cost (no standalone_cost)
+        cost_data = {artifact_id: {"total_cost": size_mb}}
+    else:
+        # Per spec: When dependency=true, include standalone_cost + all dependencies
+        # Get dependencies from lineage (if available)
+        dependencies = {}
+        try:
+            # Try to get lineage data
+            from src.lineage_tree import extract_lineage_graph
+
+            lineage = extract_lineage_graph(artifact_url, artifact_id)
+
+            # Calculate cost for each dependency node
+            for node in lineage.get("nodes", []):
+                dep_id = node.get("artifact_id")
+                if dep_id and dep_id != artifact_id:
+                    # Try to get dependency artifact
+                    try:
+                        dep_key = f"model/{dep_id}.json"  # Assume model type for dependencies
+                        dep_response = s3_client.get_object(Bucket=BUCKET_NAME, Key=dep_key)
+                        dep_envelope = json.loads(dep_response["Body"].read().decode("utf-8"))
+                        dep_url = dep_envelope["data"]["url"]
+
+                        # Calculate dependency size
+                        dep_model_id = dep_url
+                        if "huggingface.co/" in dep_url:
+                            parts = dep_url.split("huggingface.co/")[-1].split("/")
+                            if len(parts) >= 2:
+                                dep_model_id = f"{parts[0]}/{parts[1]}"
+
+                        dep_size_gb = get_model_size_gb(dep_model_id)
+                        dep_size_mb = round(dep_size_gb * 1024, 2)
+
+                        dependencies[dep_id] = {
+                            "standalone_cost": dep_size_mb,
+                            "total_cost": dep_size_mb
+                        }
+                    except Exception:
+                        # If dependency not found, skip it
+                        pass
+        except Exception:
+            # If lineage extraction fails, continue without dependencies
+            pass
+
+        # Calculate total_cost as sum of all dependencies + standalone
+        total_cost = size_mb + sum(dep.get("total_cost", 0) for dep in dependencies.values())
+
+        # Build response with main artifact + all dependencies
+        cost_data = {
+            artifact_id: {
+                "standalone_cost": size_mb,
+                "total_cost": total_cost
+            }
+        }
+        cost_data.update(dependencies)
 
     return cost_data
 
@@ -617,71 +724,73 @@ async def get_artifact_cost(
 # ============================================================================
 # GET /artifact/model/{artifact_id}/lineage - GET ARTIFACT LINEAGE (BASELINE)
 # ============================================================================
+# NOTE: This endpoint is now implemented in src/lineage_tree.py with full functionality
+# The lineage_router is included in app.py instead of this basic implementation
 
 
-@router.get(
-    "/artifact/model/{artifact_id}/lineage", response_model=ArtifactLineageGraph
-)
-async def get_artifact_lineage(
-    artifact_id: str,
-    x_authorization: Optional[str] = Header(None),
-) -> ArtifactLineageGraph:
-    """Retrieve the lineage graph for an artifact.
+# @router.get(
+#     "/artifact/model/{artifact_id}/lineage", response_model=ArtifactLineageGraph
+# )
+# async def get_artifact_lineage(
+#     artifact_id: str,
+#     x_authorization: Optional[str] = Header(None),
+# ) -> ArtifactLineageGraph:
+#     """Retrieve the lineage graph for an artifact.
 
-    Per OpenAPI v3.4.4 spec:
-    - Returns lineage graph extracted from structured metadata
-    - Returns 404 if artifact not found
+#     Per OpenAPI v3.4.7 spec:
+#     - Returns lineage graph extracted from structured metadata
+#     - Returns 404 if artifact not found
 
-    Args:
-        artifact_id: Unique artifact identifier
-        x_authorization: Bearer token for authentication
+#     Args:
+#         artifact_id: Unique artifact identifier
+#         x_authorization: Bearer token for authentication
 
-    Returns:
-        ArtifactLineageGraph with nodes and edges
+#     Returns:
+#         ArtifactLineageGraph with nodes and edges
 
-    Raises:
-        HTTPException: 403 if auth fails, 404 if not found
-    """
-    if not x_authorization:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header",
-        )
+#     Raises:
+#         HTTPException: 403 if auth fails, 404 if not found
+#     """
+#     if not x_authorization:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Missing X-Authorization header",
+#         )
 
-    try:
-        get_current_user(x_authorization, None)
-    except HTTPException:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token",
-        )
+#     try:
+#         get_current_user(x_authorization, None)
+#     except HTTPException:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Authentication failed: Invalid or expired token",
+#         )
 
-    try:
-        key = _get_artifact_key("model", artifact_id)
-        response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)
-        artifact_envelope = json.loads(response["Body"].read().decode("utf-8"))
+#     try:
+#         key = _get_artifact_key("model", artifact_id)
+#         response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)
+#         artifact_envelope = json.loads(response["Body"].read().decode("utf-8"))
 
-        # For now, return self as a single node with no edges
-        nodes = [
-            ArtifactLineageNode(
-                artifact_id=artifact_id,
-                name=artifact_envelope["metadata"]["name"],
-                source="metadata",
-            )
-        ]
+#         # For now, return self as a single node with no edges
+#         nodes = [
+#             ArtifactLineageNode(
+#                 artifact_id=artifact_id,
+#                 name=artifact_envelope["metadata"]["name"],
+#                 source="metadata",
+#             )
+#         ]
 
-        return ArtifactLineageGraph(nodes=nodes, edges=[])
+#         return ArtifactLineageGraph(nodes=nodes, edges=[])
 
-    except ClientError as e:
-        if e.response["Error"]["Code"] == "NoSuchKey":
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Artifact does not exist.",
-            )
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Failed to retrieve artifact: {str(e)}",
-        )
+#     except ClientError as e:
+#         if e.response["Error"]["Code"] == "NoSuchKey":
+#             raise HTTPException(
+#                 status_code=status.HTTP_404_NOT_FOUND,
+#                 detail="Artifact does not exist.",
+#             )
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST,
+#             detail=f"Failed to retrieve artifact: {str(e)}",
+#         )
 
 
 # ============================================================================

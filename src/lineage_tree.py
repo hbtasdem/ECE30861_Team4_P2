@@ -278,14 +278,19 @@ async def get_artifact_lineage(
     Raises:
         HTTPException: 403 if auth fails, 404 if not found
     """
-    # Validate authentication if provided
-    if x_authorization:
-        if not x_authorization.startswith("Bearer ") and not x_authorization.startswith(
-            "bearer "
-        ):
-            raise HTTPException(
-                status_code=403, detail="Invalid authorization header format"
-            )
+    # Per spec: X-Authorization header is REQUIRED
+    if not x_authorization:
+        raise HTTPException(
+            status_code=403, detail="Missing X-Authorization header"
+        )
+
+    # Validate authentication header format
+    if not x_authorization.startswith("Bearer ") and not x_authorization.startswith(
+        "bearer "
+    ):
+        raise HTTPException(
+            status_code=403, detail="Invalid authorization header format"
+        )
 
     # TODO: Look up artifact in YOUR database
     # For now, treat artifact_id as HuggingFace model identifier

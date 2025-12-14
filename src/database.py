@@ -139,8 +139,7 @@ def init_db() -> None:
     """
     # Import models to register them with SQLAlchemy Base
     # IMPORTANT: This must import Artifact (not Model!) for spec compliance
-    from src.database_models import (Artifact, AuditEntry, Base,  # noqa: F401
-                                     User)
+    from src.database_models import Artifact, AuditEntry, Base, User  # noqa: F401
 
     # from src.phase3_models import FileStorage  # noqa: F401
     # Create all tables defined in src.models
@@ -148,28 +147,26 @@ def init_db() -> None:
     # Includes Phase 2 tables (User, Artifact, AuditEntry)
     Base.metadata.create_all(bind=engine)
 
-    # Create default admin user (per OpenAPI spec example)
-    # The spec example shows: ece30861defaultadminuser with password correcthorsebatterystaple123(!__+@**(A'"`;DROP TABLE artifacts;
+
+    # Always create default admin user with spec credentials if missing
     db = SessionLocal()
     try:
-        existing_admin = (
-            db.query(User).filter(User.username == "ece30861defaultadminuser").first()
-        )
+        admin_username = "ece30861defaultadminuser"
+        admin_password = "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
+        existing_admin = db.query(User).filter(User.username == admin_username).first()
         if not existing_admin:
             from src.crud.upload.auth import hash_password
-
-            default_password = (
-                "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
-            )
-            hashed = hash_password(default_password)
-
+            hashed = hash_password(admin_password)
             admin_user = User(
-                username="ece30861defaultadminuser",
+                username=admin_username,
                 email="admin@registry.local",
                 hashed_password=hashed,
                 is_admin=True,
             )
             db.add(admin_user)
             db.commit()
+            print(f" Created default admin user: {admin_username}")
+        else:
+            print(f" Default admin user already exists: {admin_username}")
     finally:
         db.close()
