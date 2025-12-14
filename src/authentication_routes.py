@@ -23,7 +23,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from src.crud.upload.artifacts import AuthenticationRequest
-from src.crud.upload.auth import create_access_token, hash_password, verify_password
+from src.crud.upload.auth import create_access_token, hash_password  # , verify_password
 from src.database import get_db
 from src.database_models import User as DBUser
 
@@ -98,9 +98,6 @@ async def register_user(
     }
     access_token = create_access_token(token_data)
 
-    # Per spec: Return token as a JSON string with escaped quotes (double-encoded)
-    import json
-    from fastapi.responses import Response
     # Return token with literal double quotes and backslashes
     from fastapi.responses import Response
     return Response(content='\\"' + access_token + '\\"', media_type="application/json")
@@ -155,7 +152,7 @@ async def authenticate_user(
     # Find user in database
     user = db.query(DBUser).filter(DBUser.username == request.user.name).first()
 
-    # COMMENTED OUT ANY 
+    # COMMENTED OUT ANY
     # if not user:
     #     logger.warning(f"Login failed: user not found. Username: {request.user.name}")
     #     raise HTTPException(
@@ -178,14 +175,4 @@ async def authenticate_user(
         "is_admin": user.is_admin,
     }
     access_token = create_access_token(token_data)
-
-    # # Per spec: Return token as a JSON string with escaped quotes (double-encoded)
-    # import json
-    # from fastapi.responses import Response
-    # # Return token with literal double quotes and backslashes
-    # from fastapi.responses import Response
-    # print("auth_routes.py")
-    # print(access_token)
-    # return request.user
-    return JSONResponse(content=f"bearer {access_token}") # Response(content='\\"' + access_token + '\\"', media_type="application/json")
-    # return access_token # Response(content='\\"' + access_token + '\\"', media_type="application/json")
+    return JSONResponse(content=f"bearer {access_token}")

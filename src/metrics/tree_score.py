@@ -197,17 +197,18 @@
 #!/usr/bin/env python3
 """Tree score calculation based on parent model ratings from S3."""
 
-import time
-import boto3
 import json
-from typing import Tuple, Optional
-import sys
 import os
+import sys
+import time
+from typing import Optional, Tuple
+
+import boto3
 
 # Add parent directory to path to import lineage_tree
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src import lineage_tree
+from src import lineage_tree  # noqa: E402
 
 # Initialize S3 client
 s3_client = boto3.client('s3')
@@ -224,7 +225,7 @@ def get_artifact_id_by_name(model_name: str) -> Optional[str]:
     
     Args:
         model_name: Model name (e.g., "climategpt-70b")
-    
+
     Returns:
         artifact_id if found, None otherwise
     """
@@ -260,12 +261,12 @@ def get_artifact_id_by_name(model_name: str) -> Optional[str]:
                 # Skip if not a .rate.json file or if it's in name_to_id/
                 if not key.endswith('.rate.json') or 'name_to_id' in key:
                     continue
-                
+
                 try:
                     # Fetch and check the name field
                     rating_obj = s3_client.get_object(Bucket=S3_BUCKET, Key=key)
                     rating_data = json.loads(rating_obj['Body'].read().decode('utf-8'))
-                    
+
                     if rating_data.get('name') == model_name:
                         # Extract artifact_id from filename
                         # rating/01KCDBCVND2S5Y2SRBDK8H9078.rate.json -> 01KCDBCVND2S5Y2SRBDK8H9078
@@ -275,10 +276,10 @@ def get_artifact_id_by_name(model_name: str) -> Optional[str]:
                 except Exception as e:
                     print(f"Error checking {key}: {e}", file=sys.stderr)
                     continue
-        
+
         print(f"No artifact found for name: {model_name}", file=sys.stderr)
         return None
-        
+
     except Exception as e:
         print(f"Error looking up artifact_id for {model_name}: {e}", file=sys.stderr)
         return None
@@ -290,28 +291,28 @@ def get_model_rating_from_s3(model_name: str) -> Optional[dict]:
     
     Args:
         model_name: Model name (e.g., "climategpt-70b")
-    
+
     Returns:
         Rating dict if found, None otherwise
     """
     try:
         # First, look up the artifact_id for this model name
         artifact_id = get_artifact_id_by_name(model_name)
-        
+
         if not artifact_id:
             print(f"Could not find artifact_id for model: {model_name}", file=sys.stderr)
             return None
-        
+
         # Now fetch using the artifact_id
         s3_key = f"{RATING_PREFIX}{artifact_id}.rate.json"
-        
+
         print(f"Fetching rating from S3: {s3_key}", file=sys.stderr)
-        
+
         response = s3_client.get_object(Bucket=S3_BUCKET, Key=s3_key)
         rating_data = json.loads(response['Body'].read().decode('utf-8'))
-        
+
         return rating_data
-    
+
     except s3_client.exceptions.NoSuchKey:
         print(f"No rating found in S3 for artifact_id: {artifact_id}", file=sys.stderr)
         return None
@@ -323,23 +324,23 @@ def get_model_rating_from_s3(model_name: str) -> Optional[dict]:
 def treescore_calc(model_identifier: str) -> Tuple[float, float]:
     """
     Calculate tree score based on parent model net scores from S3.
-    
+
     Tree score = average of all parent models' net_scores
     If no parents, returns 0.0 (base model)
-    
+
     Args:
         model_identifier: Model identifier - can be full path or just name
-    
+
     Returns:
         (tree_score, latency_in_seconds)
     """
     start_time = time.time()
-    
+
     print(f"Calculating tree score for: {model_identifier}", file=sys.stderr)
-    
+
     # Get lineage info from lineage_tree module
     parent_lineage, _ = lineage_tree.check_lineage(model_identifier)
-    
+
     if not parent_lineage or not parent_lineage.get("has_lineage"):
         # No parents = base model, tree_score is 0
         print(f"Model {model_identifier} has no parents, tree_score = 0.0", file=sys.stderr)
@@ -347,26 +348,26 @@ def treescore_calc(model_identifier: str) -> Tuple[float, float]:
     
     # Get all parent model names
     parent_models = parent_lineage.get("all_parents", [])
-    
+
     if not parent_models:
         return 0.5, time.time() - start_time
     
     print(f"Found {len(parent_models)} parent(s): {parent_models}", file=sys.stderr)
-    
+
     total_score = 0.0
     num_parents_with_scores = 0
-    
+
     # For each parent, fetch its rating from S3 and get net_score
     for parent_full_name in parent_models:
         # Extract just the model name (remove org prefix if present)
         # e.g., "eci-io/climategpt-70b" -> "climategpt-70b"
         parent_name = parent_full_name.split("/")[-1] if "/" in parent_full_name else parent_full_name
-        
+
         print(f"Fetching rating for parent: {parent_name}", file=sys.stderr)
-        
+
         # Fetch parent rating from S3
         parent_rating = get_model_rating_from_s3(parent_name)
-        
+
         if parent_rating:
             parent_net_score = parent_rating.get("net_score", 0.0)
             total_score += float(parent_net_score)
@@ -374,7 +375,7 @@ def treescore_calc(model_identifier: str) -> Tuple[float, float]:
             print(f"Parent {parent_name} net_score: {parent_net_score}", file=sys.stderr)
         else:
             print(f"Could not find rating for parent: {parent_name}", file=sys.stderr)
-    
+
     # Calculate average
     if num_parents_with_scores > 0:
         tree_score = total_score / num_parents_with_scores
@@ -382,7 +383,7 @@ def treescore_calc(model_identifier: str) -> Tuple[float, float]:
     else:
         tree_score = 0.8
         print(f"No parent scores found for {model_identifier}, tree_score = 0.0", file=sys.stderr)
-    
+
     latency = time.time() - start_time
     return tree_score, latency
 
@@ -393,8 +394,9 @@ if __name__ == "__main__":
         print("Usage: tree_score.py <model_name>")
         print("Example: tree_score.py johngreendr1/88e47b26-9e0e-40c0-93e7-8a9245056e7c")
         sys.exit(1)
-    
+
     for model_name in sys.argv[1:]:
         score, latency = treescore_calc(model_name)
         print(f"\nTree Score for {model_name}: {score}")
         print(f"Latency: {latency:.3f}s")
+

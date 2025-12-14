@@ -147,7 +147,6 @@ def init_db() -> None:
     # Includes Phase 2 tables (User, Artifact, AuditEntry)
     Base.metadata.create_all(bind=engine)
 
-
     # Always create default admin user with spec credentials if missing
     db = SessionLocal()
     try:

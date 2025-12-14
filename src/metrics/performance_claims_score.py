@@ -45,7 +45,8 @@ def performance_claims_sub_score(model_id: str) -> Tuple[float, float]:
 
     # Normalize (max score is 2)
     normalized = round(score / 2, 2)
-    return normalized, time.time() - start
+    score = min(normalized, 0.5)
+    return score, time.time() - start
 
 
 if __name__ == "__main__":
