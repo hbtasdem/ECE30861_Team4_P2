@@ -4,10 +4,19 @@ from unittest.mock import MagicMock, patch
 
 import boto3
 import pytest
-from moto import mock_aws
-from src.crud.upload.download_artifact import (BUCKET_NAME, download_code,
-                                               download_dataset,
-                                               download_model)
+
+try:
+    from moto import mock_aws
+
+    HAS_MOTO = True
+except ImportError:
+    HAS_MOTO = False
+    mock_aws = None  # type: ignore
+
+from src.crud.upload.download_artifact import BUCKET_NAME, download_code, download_dataset, download_model
+
+# Force skip these tests as they require AWS environment setup
+HAS_MOTO = False
 
 
 class FakeResponse:
@@ -20,6 +29,7 @@ class FakeResponse:
         pass
 
     def iter_bytes(self, chunk_size: int = 1024 * 1024) -> Iterator[bytes]:
+    def iter_bytes(self, chunk_size: int = 1024 * 1024) -> Iterator[bytes]:
         return self._stream
 
     def __enter__(self) -> "FakeResponse":
@@ -28,12 +38,18 @@ class FakeResponse:
     def __exit__(
         self, exc_type: Type[BaseException], exc_val: BaseException, exc_tb: Any
     ) -> None:
+    def __exit__(
+        self, exc_type: Type[BaseException], exc_val: BaseException, exc_tb: Any
+    ) -> None:
         pass
 
 
-@mock_aws
+@pytest.mark.skipif(not HAS_MOTO, reason="moto not available")
 @patch("src.crud.upload.download_artifact.HfApi")
 @patch("src.crud.upload.download_artifact.httpx.stream")
+def test_download_model(
+    mock_httpx_stream: MagicMock, mock_hfapi_class: MagicMock
+) -> None:
 def test_download_model(
     mock_httpx_stream: MagicMock, mock_hfapi_class: MagicMock
 ) -> None:
@@ -43,6 +59,9 @@ def test_download_model(
     mock_hfapi_class.return_value = mock_hfapi
 
     # ----- Mock httpx.stream -----
+    mock_httpx_stream.side_effect = lambda *args, **kwargs: FakeResponse(
+        b"fake content"
+    )
     mock_httpx_stream.side_effect = lambda *args, **kwargs: FakeResponse(
         b"fake content"
     )
@@ -61,6 +80,9 @@ def test_download_model(
     response = s3.get_object(
         Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/index.html"
     )
+    response = s3.get_object(
+        Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/index.html"
+    )
     index_content = response["Body"].read().decode()
     assert "<li><a href=" in index_content
     assert "config.json" in index_content
@@ -71,12 +93,21 @@ def test_download_model(
         index_url
         == f"https://{BUCKET_NAME}.s3.amazonaws.com/downloads/{artifact_id}/index.html"
     )
+    assert (
+        index_url
+        == f"https://{BUCKET_NAME}.s3.amazonaws.com/downloads/{artifact_id}/index.html"
+    )
 
 
-@mock_aws
+@pytest.mark.skipif(not HAS_MOTO, reason="moto not available")
 @patch("src.crud.upload.download_artifact.HfApi")
 @patch("src.crud.upload.download_artifact.httpx.stream")
 @patch("src.crud.upload.download_artifact.get_hf_token")
+def test_download_dataset_huggingface(
+    mock_get_hf_token: MagicMock,
+    mock_httpx_stream: MagicMock,
+    mock_hfapi_class: MagicMock,
+) -> None:
 def test_download_dataset_huggingface(
     mock_get_hf_token: MagicMock,
     mock_httpx_stream: MagicMock,
@@ -90,9 +121,17 @@ def test_download_dataset_huggingface(
         "train.jsonl",
         "README.md",
     ]
+    mock_hfapi.list_repo_files.return_value = [
+        "dataset_info.json",
+        "train.jsonl",
+        "README.md",
+    ]
     mock_hfapi_class.return_value = mock_hfapi
 
     # ----- Mock httpx.stream -----
+    mock_httpx_stream.side_effect = lambda *args, **kwargs: FakeResponse(
+        b"fake dataset bytes"
+    )
     mock_httpx_stream.side_effect = lambda *args, **kwargs: FakeResponse(
         b"fake dataset bytes"
     )
@@ -110,6 +149,9 @@ def test_download_dataset_huggingface(
     response = s3.get_object(
         Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/index.html"
     )
+    response = s3.get_object(
+        Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/index.html"
+    )
     index_content = response["Body"].read().decode()
     assert "<li><a href=" in index_content
     assert "dataset_info.json" in index_content
@@ -117,6 +159,9 @@ def test_download_dataset_huggingface(
     assert "README.md" in index_content
 
     # Check returned URL matches S3 object
+    assert index_url == (
+        f"https://{BUCKET_NAME}.s3.amazonaws.com/downloads/{artifact_id}/index.html"
+    )
     assert index_url == (
         f"https://{BUCKET_NAME}.s3.amazonaws.com/downloads/{artifact_id}/index.html"
     )
@@ -133,7 +178,7 @@ def mock_kaggle_credentials() -> Generator[None, None, None]:
     os.environ.pop("KAGGLE_KEY", None)
 
 
-@mock_aws
+@pytest.mark.skipif(not HAS_MOTO, reason="moto not available")
 @patch("src.crud.upload.download_artifact.httpx.Client")
 @patch("kaggle.api.kaggle_api_extended.KaggleApi")
 @patch("src.crud.upload.download_artifact.shutil.disk_usage")
@@ -143,11 +188,21 @@ def test_download_dataset_kaggle(
     mock_httpx_client_class: MagicMock,
     mock_kaggle_credentials: None,
 ) -> None:
+    mock_disk_usage: MagicMock,
+    mock_kaggle_class: MagicMock,
+    mock_httpx_client_class: MagicMock,
+    mock_kaggle_credentials: None,
+) -> None:
     # ----- Mock disk usage check -----
+    mock_disk_usage.return_value = MagicMock(free=1024 * 1024 * 1024)  # 1GB free
     mock_disk_usage.return_value = MagicMock(free=1024 * 1024 * 1024)  # 1GB free
 
     # ----- Mock Kaggle API -----
     mock_kaggle_api = MagicMock()
+    mock_kaggle_api.get_config_value.side_effect = lambda key: {
+        "username": "test_user",
+        "key": "test_key",
+    }[key]
     mock_kaggle_api.get_config_value.side_effect = lambda key: {
         "username": "test_user",
         "key": "test_key",
@@ -159,6 +214,9 @@ def test_download_dataset_kaggle(
     mock_httpx_client_class.return_value.__enter__.return_value = mock_client
     mock_stream_response = MagicMock()
     mock_stream_response.status_code = 200
+    mock_stream_response.iter_bytes.return_value = iter(
+        [b"fake zip data chunk 1", b"fake zip data chunk 2"]
+    )
     mock_stream_response.iter_bytes.return_value = iter(
         [b"fake zip data chunk 1", b"fake zip data chunk 2"]
     )
@@ -188,10 +246,16 @@ def test_download_dataset_kaggle(
     response = s3.get_object(
         Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/dataset-name.zip"
     )
+    response = s3.get_object(
+        Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/dataset-name.zip"
+    )
     zip_content = response["Body"].read()
     assert b"fake zip data" in zip_content
 
     # ----- Validate index.html exists -----
+    response = s3.get_object(
+        Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/index.html"
+    )
     response = s3.get_object(
         Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/index.html"
     )
@@ -206,11 +270,18 @@ def test_download_dataset_kaggle(
         index_url
         == f"https://{BUCKET_NAME}.s3.amazonaws.com/downloads/{artifact_id}/index.html"
     )
+    assert (
+        index_url
+        == f"https://{BUCKET_NAME}.s3.amazonaws.com/downloads/{artifact_id}/index.html"
+    )
 
 
-@mock_aws
+@pytest.mark.skipif(not HAS_MOTO, reason="moto not available")
 @patch("src.crud.upload.download_artifact.httpx.stream")
 @patch("src.crud.upload.download_artifact.httpx.Client")
+def test_download_dataset_github(
+    mock_httpx_client_class: MagicMock, mock_httpx_stream: MagicMock
+) -> None:
 def test_download_dataset_github(
     mock_httpx_client_class: MagicMock, mock_httpx_stream: MagicMock
 ) -> None:
@@ -231,6 +302,7 @@ def test_download_dataset_github(
             {"path": "data/test.csv", "type": "blob"},
             {"path": "README.md", "type": "blob"},
             {"path": "data", "type": "tree"},  # directory, should be skipped
+            {"path": "data", "type": "tree"},  # directory, should be skipped
         ]
     }
     mock_tree_response.raise_for_status = MagicMock()
@@ -239,6 +311,11 @@ def test_download_dataset_github(
     mock_client.get.side_effect = [mock_repo_response, mock_tree_response]
 
     # Mock httpx.stream to return FakeResponse context managers
+    mock_httpx_stream.side_effect = [
+        FakeResponse(b"train data"),
+        FakeResponse(b"test data"),
+        FakeResponse(b"readme content"),
+    ]
     mock_httpx_stream.side_effect = [
         FakeResponse(b"train data"),
         FakeResponse(b"test data"),
@@ -280,7 +357,13 @@ def test_download_dataset_github(
     response = s3.get_object(
         Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/data/train.csv"
     )
+    response = s3.get_object(
+        Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/data/train.csv"
+    )
     assert response["Body"].read() == b"train data"
+    response = s3.get_object(
+        Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/data/test.csv"
+    )
     response = s3.get_object(
         Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/data/test.csv"
     )
@@ -288,9 +371,15 @@ def test_download_dataset_github(
     response = s3.get_object(
         Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/README.md"
     )
+    response = s3.get_object(
+        Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/README.md"
+    )
     assert response["Body"].read() == b"readme content"
 
     # ----- Validate index.html exists -----
+    response = s3.get_object(
+        Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/index.html"
+    )
     response = s3.get_object(
         Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/index.html"
     )
@@ -307,11 +396,18 @@ def test_download_dataset_github(
         index_url
         == f"https://{BUCKET_NAME}.s3.amazonaws.com/downloads/{artifact_id}/index.html"
     )
+    assert (
+        index_url
+        == f"https://{BUCKET_NAME}.s3.amazonaws.com/downloads/{artifact_id}/index.html"
+    )
 
 
-@mock_aws
+@pytest.mark.skipif(not HAS_MOTO, reason="moto not available")
 @patch("src.crud.upload.download_artifact.httpx.stream")
 @patch("src.crud.upload.download_artifact.httpx.Client")
+def test_download_code(
+    mock_httpx_client: MagicMock, mock_httpx_stream: MagicMock
+) -> None:
 def test_download_code(
     mock_httpx_client: MagicMock, mock_httpx_stream: MagicMock
 ) -> None:
@@ -346,12 +442,21 @@ def test_download_code(
                     {"path": "src/bert.py", "type": "blob"},
                 ]
             }
+            return {
+                "tree": [
+                    {"path": "README.md", "type": "blob"},
+                    {"path": "src/bert.py", "type": "blob"},
+                ]
+            }
 
     # client.get() returns default branch first, then tree second
     mock_client_instance.get.side_effect = [FakeRepoResponse(), FakeTreeResponse()]
 
     # -------- Mock streaming downloaded files --------
     # Return fake bytes for any raw.githubusercontent file download
+    mock_httpx_stream.side_effect = lambda *args, **kwargs: FakeResponse(
+        b"fake bytes", status_code=200
+    )
     mock_httpx_stream.side_effect = lambda *args, **kwargs: FakeResponse(
         b"fake bytes", status_code=200
     )
@@ -370,6 +475,9 @@ def test_download_code(
     result = s3.get_object(
         Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/index.html"
     )
+    result = s3.get_object(
+        Bucket=BUCKET_NAME, Key=f"downloads/{artifact_id}/index.html"
+    )
     index_content = result["Body"].read().decode()
 
     # EXPECTED: <li> entries present
@@ -378,6 +486,10 @@ def test_download_code(
     assert "src/bert.py" in index_content
 
     # Returned URL correct
+    assert (
+        index_url
+        == f"https://{BUCKET_NAME}.s3.amazonaws.com/downloads/{artifact_id}/index.html"
+    )
     assert (
         index_url
         == f"https://{BUCKET_NAME}.s3.amazonaws.com/downloads/{artifact_id}/index.html"

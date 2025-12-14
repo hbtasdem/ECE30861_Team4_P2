@@ -1,6 +1,4 @@
-"""Monitoring program validation for artifact downloads.
-
-FILE PURPOSE:
+"""Monitoring program validation for artifact downloads.FILE PURPOSE:
 Implements download rejection if external monitoring program exits with code 0 and outputs to stdout.
 Per requirement: reject model downloads if monitoring program returns 0 (success indicates "no go").
 

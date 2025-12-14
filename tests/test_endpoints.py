@@ -3,15 +3,17 @@
 import json
 from typing import Any, Optional
 
-import requests
+from fastapi.testclient import TestClient
 
-BASE_URL = "http://127.0.0.1:8000"
+from src.crud.app import app
+
+client = TestClient(app)
 
 
 def test_health() -> None:
     """Test GET /health endpoint"""
     print("\n=== Testing GET /health ===")
-    response = requests.get(f"{BASE_URL}/health")
+    response = client.get("/health")
     print(f"Status: {response.status_code}")
     print(f"Response: {response.json()}")
     assert response.status_code == 200
@@ -22,7 +24,7 @@ def test_health() -> None:
 def test_health_components() -> None:
     """Test GET /health/components endpoint"""
     print("\n=== Testing GET /health/components ===")
-    response = requests.get(f"{BASE_URL}/health/components?windowMinutes=60")
+    response = client.get("/health/components?windowMinutes=60")
     print(f"Status: {response.status_code}")
     data = response.json()
     print(f"Components found: {len(data.get('components', []))}")
@@ -36,14 +38,17 @@ def test_register() -> tuple[Any, str, str]:
     print("\n=== Testing POST /register ===")
     import time
 
+
     timestamp = int(time.time())
     username = f"testuser{timestamp}"
     password = "testpass123"
     payload = {
         "user": {"name": username, "isAdmin": False},
         "secret": {"password": password},
+        "user": {"name": username, "isAdmin": False},
+        "secret": {"password": password},
     }
-    response = requests.post(f"{BASE_URL}/register", json=payload)
+    response = client.post("/register", json=payload)
     print(f"Status: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
@@ -51,7 +56,11 @@ def test_register() -> tuple[Any, str, str]:
         assert "token" in data
         assert "bearer " in data["token"]
         print("PASSED - JWT token received")
-        return data["token"], username, password
+        # Store in global for next test to use
+        global registered_user_token, registered_username, registered_password
+        registered_user_token = data["token"]
+        registered_username = username
+        registered_password = password
     else:
         print(f"Response: {response.text}")
         raise AssertionError(f"Registration failed: {response.text}")
@@ -60,13 +69,16 @@ def test_register() -> tuple[Any, str, str]:
 def test_authenticate(
     username: str = "testuser123", password: str = "testpass123"
 ) -> Any:
+def test_authenticate(
+    username: str = "testuser123", password: str = "testpass123"
+) -> Any:
     """Test PUT /authenticate endpoint"""
     print("\n=== Testing PUT /authenticate ===")
     payload = {
-        "user": {"name": username, "isAdmin": False},
+        "user": {"name": username, "is_admin": True},
         "secret": {"password": password},
     }
-    response = requests.put(f"{BASE_URL}/authenticate", json=payload)
+    response = client.put("/authenticate", json=payload)
     print(f"Status: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
@@ -74,7 +86,6 @@ def test_authenticate(
         assert "token" in data
         assert "bearer " in data["token"]
         print("PASSED - JWT token received")
-        return data["token"]
     else:
         print(f"Response: {response.text}")
         raise AssertionError(f"Authentication failed: {response.text}")
@@ -87,13 +98,12 @@ def test_enumerate(token: Optional[str | None] = None) -> Any:
     headers = {}
     if token:
         headers["X-Authorization"] = token
-    response = requests.post(f"{BASE_URL}/artifacts", json=payload, headers=headers)
+    response = client.post("/artifacts", json=payload, headers=headers)
     print(f"Status: {response.status_code}")
     if response.status_code == 200:
         data = response.json()
         print(f"Artifacts found: {len(data)}")
         print("PASSED")
-        return data
     else:
         print(f"Response: {response.text}")
         if response.status_code == 403:
@@ -112,9 +122,7 @@ def test_regex_search(token: Optional[str] = None) -> None:
     headers = {}
     if token:
         headers["X-Authorization"] = token
-    response = requests.post(
-        f"{BASE_URL}/artifact/byRegEx", json=payload, headers=headers
-    )
+    response = client.post("/artifact/byRegEx", json=payload, headers=headers)
     print(f"Status: {response.status_code}")
     if response.status_code == 404:
         print("PASSED - No artifacts match (expected for empty registry)")
@@ -128,9 +136,7 @@ def test_regex_search(token: Optional[str] = None) -> None:
     # Test 2: Malicious regex (ReDoS protection)
     print("\nTest 2: Malicious regex (should be rejected)")
     payload = {"regex": "(a+)+b"}  # Classic ReDoS pattern
-    response = requests.post(
-        f"{BASE_URL}/artifact/byRegEx", json=payload, headers=headers
-    )
+    response = client.post("/artifact/byRegEx", json=payload, headers=headers)
     print(f"Status: {response.status_code}")
     if response.status_code == 400:
         print("PASSED - Malicious regex rejected (DoS protection working)")
@@ -141,9 +147,7 @@ def test_regex_search(token: Optional[str] = None) -> None:
     # Test 3: Too long regex
     print("\nTest 3: Excessively long regex (should be rejected)")
     payload = {"regex": "a" * 250}  # Exceeds 200 char limit
-    response = requests.post(
-        f"{BASE_URL}/artifact/byRegEx", json=payload, headers=headers
-    )
+    response = client.post("/artifact/byRegEx", json=payload, headers=headers)
     print(f"Status: {response.status_code}")
     if response.status_code == 400:
         print("PASSED - Long regex rejected")
@@ -180,5 +184,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\nTEST FAILED: {e}")
         import traceback
+
 
         traceback.print_exc()
