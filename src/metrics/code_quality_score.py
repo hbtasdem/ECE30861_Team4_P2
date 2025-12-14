@@ -2,10 +2,10 @@
 """
 Evaluate Hugging Face model repository quality.
 Submetrics:
-- JSON/config presence and validity [weight 0.4]
-- README presence [weight 0.2]
-- LICENSE presence [weight 0.2]
-- Example notebooks / usage examples [weight 0.2]
+- JSON/config presence and validity [weight 0.35]
+- README presence [weight 0.25]
+- LICENSE presence [weight 0.20]
+- Example notebooks / usage examples [weight 0.20]
 Only fetches repo metadata/files, not full model weights.
 """
 
@@ -38,9 +38,8 @@ def download_file(model_name: str, filename: str) -> Optional[str]:
 # --------- Submetric calculators ---------
 
 
-def json_score(model_name: str) -> float:
+def json_score(model_name: str, files: List[str]) -> float:
     """Score based on presence and validity of JSON/config files."""
-    files = get_repo_files(model_name)
     json_files = [f for f in files if f.endswith(".json")]
     if not json_files:
         return 0.0
@@ -58,25 +57,40 @@ def json_score(model_name: str) -> float:
             continue
 
     score = valid_count / len(json_files)
-    return score * 0.4  # weight of 0.4
+    return score * 0.35  # weight of 0.35
 
 
-def readme_score(model_name: str) -> float:
+def readme_score(files: List[str]) -> float:
     """Score based on README presence."""
-    files = get_repo_files(model_name)
     for f in files:
         if f.lower().startswith("readme"):
-            return 0.2
+            return 0.25
     return 0.0
 
 
-def license_score(model_name: str) -> float:
+def license_score(files: List[str]) -> float:
     """Score based on LICENSE presence."""
-    files = get_repo_files(model_name)
     for f in files:
         if "license" in f.lower():
-            return 0.2
+            return 0.20
     return 0.0
+
+
+def examples_score(files: List[str]) -> float:
+    """Score based on presence of example notebooks or usage files."""
+    example_indicators = [
+        ".ipynb",  # Jupyter notebooks
+        "example",
+        "demo",
+        "usage"
+    ]
+
+    has_examples = any(
+        any(indicator in f.lower() for indicator in example_indicators)
+        for f in files
+    )
+
+    return 0.20 if has_examples else 0.0
 
 
 def code_quality_score(model_name: str) -> Tuple[float, float]:
@@ -86,11 +100,16 @@ def code_quality_score(model_name: str) -> Tuple[float, float]:
     """
     start_time = time.time()
 
-    j_score = json_score(model_name)
-    rd_score = readme_score(model_name)
-    lic_score = license_score(model_name)
+    files = get_repo_files(model_name)
+    if not files:
+        return 0.0, time.time() - start_time
 
-    overall_score = round(j_score + rd_score + lic_score, 2)
+    j_score = json_score(model_name, files)
+    rd_score = readme_score(files)
+    lic_score = license_score(files)
+    ex_score = examples_score(files)
+
+    overall_score = round(j_score + rd_score + lic_score + ex_score, 2)
     latency = time.time() - start_time
     return overall_score, latency
 

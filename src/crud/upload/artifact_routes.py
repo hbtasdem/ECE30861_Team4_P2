@@ -193,10 +193,8 @@ async def create_artifact(
 
         # SENSITIVE MODEL
         # need to figure out how to get the username from authentication
-        is_sensitive = detect_malicious_patterns(
-            name, artifact_data.url, artifact_id, is_sensitive
-        )
-        username = ""
+        is_sensitive = detect_malicious_patterns(name, artifact_data.url, artifact_id, is_sensitive)
+        username = x_authorization
         if is_sensitive and artifact_type == "model":
             log_sensitive_action(username, "upload", artifact_id)
             check_sensitive_model(name, artifact_data.url, username)
