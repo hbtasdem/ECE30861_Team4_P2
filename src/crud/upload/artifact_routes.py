@@ -14,15 +14,15 @@ S3 STORAGE STRUCTURE (Per Team Design):
     └── relations.json            - Relations table (homemade)
 
 ENDPOINTS IMPLEMENTED (9 BASELINE):
-1. POST /artifact/{artifact_type} - Register new artifact from URL
-2. GET /artifacts/{artifact_type}/{artifact_id} - Retrieve artifact by type and ID
-3. PUT /artifacts/{artifact_type}/{artifact_id} - Update artifact source and metadata
-4. POST /artifacts - Query/enumerate artifacts with filters
-5. DELETE /reset - Reset registry (admin only)
-6. GET /artifact/{artifact_type}/{artifact_id}/cost - Get artifact cost in MB
-7. GET /artifact/model/{artifact_id}/lineage - Get artifact lineage graph
-8. POST /artifact/model/{artifact_id}/license-check - Check license compatibility
-9. POST /artifact/byRegEx - Query artifacts by regular expression
+1. POST /artifact/byRegEx - Query artifacts by regular expression (MUST BE FIRST!)
+2. POST /artifact/{artifact_type} - Register new artifact from URL
+3. GET /artifacts/{artifact_type}/{artifact_id} - Retrieve artifact by type and ID
+4. PUT /artifacts/{artifact_type}/{artifact_id} - Update artifact source and metadata
+5. POST /artifacts - Query/enumerate artifacts with filters
+6. DELETE /reset - Reset registry (admin only)
+7. GET /artifact/{artifact_type}/{artifact_id}/cost - Get artifact cost in MB
+8. GET /artifact/model/{artifact_id}/lineage - Get artifact lineage graph
+9. POST /artifact/model/{artifact_id}/license-check - Check license compatibility
 
 ENVELOPE STRUCTURE (Per Spec Section 3.2.1):
 All responses follow:
@@ -88,6 +88,100 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
         pass
 
     return artifacts
+
+
+# ============================================================================
+# POST /artifact/byRegEx - QUERY BY REGULAR EXPRESSION (BASELINE)
+# ============================================================================
+# CRITICAL: This MUST come BEFORE /artifact/{artifact_type} to avoid route conflicts!
+# FastAPI matches routes in order, so specific routes must precede parameterized ones.
+
+@router.post("/artifact/byRegEx", response_model=List[ArtifactMetadata])
+async def get_artifacts_by_regex(
+    request: ArtifactRegEx,
+    x_authorization: Optional[str] = Header(None),
+) -> List[ArtifactMetadata]:
+    """Search for artifacts using regular expression over artifact names (spec-compliant).
+    
+    Per OpenAPI spec Section /artifact/byRegEx:
+    Search for artifacts using regular expression over artifact names and READMEs.
+    
+    Args:
+        request: Request body with regex pattern (ArtifactRegEx schema)
+        x_authorization: Bearer token for authentication
+    
+    Returns:
+        List[ArtifactMetadata]: Matching artifacts (name, id, type only)
+    
+    Raises:
+        HTTPException: 400 if invalid regex, 403 if auth fails, 404 if no matches
+    """
+    # ========================================================================
+    # AUTHENTICATION
+    # ========================================================================
+    if not x_authorization:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Missing X-Authorization header",
+        )
+    
+    try:
+        get_current_user(x_authorization, None)
+    except HTTPException:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Authentication failed: Invalid or expired token",
+        )
+    
+    # ========================================================================
+    # VALIDATE AND COMPILE REGEX
+    # ========================================================================
+    import logging
+    logger = logging.getLogger("artifact_debug")
+    
+    try:
+        regex_pattern = re.compile(request.regex)
+        logger.info(f"Regex pattern received: {request.regex}")
+    except re.error as e:
+        logger.error(f"Regex compile error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid",
+        )
+    
+    # ========================================================================
+    # SEARCH ARTIFACTS ACROSS ALL TYPES
+    # ========================================================================
+    matching = []
+    for artifact_type in ["model", "dataset", "code"]:
+        artifacts = _get_artifacts_by_type(artifact_type)
+        logger.info(f"Regex search: {len(artifacts)} artifacts for type {artifact_type}")
+        
+        for artifact in artifacts:
+            name = artifact["metadata"]["name"]
+            if regex_pattern.search(name):
+                logger.info(f"Regex match: {name}")
+                matching.append(
+                    ArtifactMetadata(
+                        name=name,
+                        id=artifact["metadata"]["id"],
+                        type=artifact["metadata"]["type"],
+                    )
+                )
+    
+    logger.info(f"Regex search found {len(matching)} matches")
+    
+    # ========================================================================
+    # RETURN RESULTS OR 404
+    # ========================================================================
+    if not matching:
+        logger.warning("No artifact found under this regex.")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No artifact found under this regex.",
+        )
+    
+    return matching
 
 
 # ============================================================================
@@ -818,95 +912,3 @@ async def check_license_compatibility(
         )
 
     return license_check(github_url, artifact_id)
-
-
-# ============================================================================
-# POST /artifact/byRegEx - QUERY BY REGULAR EXPRESSION (BASELINE)
-# ============================================================================
-
-@router.post("/artifact/byRegEx", response_model=List[ArtifactMetadata])
-async def get_artifacts_by_regex(
-    request: ArtifactRegEx,
-    x_authorization: Optional[str] = Header(None),
-) -> List[ArtifactMetadata]:
-    """Search for artifacts using regular expression over artifact names (spec-compliant).
-    
-    Per OpenAPI spec Section /artifact/byRegEx:
-    Search for artifacts using regular expression over artifact names and READMEs.
-    
-    Args:
-        request: Request body with regex pattern (ArtifactRegEx schema)
-        x_authorization: Bearer token for authentication
-    
-    Returns:
-        List[ArtifactMetadata]: Matching artifacts (name, id, type only)
-    
-    Raises:
-        HTTPException: 400 if invalid regex, 403 if auth fails, 404 if no matches
-    """
-    # ========================================================================
-    # AUTHENTICATION
-    # ========================================================================
-    if not x_authorization:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Missing X-Authorization header",
-        )
-    
-    try:
-        get_current_user(x_authorization, None)
-    except HTTPException:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token",
-        )
-    
-    # ========================================================================
-    # VALIDATE AND COMPILE REGEX
-    # ========================================================================
-    import logging
-    logger = logging.getLogger("artifact_debug")
-    
-    try:
-        regex_pattern = re.compile(request.regex)
-        logger.info(f"Regex pattern received: {request.regex}")
-    except re.error as e:
-        logger.error(f"Regex compile error: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid",
-        )
-    
-    # ========================================================================
-    # SEARCH ARTIFACTS ACROSS ALL TYPES
-    # ========================================================================
-    matching = []
-    for artifact_type in ["model", "dataset", "code"]:
-        artifacts = _get_artifacts_by_type(artifact_type)
-        logger.info(f"Regex search: {len(artifacts)} artifacts for type {artifact_type}")
-        
-        for artifact in artifacts:
-            name = artifact["metadata"]["name"]
-            if regex_pattern.search(name):
-                logger.info(f"Regex match: {name}")
-                matching.append(
-                    ArtifactMetadata(
-                        name=name,
-                        id=artifact["metadata"]["id"],
-                        type=artifact["metadata"]["type"],
-                    )
-                )
-    
-    logger.info(f"Regex search found {len(matching)} matches")
-    
-    # ========================================================================
-    # RETURN RESULTS OR 404
-    # ========================================================================
-    if not matching:
-        logger.warning("No artifact found under this regex.")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No artifact found under this regex.",
-        )
-    
-    return matching

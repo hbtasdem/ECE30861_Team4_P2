@@ -642,12 +642,7 @@ class ArtifactRegEx(BaseModel):
         regex (str): Regular expression pattern for searching artifacts
     """
 
-    regex: str = Field(
-        ...,
-        description="A regular expression over artifact names and READMEs "
-        "that is used for searching for an artifact",
-        min_length=1,
-    )
+    regex: str
 
 
 # ============================================================================
