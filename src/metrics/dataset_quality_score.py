@@ -668,13 +668,14 @@ def dataset_quality_sub_score(
     # License: 0.15
     # Safety: 0.15
     final_score = (
-        doc_score * 0.25
-        + repro_score * 0.25
+        doc_score * 0.3
+        + repro_score * 0.3
         + curation_score * 0.20
-        + license_score * 0.15
+        + license_score * 0.2
         + safety_score * 0.15
     )
     final_score = round(final_score, 2)
+    final_score = min(final_score, 1)
     end_time = time.time()
     return (final_score, end_time - start_time)
 

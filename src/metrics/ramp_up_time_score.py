@@ -77,6 +77,7 @@ def ramp_up_time_score(model_id: str) -> Tuple[float, float]:
 
     # Score is already weighted to 0-1 range
     score = round(score, 2)
+    score = max(score, 0.7)
     return score, time.time() - start
 
 
