@@ -233,7 +233,20 @@ async def create_artifact(
         # Generate unique ID
         artifact_id = str(ULID())
 
-        # RATE MODEL
+        # Extract name from URL
+        name = artifact_data.url.split("/")[-1]
+        if not name or name.startswith("http"):
+            name = f"{artifact_type}_{artifact_id[:8]}"
+
+       # SENSITIVE MODEL
+# need to figure out how to get the username from authentication
+# is_sensitive = detect_malicious_patterns(name, artifact_data.url, artifact_id, is_sensitive)
+# username = x_authorization
+# if is_sensitive and artifact_type == "model":
+#     log_sensitive_action(username, "upload", artifact_id)
+#     check_sensitive_model(name, artifact_data.url, username)
+
+        # RATE MODEL: if model ingestible will store rating in s3 and return True
         if artifact_type == "model":
             if not rateOnUpload(artifact_data.url, artifact_id):
                 raise HTTPException(
@@ -243,11 +256,6 @@ async def create_artifact(
 
         # Get download_url
         download_url = get_download_url(artifact_data.url, artifact_id, artifact_type)
-
-        # Extract name from URL
-        name = artifact_data.url.split("/")[-1]
-        if not name or name.startswith("http"):
-            name = f"{artifact_type}_{artifact_id[:8]}"
 
         # Create spec-compliant envelope
         artifact_envelope = {
@@ -470,9 +478,6 @@ async def enumerate_artifacts(
                     if artifact_id not in seen_ids:
                         seen_ids.add(artifact_id)
                         results.append(artifact)
-            
-            if len(matching) >= 10:
-            return matching
 
         # Apply pagination
         paginated_results = results[offset_int:offset_int + page_size]
