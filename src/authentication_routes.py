@@ -98,9 +98,6 @@ async def register_user(
     }
     access_token = create_access_token(token_data)
 
-    # Per spec: Return token as a JSON string with escaped quotes (double-encoded)
-    import json
-    from fastapi.responses import Response
     # Return token with literal double quotes and backslashes
     from fastapi.responses import Response
     return Response(content='\\"' + access_token + '\\"', media_type="application/json")
@@ -176,7 +173,6 @@ async def authenticate_user(
         "is_admin": user.is_admin,
     }
     access_token = create_access_token(token_data)
-
     from fastapi.responses import Response
     # Per spec: Return token as a JSON string (not wrapped in object)
     return Response(content=f'"bearer {access_token}"', media_type="application/json")

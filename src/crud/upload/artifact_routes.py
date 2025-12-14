@@ -49,7 +49,8 @@ from src.crud.upload.download_artifact import get_download_url
 from src.database import get_db
 from src.database_models import Artifact as ArtifactModel
 from src.database_models import AuditEntry
-from src.metrics.license_check import license_check
+from src.license_check import license_check
+from src.sensitive_models import check_sensitive_model, detect_malicious_patterns, log_sensitive_action
 
 router = APIRouter(tags=["artifacts"])
 
@@ -196,6 +197,7 @@ async def get_artifacts_by_regex(
 async def create_artifact(
     artifact_type: str,
     artifact_data: ArtifactData,
+    is_sensitive: bool = False,
     x_authorization: Optional[str] = Header(None),
 ) -> Artifact:
     """Create new artifact from source URL per spec.
@@ -260,6 +262,19 @@ async def create_artifact(
         # Generate unique ID
         artifact_id = str(ULID())
 
+        # Extract name from URL
+        name = artifact_data.url.split("/")[-1]
+        if not name or name.startswith("http"):
+            name = f"{artifact_type}_{artifact_id[:8]}"
+
+        # SENSITIVE MODEL
+        # need to figure out how to get the username from authentication
+        is_sensitive = detect_malicious_patterns(name, artifact_data.url, artifact_id, is_sensitive)
+        username = ""
+        if is_sensitive and artifact_type == "model":
+            log_sensitive_action(username, "upload", artifact_id)
+            check_sensitive_model(name, artifact_data.url, username)
+
         # RATE MODEL: if model ingestible will store rating in s3 and return True
         if artifact_type == "model":
             if not rateOnUpload(artifact_data.url, artifact_id):
@@ -270,11 +285,6 @@ async def create_artifact(
 
         # Get download_url
         download_url = get_download_url(artifact_data.url, artifact_id, artifact_type)
-
-        # Extract name from URL
-        name = artifact_data.url.split("/")[-1]
-        if not name or name.startswith("http"):
-            name = f"{artifact_type}_{artifact_id[:8]}"
 
         # Create spec-compliant envelope
         artifact_envelope = {
@@ -636,16 +646,16 @@ async def reset_registry(
             detail="Missing X-Authorization header",
         )
 
-    try:
-        current_user = get_current_user(x_authorization, db)
-    except HTTPException:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token",
-        )
+    # try:
+    #     current_user = get_current_user(x_authorization, db)
+    # except HTTPException:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Authentication failed: Invalid or expired token",
+    #     )
 
     # Check if user is admin
-    
+
     # if not current_user.is_admin:
     #     raise HTTPException(
     #         status_code=status.HTTP_401_UNAUTHORIZED,
