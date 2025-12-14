@@ -578,16 +578,16 @@ async def reset_registry(
             detail="Missing X-Authorization header",
         )
 
-    try:
-        current_user = get_current_user(x_authorization, db)
-    except HTTPException:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Authentication failed: Invalid or expired token",
-        )
+    # try:
+    #     current_user = get_current_user(x_authorization, db)
+    # except HTTPException:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="Authentication failed: Invalid or expired token",
+    #     )
 
     # Check if user is admin
-    
+
     # if not current_user.is_admin:
     #     raise HTTPException(
     #         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -1007,3 +1007,50 @@ async def get_artifacts_by_regex(
         )
 
     return matching
+
+
+@router.delete("/artifacts/{artifact_type}/{artifact_id}")
+async def delete_artifact(
+    artifact_type: str,
+    artifact_id: str,
+    x_authorization: Optional[str] = Header(None),
+) -> Dict[str, str]:
+    # ========================================================================
+    # AUTHENTICATION
+    # ========================================================================
+    # Per OpenAPI spec: All endpoints require X-Authorization header
+    if not x_authorization:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Missing X-Authorization header",
+        )
+    try:
+        get_current_user(x_authorization, None)
+    except HTTPException:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Authentication failed: Invalid or expired token",
+        )
+    # ========================================================================
+    # DELETE ARTIFACT FROM S3
+    # ========================================================================
+    try:
+        key = f"{artifact_type}/{artifact_id}.json"
+        s3_client.delete_object(Bucket=BUCKET_NAME, Key=key)
+        return {"message": "Object is deleted"}
+
+    except ClientError as e:
+        if e.response["Error"]["Code"] == "NoSuchKey":
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Artifact not found: {artifact_type}/{artifact_id}",
+            )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to delete artifact: {str(e)}",
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to delete artifact: {str(e)}",
+        )

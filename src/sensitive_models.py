@@ -230,7 +230,7 @@ def detect_malicious_patterns(model_name: str, model_url: str, artifact_id: str,
             created_at = model_info.get('createdAt', '')
             if created_at:
                 created = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
-                if datetime.now(datetime.UTC)(created.tzinfo) - created < timedelta(days=7):
+                if datetime.now(timezone.utc) - created < timedelta(days=7):
                     if model_info.get('downloads', 0) < 5:
                         reasons.append("Newly created model with almost no usage")
     except Exception as e:

@@ -171,10 +171,11 @@ def create_access_token(
     # Per OpenAPI spec: Return token with "bearer " prefix
     # print("auth.py")
     # print(str(access_token))
- 
-#  return Response(content=f"{access_token}", media_type="application/json")   
+
+#  return Response(content=f"{access_token}", media_type="application/json")
 
     return encoded_jwt
+
 
 def decode_access_token(token: str) -> dict[str, Any]:  # NEW: JWT token validation
     """Decode and validate a JWT access token.
