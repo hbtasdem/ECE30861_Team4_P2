@@ -43,7 +43,7 @@ from sqlalchemy.orm import Session
 from ulid import ULID
 
 from src.crud.rate_route import rateOnUpload
-from src.crud.upload.artifacts import Artifact, ArtifactData, ArtifactMetadata, ArtifactQuery
+from src.crud.upload.artifacts import Artifact, ArtifactData, ArtifactMetadata, ArtifactQuery, ArtifactRegEx
 from src.crud.upload.auth import get_current_user
 from src.crud.upload.download_artifact import get_download_url
 from src.database import get_db
@@ -81,9 +81,6 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
                         artifact_data = json.loads(
                             response["Body"].read().decode("utf-8")
                         )
-                        artifact_data = json.loads(
-                            response["Body"].read().decode("utf-8")
-                        )
                         artifacts.append(artifact_data)
                     except Exception:
                         pass
@@ -97,12 +94,6 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
 # POST /artifact/{artifact_type} - CREATE ARTIFACT (BASELINE)
 # ============================================================================
 
-
-@router.post(
-    "/artifact/{artifact_type}",
-    response_model=Artifact,
-    status_code=status.HTTP_201_CREATED,
-)
 @router.post(
     "/artifact/{artifact_type}",
     response_model=Artifact,
@@ -182,10 +173,6 @@ async def create_artifact(
                     status_code=424,
                     detail="Artifact is not registered due to the disqualified rating.",
                 )
-                raise HTTPException(
-                    status_code=424,
-                    detail="Artifact is not registered due to the disqualified rating.",
-                )
 
         # Get download_url
         download_url = get_download_url(artifact_data.url, artifact_id, artifact_type)
@@ -209,12 +196,6 @@ async def create_artifact(
             Body=json.dumps(artifact_envelope, indent=2),
             ContentType="application/json",
         )
-        s3_client.put_object(
-            Bucket=BUCKET_NAME,
-            Key=key,
-            Body=json.dumps(artifact_envelope, indent=2),
-            ContentType="application/json",
-        )
 
         return artifact_envelope
 
@@ -228,7 +209,6 @@ async def create_artifact(
 # ============================================================================
 # GET /artifacts/{artifact_type}/{artifact_id} - RETRIEVE ARTIFACT (BASELINE)
 # ============================================================================
-
 
 @router.get("/artifacts/{artifact_type}/{artifact_id}", response_model=Artifact)
 async def get_artifact(
@@ -280,17 +260,6 @@ async def get_artifact(
         artifact_envelope = json.loads(response["Body"].read().decode("utf-8"))
 
         return artifact_envelope
-        # Artifact(
-        #     metadata=ArtifactMetadata(
-        #         name=artifact_envelope["metadata"]["name"],
-        #         id=artifact_envelope["metadata"]["id"],
-        #         type=artifact_envelope["metadata"]["type"],
-        #     ),
-        #     data=ArtifactData(
-        #         url=artifact_envelope["data"]["url"],
-        #         download_url=artifact_envelope["data"]["download_url"],
-        #     ),
-        # )
 
     except ClientError as e:
         if e.response["Error"]["Code"] == "NoSuchKey":
@@ -313,8 +282,6 @@ async def get_artifact(
 # PUT /artifacts/{artifact_type}/{artifact_id} - UPDATE ARTIFACT (BASELINE)
 # ============================================================================
 
-
-@router.put("/artifacts/{artifact_type}/{artifact_id}", response_model=Artifact)
 @router.put("/artifacts/{artifact_type}/{artifact_id}", response_model=Artifact)
 async def update_artifact(
     artifact_type: str,
@@ -415,7 +382,6 @@ async def update_artifact(
 # ============================================================================
 # POST /artifacts - QUERY/ENUMERATE ARTIFACTS (BASELINE)
 # ============================================================================
-
 
 @router.post("/artifacts", response_model=List[ArtifactMetadata])
 async def enumerate_artifacts(
@@ -548,7 +514,6 @@ async def enumerate_artifacts(
 # DELETE /reset - RESET REGISTRY (BASELINE)
 # ============================================================================
 
-
 @router.delete("/reset")
 async def reset_registry(
     x_authorization: Optional[str] = Header(None),
@@ -641,7 +606,6 @@ async def reset_registry(
 # ============================================================================
 # GET /artifact/{artifact_type}/{artifact_id}/cost - GET ARTIFACT COST (BASELINE)
 # ============================================================================
-
 
 @router.get("/artifact/{artifact_type}/{artifact_id}/cost")
 async def get_artifact_cost(
@@ -780,81 +744,8 @@ async def get_artifact_cost(
 
 
 # ============================================================================
-# GET /artifact/model/{artifact_id}/lineage - GET ARTIFACT LINEAGE (BASELINE)
-# ============================================================================
-# NOTE: This endpoint is now implemented in src/lineage_tree.py with full functionality
-# The lineage_router is included in app.py instead of this basic implementation
-
-
-# @router.get(
-#     "/artifact/model/{artifact_id}/lineage", response_model=ArtifactLineageGraph
-# )
-# async def get_artifact_lineage(
-#     artifact_id: str,
-#     x_authorization: Optional[str] = Header(None),
-# ) -> ArtifactLineageGraph:
-#     """Retrieve the lineage graph for an artifact.
-
-#     Per OpenAPI v3.4.7 spec:
-#     - Returns lineage graph extracted from structured metadata
-#     - Returns 404 if artifact not found
-
-#     Args:
-#         artifact_id: Unique artifact identifier
-#         x_authorization: Bearer token for authentication
-
-#     Returns:
-#         ArtifactLineageGraph with nodes and edges
-
-#     Raises:
-#         HTTPException: 403 if auth fails, 404 if not found
-#     """
-#     if not x_authorization:
-#         raise HTTPException(
-#             status_code=status.HTTP_403_FORBIDDEN,
-#             detail="Missing X-Authorization header",
-#         )
-
-#     try:
-#         get_current_user(x_authorization, None)
-#     except HTTPException:
-#         raise HTTPException(
-#             status_code=status.HTTP_403_FORBIDDEN,
-#             detail="Authentication failed: Invalid or expired token",
-#         )
-
-#     try:
-#         key = _get_artifact_key("model", artifact_id)
-#         response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)
-#         artifact_envelope = json.loads(response["Body"].read().decode("utf-8"))
-
-#         # For now, return self as a single node with no edges
-#         nodes = [
-#             ArtifactLineageNode(
-#                 artifact_id=artifact_id,
-#                 name=artifact_envelope["metadata"]["name"],
-#                 source="metadata",
-#             )
-#         ]
-
-#         return ArtifactLineageGraph(nodes=nodes, edges=[])
-
-#     except ClientError as e:
-#         if e.response["Error"]["Code"] == "NoSuchKey":
-#             raise HTTPException(
-#                 status_code=status.HTTP_404_NOT_FOUND,
-#                 detail="Artifact does not exist.",
-#             )
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST,
-#             detail=f"Failed to retrieve artifact: {str(e)}",
-#         )
-
-
-# ============================================================================
 # POST /artifact/model/{artifact_id}/license-check - LICENSE COMPATIBILITY (BASELINE)
 # ============================================================================
-
 
 @router.post("/artifact/model/{artifact_id}/license-check")
 async def check_license_compatibility(
@@ -933,35 +824,35 @@ async def check_license_compatibility(
 # POST /artifact/byRegEx - QUERY BY REGULAR EXPRESSION (BASELINE)
 # ============================================================================
 
-
 @router.post("/artifact/byRegEx", response_model=List[ArtifactMetadata])
 async def get_artifacts_by_regex(
-    request: Dict[str, str],
+    request: ArtifactRegEx,
     x_authorization: Optional[str] = Header(None),
 ) -> List[ArtifactMetadata]:
-    """Search for artifacts using regular expression over names.
-
-    Per OpenAPI v3.4.4 spec:
-    - Searches artifact names
-    - Similar to search by name but using regex
-    - Returns 404 if no artifacts found
-
+    """Search for artifacts using regular expression over artifact names (spec-compliant).
+    
+    Per OpenAPI spec Section /artifact/byRegEx:
+    Search for artifacts using regular expression over artifact names and READMEs.
+    
     Args:
-        request: Request body with regex pattern
+        request: Request body with regex pattern (ArtifactRegEx schema)
         x_authorization: Bearer token for authentication
-
+    
     Returns:
-        List[ArtifactMetadata]: Matching artifacts
-
+        List[ArtifactMetadata]: Matching artifacts (name, id, type only)
+    
     Raises:
         HTTPException: 400 if invalid regex, 403 if auth fails, 404 if no matches
     """
+    # ========================================================================
+    # AUTHENTICATION
+    # ========================================================================
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Missing X-Authorization header",
         )
-
+    
     try:
         get_current_user(x_authorization, None)
     except HTTPException:
@@ -969,31 +860,31 @@ async def get_artifacts_by_regex(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Authentication failed: Invalid or expired token",
         )
-
+    
+    # ========================================================================
+    # VALIDATE AND COMPILE REGEX
+    # ========================================================================
     import logging
     logger = logging.getLogger("artifact_debug")
-    if "regex" not in request:
-        logger.warning("Regex request missing 'regex' field: %s", request)
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid",
-        )
-
+    
     try:
-        regex_pattern = re.compile(request["regex"])
-        logger.info(f"Regex pattern received: {request['regex']}")
+        regex_pattern = re.compile(request.regex)
+        logger.info(f"Regex pattern received: {request.regex}")
     except re.error as e:
         logger.error(f"Regex compile error: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid: {str(e)}",
+            detail="There is missing field(s) in the artifact_regex or it is formed improperly, or is invalid",
         )
-
-    # Search artifacts across all types
+    
+    # ========================================================================
+    # SEARCH ARTIFACTS ACROSS ALL TYPES
+    # ========================================================================
     matching = []
     for artifact_type in ["model", "dataset", "code"]:
         artifacts = _get_artifacts_by_type(artifact_type)
         logger.info(f"Regex search: {len(artifacts)} artifacts for type {artifact_type}")
+        
         for artifact in artifacts:
             name = artifact["metadata"]["name"]
             if regex_pattern.search(name):
@@ -1005,13 +896,17 @@ async def get_artifacts_by_regex(
                         type=artifact["metadata"]["type"],
                     )
                 )
-
+    
     logger.info(f"Regex search found {len(matching)} matches")
+    
+    # ========================================================================
+    # RETURN RESULTS OR 404
+    # ========================================================================
     if not matching:
         logger.warning("No artifact found under this regex.")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="No artifact found under this regex.",
         )
-
+    
     return matching

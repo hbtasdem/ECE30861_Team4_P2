@@ -75,7 +75,9 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
+# ============================================================================
 # ARTIFACT SCHEMAS - CORE ENVELOPE STRUCTURE
+# ============================================================================
 
 
 class ArtifactMetadata(BaseModel):
@@ -236,7 +238,9 @@ class Artifact(BaseModel):
     )
 
 
+# ============================================================================
 # QUERY SCHEMAS - FOR ARTIFACT ENUMERATION (Per Spec POST /artifacts)
+# ============================================================================
 
 
 class ArtifactQuery(BaseModel):
@@ -287,7 +291,9 @@ class ArtifactQuery(BaseModel):
     )
 
 
+# ============================================================================
 # AUTHENTICATION SCHEMAS (Per Spec Section 3.2.2)
+# ============================================================================
 
 
 class User(BaseModel):
@@ -427,7 +433,9 @@ class AuthenticationToken(BaseModel):
     )
 
 
+# ============================================================================
 # AUDIT SCHEMAS (Per Spec GET /artifact/{type}/{id}/audit endpoint)
+# ============================================================================
 
 
 class AuditEntry(BaseModel):
@@ -484,7 +492,9 @@ class AuditEntry(BaseModel):
     )
 
 
+# ============================================================================
 # LINEAGE SCHEMAS (Per Spec GET /artifact/model/{id}/lineage endpoint)
+# ============================================================================
 
 
 class ArtifactLineageNode(BaseModel):
@@ -612,51 +622,41 @@ class ArtifactLineageGraph(BaseModel):
     )
 
 
-# ADDITIONAL REQUEST SCHEMAS
+# ============================================================================
+# REGEX SEARCH SCHEMA (Per Spec POST /artifact/byRegEx endpoint)
+# ============================================================================
 
 
 class ArtifactRegEx(BaseModel):
     """Regular expression search request per OpenAPI spec.
 
-    Per spec POST /artifact/byRegEx endpoint:
-    Searches for artifacts matching regular expression pattern.
-
-    Used for flexible artifact discovery and pattern-based searches.
+    Per spec: POST /artifact/byRegEx endpoint accepts this schema
+    for searching artifacts by regex pattern over names and READMEs.
 
     Example request:
     {
-        "regex": "^bert.*base.*"
+        "regex": ".*?(audience|bert).*"
     }
 
     Attributes:
-        regex (str): Regex pattern for searching artifact names/descriptions
+        regex (str): Regular expression pattern for searching artifacts
     """
 
     regex: str = Field(
         ...,
-        description="Regular expression pattern for artifact search "
-        "per spec POST /artifact/byRegEx",
+        description="A regular expression over artifact names and READMEs "
+        "that is used for searching for an artifact",
+        min_length=1,
     )
 
 
+# ============================================================================
 # LEGACY SCHEMAS (Deprecated - for backward compatibility during migration)
+# ============================================================================
 
 # These schemas were used by the old implementation and are kept for
 # reference during the migration to the new spec-compliant schemas.
 # NEW CODE SHOULD NOT USE THESE - use Artifact envelope instead.
-
-
-class ModelCreate(BaseModel):
-    """DEPRECATED: Use ArtifactData instead.
-
-    This schema is from the old implementation that didn't follow spec.
-    Kept only for reference during migration.
-
-    Per NEW spec: Use ArtifactData for requests, Artifact for responses.
-    """
-
-    name: str
-    url: str
 
 
 class ModelResponse(BaseModel):
@@ -681,7 +681,6 @@ class UploadResponse(BaseModel):
 
     This schema is from the old implementation that didn't follow spec.
     Kept only for reference during migration.
-
 
     Per NEW spec: Use Artifact envelope with metadata/data structure.
     """
