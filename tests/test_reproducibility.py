@@ -11,6 +11,7 @@ sys.path.insert(0, str(SRC_DIR))
 
 from metrics.reproducibility import ReproducibilityChecker
 
+
 @pytest.fixture
 def checker():
     """
@@ -24,6 +25,7 @@ def checker():
 # -----------------------------
 # fetch_model_card
 # -----------------------------
+
 
 @patch("requests.get")
 def test_fetch_model_card_success(mock_get, checker):
@@ -55,10 +57,6 @@ def test_extract_code_from_model_card_no_code(checker):
     assert code is None
 
 
-# -----------------------------
-# create_test_script
-# -----------------------------
-
 def test_create_test_script_includes_user_code(checker):
     code = "print('hi')"
     script = checker.create_test_script(code)
@@ -81,14 +79,8 @@ def test_create_test_script_parses_pip_install(checker):
     assert "subprocess.check_call" in script
 
 
-# -----------------------------
-# run_code_in_docker
-# -----------------------------
-
 def test_run_code_in_docker_success(checker):
-    checker.client.containers.run.return_value = (
-        b"=== CODE EXECUTED SUCCESSFULLY ==="
-    )
+    checker.client.containers.run.return_value = b"=== CODE EXECUTED SUCCESSFULLY ==="
 
     success, output = checker.run_code_in_docker("print('hi')")
 
@@ -104,10 +96,6 @@ def test_run_code_in_docker_failure(checker):
     assert success is False
     assert "Docker error" in output
 
-
-# -----------------------------
-# get_ai_fix
-# -----------------------------
 
 def test_get_ai_fix_no_model(checker):
     checker.model = None
@@ -128,16 +116,10 @@ def test_get_ai_fix_with_model(checker):
     assert "pip install" in fixed_code
 
 
-# -----------------------------
-# check_reproducibility
-# -----------------------------
-
 @patch.object(ReproducibilityChecker, "fetch_model_card")
 @patch.object(ReproducibilityChecker, "extract_code_from_model_card")
 @patch.object(ReproducibilityChecker, "run_code_in_docker")
-def test_check_reproducibility_success(
-    mock_run, mock_extract, mock_fetch, checker
-):
+def test_check_reproducibility_success(mock_run, mock_extract, mock_fetch, checker):
     mock_fetch.return_value = "```python\nprint('hi')\n```"
     mock_extract.return_value = "print('hi')"
     mock_run.return_value = (True, "=== CODE EXECUTED SUCCESSFULLY ===")

@@ -100,6 +100,7 @@ async def register_user(
 
     # Return token with literal double quotes and backslashes
     from fastapi.responses import Response
+
     return Response(content='\\"' + access_token + '\\"', media_type="application/json")
 
 
@@ -132,6 +133,7 @@ async def authenticate_user(
     """
 
     import logging
+
     logger = logging.getLogger("auth_debug")
 
     # Validate request
@@ -143,7 +145,9 @@ async def authenticate_user(
         )
 
     if not request.user.name or not request.secret.password:
-        logger.warning(f"Login failed: missing username or password. Request: {request}")
+        logger.warning(
+            f"Login failed: missing username or password. Request: {request}"
+        )
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="There is missing field(s) in the AuthenticationRequest or it is formed improperly.",

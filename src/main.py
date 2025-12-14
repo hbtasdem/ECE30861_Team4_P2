@@ -120,9 +120,10 @@ def calculate_all_scores(
         print(error_msg, file=sys.stderr)
     # Performance Claims Score
     try:
-        perf_score, perf_latency = (
-            performance_claims_score.performance_claims_sub_score(model_name)
-        )
+        (
+            perf_score,
+            perf_latency,
+        ) = performance_claims_score.performance_claims_sub_score(model_name)
         result["performance_claims"] = perf_score
         result["performance_claims_latency"] = int(perf_latency * 1000)
     except Exception as e:
@@ -150,14 +151,15 @@ def calculate_all_scores(
         print(f"Error calculating size scores for {model_name}: {e}", file=sys.stderr)
     # Available Dataset Code Score
     try:
-        data_code_score, code_latency = (
-            available_dataset_code_score.available_dataset_code_score(
-                model_name,
-                code_link,
-                dataset_link,
-                encountered_datasets,
-                encountered_code,
-            )
+        (
+            data_code_score,
+            code_latency,
+        ) = available_dataset_code_score.available_dataset_code_score(
+            model_name,
+            code_link,
+            dataset_link,
+            encountered_datasets,
+            encountered_code,
         )
         result["dataset_and_code_score"] = data_code_score
         result["dataset_and_code_score_latency"] = int(code_latency * 1000)
@@ -165,10 +167,11 @@ def calculate_all_scores(
         print(f"Error calculating code quality for {model_name}: {e}", file=sys.stderr)
     # Dataset Quality Score
     try:
-        dataset_score, dataset_latency = (
-            dataset_quality_score.dataset_quality_sub_score(
-                model_name, dataset_link, encountered_datasets
-            )
+        (
+            dataset_score,
+            dataset_latency,
+        ) = dataset_quality_score.dataset_quality_sub_score(
+            model_name, dataset_link, encountered_datasets
         )
         result["dataset_quality"] = dataset_score
         result["dataset_quality_latency"] = int(dataset_latency * 1000)

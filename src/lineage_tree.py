@@ -2,7 +2,7 @@
 
 import hashlib
 import json
-import sys 
+import sys
 import time
 from typing import Any, Dict, List, Optional, Tuple, cast
 
@@ -14,8 +14,8 @@ from fastapi import APIRouter, Header, HTTPException
 router = APIRouter()
 
 # S3 configuration
-S3_BUCKET = 'phase2-s3-bucket'
-MODEL_PREFIX = 'model/'
+S3_BUCKET = "phase2-s3-bucket"
+MODEL_PREFIX = "model/"
 
 # Cache for artifact_id -> model data
 _artifact_cache: Dict[str, Dict[str, Any]] = {}
@@ -24,57 +24,57 @@ _artifact_cache: Dict[str, Dict[str, Any]] = {}
 def build_artifact_cache() -> Dict[str, Dict[str, Any]]:
     """
     Build a cache of all artifacts from the models/ folder in S3.
-    
+
     Returns:
         Dict mapping artifact_id -> full model data
     """
     global _artifact_cache
-    
+
     # Return cached data if already built
     if _artifact_cache:
         return _artifact_cache
-    
+
     print("Building artifact cache from S3 models/ folder...", file=sys.stderr)
-    
-    s3_client = boto3.client('s3')
+
+    s3_client = boto3.client("s3")
     cache = {}
-    
+
     try:
         # Use paginator to handle large result sets
-        paginator = s3_client.get_paginator('list_objects_v2')
+        paginator = s3_client.get_paginator("list_objects_v2")
         pages = paginator.paginate(Bucket=S3_BUCKET, Prefix=MODEL_PREFIX)
-        
+
         for page in pages:
-            if 'Contents' not in page:
+            if "Contents" not in page:
                 continue
-            
-            for obj in page['Contents']:
-                key = obj['Key']
-                
+
+            for obj in page["Contents"]:
+                key = obj["Key"]
+
                 # Skip directories
-                if key.endswith('/'):
+                if key.endswith("/"):
                     continue
-                
+
                 try:
                     # Fetch model data
                     model_obj = s3_client.get_object(Bucket=S3_BUCKET, Key=key)
-                    model_data = json.loads(model_obj['Body'].read().decode('utf-8'))
-                    
+                    model_data = json.loads(model_obj["Body"].read().decode("utf-8"))
+
                     # Extract artifact_id from metadata
-                    metadata = model_data.get('metadata', {})
-                    artifact_id = metadata.get('id')
-                    
+                    metadata = model_data.get("metadata", {})
+                    artifact_id = metadata.get("id")
+
                     if artifact_id:
                         cache[artifact_id] = model_data
-                
+
                 except Exception as e:
                     print(f"Error processing {key}: {e}", file=sys.stderr)
                     continue
-        
+
         print(f"Built cache with {len(cache)} artifacts", file=sys.stderr)
         _artifact_cache = cache
         return cache
-    
+
     except Exception as e:
         print(f"Error building artifact cache: {e}", file=sys.stderr)
         return {}
@@ -83,10 +83,10 @@ def build_artifact_cache() -> Dict[str, Dict[str, Any]]:
 def get_artifact_by_id(artifact_id: str) -> Optional[Dict[str, Any]]:
     """
     Look up artifact data by artifact_id.
-    
+
     Args:
         artifact_id: Artifact ID (e.g., "01KCDBCVND2S5Y2SRBDK8H9078")
-    
+
     Returns:
         Full artifact data if found, None otherwise
     """
@@ -117,7 +117,7 @@ def get_model_config(model_identifier: str) -> Optional[Dict[str, Any]]:
     if not model_identifier or not model_identifier.strip():
         print("Empty model identifier provided")
         return None
-    
+
     # Clean up the model identifier
     if "huggingface.co/" in model_identifier:
         # Extract path from URL
@@ -125,7 +125,7 @@ def get_model_config(model_identifier: str) -> Optional[Dict[str, Any]]:
         model_path = model_path.split("/tree")[0].split("/blob")[0].strip("/")
     else:
         model_path = model_identifier.strip()
-    
+
     # Validate model_path is not empty after cleaning
     if not model_path:
         print("Model path is empty after cleaning")
@@ -137,12 +137,12 @@ def get_model_config(model_identifier: str) -> Optional[Dict[str, Any]]:
         resp = requests.get(api_url, timeout=10)
         resp.raise_for_status()
         data = resp.json()
-        
+
         # Ensure we got a dict, not a list
         if not isinstance(data, dict):
             print(f"Unexpected response type: {type(data)}")
             return None
-            
+
         return cast(Dict[str, Any], data)
     except Exception as e:
         print(f"Could not fetch HF API metadata for {model_path}: {e}")
@@ -372,21 +372,17 @@ async def get_artifact_lineage(
 
     # Look up artifact in the models/ folder
     artifact_data = get_artifact_by_id(artifact_id)
-    
+
     if not artifact_data:
-        raise HTTPException(
-            status_code=404, 
-            detail=f"Artifact {artifact_id} not found"
-        )
-    
+        raise HTTPException(status_code=404, detail=f"Artifact {artifact_id} not found")
+
     # Extract the model URL from the artifact data
-    data_section = artifact_data.get('data', {})
-    model_url = data_section.get('url', '')
-    
+    data_section = artifact_data.get("data", {})
+    model_url = data_section.get("url", "")
+
     if not model_url:
         raise HTTPException(
-            status_code=404,
-            detail=f"No URL found for artifact {artifact_id}"
+            status_code=404, detail=f"No URL found for artifact {artifact_id}"
         )
 
     # Fetch metadata from HuggingFace using the model URL
@@ -394,8 +390,8 @@ async def get_artifact_lineage(
 
     if not metadata:
         raise HTTPException(
-            status_code=404, 
-            detail=f"Could not fetch metadata for artifact {artifact_id}"
+            status_code=404,
+            detail=f"Could not fetch metadata for artifact {artifact_id}",
         )
 
     # Extract lineage graph
@@ -424,8 +420,8 @@ if __name__ == "__main__":
                 print(f"Found artifact: {model_id}")
                 print(f"Name: {artifact['metadata']['name']}")
                 print(f"URL: {artifact['data']['url']}")
-                model_url = artifact['data']['url']
-                
+                model_url = artifact["data"]["url"]
+
                 metadata = get_model_config(model_url)
                 if metadata:
                     graph = extract_lineage_graph(model_url, metadata)

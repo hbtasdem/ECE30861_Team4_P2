@@ -7,8 +7,11 @@ from unittest.mock import Mock, patch
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src/metrics"))
 
 # Import after path modification
-from available_dataset_code_score import (available_dataset_code_score, detect_code_examples,  # noqa: E402
-                                          detect_dataset_links)
+from available_dataset_code_score import (
+    available_dataset_code_score,
+    detect_code_examples,  # noqa: E402
+    detect_dataset_links,
+)
 
 # Test data for different README scenarios
 README_EMPTY = ""

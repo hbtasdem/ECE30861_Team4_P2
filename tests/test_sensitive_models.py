@@ -26,7 +26,7 @@ def mock_s3() -> Generator[Any, None, None]:
         s3 = boto3.client("s3", region_name="us-east-2")
         s3.create_bucket(
             Bucket="phase2-s3-bucket",
-            CreateBucketConfiguration={"LocationConstraint": "us-east-2"}
+            CreateBucketConfiguration={"LocationConstraint": "us-east-2"},
         )
         yield s3
 
@@ -34,6 +34,7 @@ def mock_s3() -> Generator[Any, None, None]:
 # ==================================================
 # TEST: Upload JS Program Endpoint
 # ==================================================
+
 
 def test_upload_js_program_success(mock_s3: MagicMock) -> None:
     """Test successfully uploading a JS monitoring program."""
@@ -50,14 +51,17 @@ def test_upload_js_program_success(mock_s3: MagicMock) -> None:
     assert response.json()["size"] == len(js_content)
 
     # Verify the file was actually uploaded to mock S3
-    obj = mock_s3.get_object(Bucket="phase2-s3-bucket", Key="sensitive/monitoring-program.js")
-    stored_content = obj['Body'].read()
+    obj = mock_s3.get_object(
+        Bucket="phase2-s3-bucket", Key="sensitive/monitoring-program.js"
+    )
+    stored_content = obj["Body"].read()
     assert stored_content == js_content
 
 
 # ==================================================
 # TEST: Get JS Program Endpoint
 # ==================================================
+
 
 def test_get_js_program_success(mock_s3: MagicMock) -> None:
     """Test retrieving the JS monitoring program."""
@@ -69,11 +73,11 @@ def test_get_js_program_success(mock_s3: MagicMock) -> None:
         Bucket="phase2-s3-bucket",
         Key="sensitive/monitoring-program.js",
         Body=js_content,
-        ContentType="application/javascript"
+        ContentType="application/javascript",
     )
     response = client.get("/sensitive/javascript-program")
     assert response.status_code == 200
-    assert response.json()["program"] == js_content.decode('utf-8')
+    assert response.json()["program"] == js_content.decode("utf-8")
     assert "last_modified" in response.json()
 
 
@@ -88,6 +92,7 @@ def test_get_js_program_not_found(mock_s3: MagicMock) -> None:
 # TEST: Delete JS Program Endpoint
 # ==================================================
 
+
 def test_delete_js_program_success(mock_s3: MagicMock) -> None:
     """Test deleting the JS monitoring program."""
     # First upload a program
@@ -95,7 +100,7 @@ def test_delete_js_program_success(mock_s3: MagicMock) -> None:
     mock_s3.put_object(
         Bucket="phase2-s3-bucket",
         Key="sensitive/monitoring-program.js",
-        Body=js_content
+        Body=js_content,
     )
     response = client.delete("/sensitive/javascript-program")
     assert response.status_code == 200
@@ -103,14 +108,17 @@ def test_delete_js_program_success(mock_s3: MagicMock) -> None:
 
     # Verify it was actually deleted
     with pytest.raises(Exception):  # Should raise NoSuchKey
-        mock_s3.get_object(Bucket="phase2-s3-bucket", Key="sensitive/monitoring-program.js")
+        mock_s3.get_object(
+            Bucket="phase2-s3-bucket", Key="sensitive/monitoring-program.js"
+        )
 
 
 # ==================================================
 # TEST: make_sensitive_zip Function
 # ==================================================
 
-@patch('src.sensitive_models.httpx.get')
+
+@patch("src.sensitive_models.httpx.get")
 def test_make_sensitive_zip_success(mock_httpx_get: MagicMock) -> None:
     """Test creating a zip with README."""
     readme_content = b"# Test Model\n\nThis is a test model."
@@ -124,12 +132,12 @@ def test_make_sensitive_zip_success(mock_httpx_get: MagicMock) -> None:
 
     try:
         # Verify zip was created
-        assert zip_path.endswith('.zip')
+        assert zip_path.endswith(".zip")
 
         # Verify zip contents
-        with zipfile.ZipFile(zip_path, 'r') as zf:
-            assert 'README.md' in zf.namelist()
-            assert zf.read('README.md') == readme_content
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            assert "README.md" in zf.namelist()
+            assert zf.read("README.md") == readme_content
 
     finally:
         # Cleanup
@@ -137,7 +145,7 @@ def test_make_sensitive_zip_success(mock_httpx_get: MagicMock) -> None:
             os.unlink(zip_path)
 
 
-@patch('src.sensitive_models.httpx.get')
+@patch("src.sensitive_models.httpx.get")
 def test_make_sensitive_zip_no_readme(mock_httpx_get: MagicMock) -> None:
     """Test creating a zip when README doesn't exist."""
     # Mock httpx to raise error (README not found)
@@ -148,9 +156,9 @@ def test_make_sensitive_zip_no_readme(mock_httpx_get: MagicMock) -> None:
 
     try:
         # Verify zip was created with minimal README
-        with zipfile.ZipFile(zip_path, 'r') as zf:
-            assert 'README.md' in zf.namelist()
-            content = zf.read('README.md').decode('utf-8')
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            assert "README.md" in zf.namelist()
+            content = zf.read("README.md").decode("utf-8")
             assert "test-model" in content
             assert model_url in content
 
@@ -176,7 +184,7 @@ def test_detect_safe_keyword_in_name():
         assert not is_malicious
 
 
-@patch('src.sensitive_models.httpx.get')
+@patch("src.sensitive_models.httpx.get")
 def test_detect_malicious_low_downloads(mock_get):
     """Test detection of models with very low downloads."""
     # Mock HuggingFace API response
@@ -187,7 +195,7 @@ def test_detect_malicious_low_downloads(mock_get):
         "downloads": 3,  # Very low
         "likes": 0,
         "tags": [],
-        "createdAt": "2025-12-10T00:00:00Z"
+        "createdAt": "2025-12-10T00:00:00Z",
     }
     mock_get.return_value = mock_response
     is_malicious = detect_malicious_patterns(
@@ -196,7 +204,7 @@ def test_detect_malicious_low_downloads(mock_get):
     assert is_malicious  # Should be flagged
 
 
-@patch('src.sensitive_models.httpx.get')
+@patch("src.sensitive_models.httpx.get")
 def test_detect_malicious_newly_created_no_usage(mock_get):
     """Test detection of newly created models with no usage."""
     # Model created 2 days ago
@@ -208,7 +216,7 @@ def test_detect_malicious_newly_created_no_usage(mock_get):
         "downloads": 2,
         "likes": 0,
         "tags": [],
-        "createdAt": recent_date
+        "createdAt": recent_date,
     }
     mock_get.return_value = mock_response
     is_malicious = detect_malicious_patterns(

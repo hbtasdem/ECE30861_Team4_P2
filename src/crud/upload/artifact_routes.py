@@ -43,14 +43,23 @@ from sqlalchemy.orm import Session
 from ulid import ULID
 
 from src.crud.rate_route import rateOnUpload
-from src.crud.upload.artifacts import Artifact, ArtifactData, ArtifactMetadata, ArtifactQuery
+from src.crud.upload.artifacts import (
+    Artifact,
+    ArtifactData,
+    ArtifactMetadata,
+    ArtifactQuery,
+)
 from src.crud.upload.auth import get_current_user
 from src.crud.upload.download_artifact import get_download_url
 from src.database import get_db
 from src.database_models import Artifact as ArtifactModel
 from src.database_models import AuditEntry
 from src.license_check import license_check
-from src.sensitive_models import check_sensitive_model, detect_malicious_patterns, log_sensitive_action
+from src.sensitive_models import (
+    check_sensitive_model,
+    detect_malicious_patterns,
+    log_sensitive_action,
+)
 
 router = APIRouter(tags=["artifacts"])
 
@@ -184,7 +193,9 @@ async def create_artifact(
 
         # SENSITIVE MODEL
         # need to figure out how to get the username from authentication
-        is_sensitive = detect_malicious_patterns(name, artifact_data.url, artifact_id, is_sensitive)
+        is_sensitive = detect_malicious_patterns(
+            name, artifact_data.url, artifact_id, is_sensitive
+        )
         username = ""
         if is_sensitive and artifact_type == "model":
             log_sensitive_action(username, "upload", artifact_id)
@@ -524,7 +535,7 @@ async def enumerate_artifacts(
                         results.append(artifact)
 
         # Apply pagination
-        paginated_results = results[offset_int:offset_int + page_size]  # noqa: E203
+        paginated_results = results[offset_int : offset_int + page_size]  # noqa: E203
 
         # Convert to metadata
         metadata_list = [
@@ -613,12 +624,16 @@ async def reset_registry(
 
         # Delete all users from database
         from src.database_models import User as DBUser
+
         db.query(DBUser).delete()
 
         # Recreate default admin user (required for autograder login)
         admin_username = "ece30861defaultadminuser"
-        admin_password = "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
+        admin_password = (
+            "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
+        )
         from src.crud.upload.auth import hash_password
+
         hashed = hash_password(admin_password)
         admin_user = DBUser(
             username=admin_username,
@@ -740,9 +755,15 @@ async def get_artifact_cost(
                 if dep_id and dep_id != artifact_id:
                     # Try to get dependency artifact
                     try:
-                        dep_key = f"model/{dep_id}.json"  # Assume model type for dependencies
-                        dep_response = s3_client.get_object(Bucket=BUCKET_NAME, Key=dep_key)
-                        dep_envelope = json.loads(dep_response["Body"].read().decode("utf-8"))
+                        dep_key = (
+                            f"model/{dep_id}.json"  # Assume model type for dependencies
+                        )
+                        dep_response = s3_client.get_object(
+                            Bucket=BUCKET_NAME, Key=dep_key
+                        )
+                        dep_envelope = json.loads(
+                            dep_response["Body"].read().decode("utf-8")
+                        )
                         dep_url = dep_envelope["data"]["url"]
 
                         # Calculate dependency size
@@ -757,7 +778,7 @@ async def get_artifact_cost(
 
                         dependencies[dep_id] = {
                             "standalone_cost": dep_size_mb,
-                            "total_cost": dep_size_mb
+                            "total_cost": dep_size_mb,
                         }
                     except Exception:
                         # If dependency not found, skip it
@@ -767,14 +788,13 @@ async def get_artifact_cost(
             pass
 
         # Calculate total_cost as sum of all dependencies + standalone
-        total_cost = size_mb + sum(dep.get("total_cost", 0) for dep in dependencies.values())
+        total_cost = size_mb + sum(
+            dep.get("total_cost", 0) for dep in dependencies.values()
+        )
 
         # Build response with main artifact + all dependencies
         cost_data = {
-            artifact_id: {
-                "standalone_cost": size_mb,
-                "total_cost": total_cost
-            }
+            artifact_id: {"standalone_cost": size_mb, "total_cost": total_cost}
         }
         cost_data.update(dependencies)
 
