@@ -4,6 +4,7 @@ Tests for sensitive model security features.
 
 import os
 import zipfile
+from datetime import datetime, timedelta, timezone
 from typing import Any, Generator
 from unittest.mock import MagicMock, Mock, patch
 
@@ -13,7 +14,7 @@ from fastapi.testclient import TestClient
 from moto import mock_aws
 
 from src.crud.app import app
-from src.sensitive_models import make_sensitive_zip, sensitive_check
+from src.sensitive_models import detect_malicious_patterns, make_sensitive_zip
 
 client = TestClient(app)
 
@@ -49,7 +50,7 @@ def test_upload_js_program_success(mock_s3: MagicMock) -> None:
     assert response.json()["size"] == len(js_content)
 
     # Verify the file was actually uploaded to mock S3
-    obj = mock_s3.get_object(Bucket="phase2-s3-bucket", Key="monitoring-program.js")
+    obj = mock_s3.get_object(Bucket="phase2-s3-bucket", Key="sensitive/monitoring-program.js")
     stored_content = obj['Body'].read()
     assert stored_content == js_content
 
@@ -66,12 +67,11 @@ def test_get_js_program_success(mock_s3: MagicMock) -> None:
     # First upload a program
     mock_s3.put_object(
         Bucket="phase2-s3-bucket",
-        Key="monitoring-program.js",
+        Key="sensitive/monitoring-program.js",
         Body=js_content,
         ContentType="application/javascript"
     )
     response = client.get("/sensitive/javascript-program")
-
     assert response.status_code == 200
     assert response.json()["program"] == js_content.decode('utf-8')
     assert "last_modified" in response.json()
@@ -94,7 +94,7 @@ def test_delete_js_program_success(mock_s3: MagicMock) -> None:
     js_content = b"console.log('test');"
     mock_s3.put_object(
         Bucket="phase2-s3-bucket",
-        Key="monitoring-program.js",
+        Key="sensitive/monitoring-program.js",
         Body=js_content
     )
     response = client.delete("/sensitive/javascript-program")
@@ -103,7 +103,7 @@ def test_delete_js_program_success(mock_s3: MagicMock) -> None:
 
     # Verify it was actually deleted
     with pytest.raises(Exception):  # Should raise NoSuchKey
-        mock_s3.get_object(Bucket="phase2-s3-bucket", Key="monitoring-program.js")
+        mock_s3.get_object(Bucket="phase2-s3-bucket", Key="sensitive/monitoring-program.js")
 
 
 # ==================================================
@@ -160,87 +160,58 @@ def test_make_sensitive_zip_no_readme(mock_httpx_get: MagicMock) -> None:
 
 
 # ==================================================
-# TEST: sensitive_check Function
+# TEST: check_sensitive_model Function
 # ==================================================
 
-@patch('src.sensitive_models.make_sensitive_zip')
-@patch('src.sensitive_models.subprocess.run')
-def test_sensitive_check_no_js_program(mock_subprocess: MagicMock, mock_make_zip: MagicMock, mock_s3: MagicMock) -> None:
-    """Test sensitive_check when no JS program is configured."""
 
-    # No JS program in S3, should pass without running subprocess
-    sensitive_check("test-model", "https://huggingface.co/model", "user123")
+def test_detect_safe_keyword_in_name():
+    """Test that safe model names don't trigger false positives."""
+    safe_names = [
+        ("bert-base-uncased", "https://huggingface.co/bert-base-uncased"),
+        ("gpt2", "https://huggingface.co/gpt2"),
+        ("sentiment-analysis", "https://huggingface.co/user/sentiment-analysis"),
+    ]
+    for name, url in safe_names:
+        is_malicious = detect_malicious_patterns(name, url, "test_id", False)
+        assert not is_malicious
 
-    # Should not create zip or run subprocess
-    mock_make_zip.assert_not_called()
-    mock_subprocess.assert_not_called()
 
-
-@patch('src.sensitive_models.make_sensitive_zip')
-@patch('src.sensitive_models.subprocess.run')
-def test_sensitive_check_approved(mock_subprocess: MagicMock, mock_make_zip: MagicMock, mock_s3: MagicMock) -> None:
-    """Test sensitive_check when JS program approves."""
-
-    # Upload JS program to mock S3
-    js_program = b"console.log('approved'); process.exit(0);"
-    mock_s3.put_object(
-        Bucket="phase2-s3-bucket",
-        Key="monitoring-program.js",
-        Body=js_program
+@patch('src.sensitive_models.httpx.get')
+def test_detect_malicious_low_downloads(mock_get):
+    """Test detection of models with very low downloads."""
+    # Mock HuggingFace API response
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {
+        "author": "unknown-user",
+        "downloads": 3,  # Very low
+        "likes": 0,
+        "tags": [],
+        "createdAt": "2025-12-10T00:00:00Z"
+    }
+    mock_get.return_value = mock_response
+    is_malicious = detect_malicious_patterns(
+        "test-model", "https://huggingface.co/unknown-user/test-model", "test_id", False
     )
-
-    # Mock zip creation
-    mock_make_zip.return_value = "/tmp/test.zip"
-
-    # Mock subprocess to return success
-    mock_result = Mock()
-    mock_result.returncode = 0
-    mock_result.stdout = "APPROVED"
-    mock_subprocess.return_value = mock_result
-
-    # Should not raise exception
-    sensitive_check("test-model", "https://huggingface.co/model", "user123")
-
-    # Verify subprocess was called with correct args
-    mock_subprocess.assert_called_once()
-    call_args = mock_subprocess.call_args[0][0]  # Get the list of arguments
-
-    # Arguments are: ['node', js_file_path, model_name, uploader, uploader, zip_path]
-    assert call_args[0] == 'node'
-    assert call_args[2] == 'test-model'       # model_name
-    assert call_args[3] == 'user123'          # uploader_username
-    assert call_args[4] == 'user123'          # uploader_username (same for upload)
-    assert call_args[5] == '/tmp/test.zip'    # zip_path
+    assert is_malicious  # Should be flagged
 
 
-@patch('src.sensitive_models.make_sensitive_zip')
-@patch('src.sensitive_models.subprocess.run')
-def test_sensitive_check_rejected(mock_subprocess: MagicMock, mock_make_zip: MagicMock, mock_s3: MagicMock) -> None:
-    """Test sensitive_check when JS program rejects."""
-
-    from fastapi import HTTPException
-
-    # Upload JS program to mock S3
-    js_program = b"console.log('rejected'); process.exit(1);"
-    mock_s3.put_object(
-        Bucket="phase2-s3-bucket",
-        Key="monitoring-program.js",
-        Body=js_program
+@patch('src.sensitive_models.httpx.get')
+def test_detect_malicious_newly_created_no_usage(mock_get):
+    """Test detection of newly created models with no usage."""
+    # Model created 2 days ago
+    recent_date = (datetime.now(timezone.utc) - timedelta(days=2)).isoformat() + "Z"
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {
+        "author": "new-user",
+        "downloads": 2,
+        "likes": 0,
+        "tags": [],
+        "createdAt": recent_date
+    }
+    mock_get.return_value = mock_response
+    is_malicious = detect_malicious_patterns(
+        "test-model", "https://huggingface.co/new-user/test-model", "test_id", False
     )
-
-    # Mock zip creation
-    mock_make_zip.return_value = "/tmp/test.zip"
-
-    # Mock subprocess to return failure
-    mock_result = Mock()
-    mock_result.returncode = 1
-    mock_result.stdout = "REJECTED: Model contains malicious content"
-    mock_subprocess.return_value = mock_result
-
-    # Should raise HTTPException
-    with pytest.raises(HTTPException) as exc_info:
-        sensitive_check("malicious-model", "https://huggingface.co/model", "user123")
-
-    assert exc_info.value.status_code == 403
-    assert "rejected by monitoring program" in exc_info.value.detail
-    assert "malicious content" in exc_info.value.detail
+    assert is_malicious

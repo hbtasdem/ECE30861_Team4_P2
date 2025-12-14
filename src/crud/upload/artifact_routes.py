@@ -46,7 +46,7 @@ from src.crud.upload.artifacts import Artifact, ArtifactData, ArtifactMetadata, 
 from src.crud.upload.auth import get_current_user
 from src.crud.upload.download_artifact import get_download_url
 from src.license_check import license_check
-from src.sensitive_models import sensitive_check
+from src.sensitive_models import check_sensitive_model, detect_malicious_patterns, log_sensitive_action
 
 # from src.database import get_db
 # from src.database_models import Artifact as ArtifactModel
@@ -184,9 +184,11 @@ async def create_artifact(
 
         # SENSITIVE MODEL
         # need to figure out how to get the username from authentication
+        is_sensitive = detect_malicious_patterns(name, artifact_data.url, artifact_id, is_sensitive)
         username = ""
         if is_sensitive and artifact_type == "model":
-            sensitive_check(name, artifact_data.url, username)
+            log_sensitive_action(username, "upload", artifact_id)
+            check_sensitive_model(name, artifact_data.url, username)
 
         # RATE MODEL: if model ingestible will store rating in s3 and return True
         if artifact_type == "model":

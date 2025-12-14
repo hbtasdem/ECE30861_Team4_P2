@@ -46,6 +46,7 @@ mypy
 types-requests
 passlib
 kaggle
+dotenv
 
 # Testing dependencies (optional)
 pytest>=7.0.0
