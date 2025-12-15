@@ -36,3 +36,14 @@ Compute: AWS EC2
 CI/CD: GitHub Actions (push-to-main deployment)
 Monitoring: AWS CloudWatch
 API Documentation: OpenAPI 3.1 (/docs)
+
+
+Frontend: http://3.22.221.210:8000/
+
+
+Testing:
+
+Manual testing: Endpoint behavior validated using curl and browser-based testing
+Automated tests: Basic unit tests for selected endpoints
+Deployment validation: Verified via live interaction with the deployed service
+Monitoring: Logs available through CloudWatch and exposed via health endpoints
