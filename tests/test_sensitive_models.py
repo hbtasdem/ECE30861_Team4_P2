@@ -2,6 +2,7 @@
 Tests for sensitive model security features.
 """
 
+import json
 import os
 import zipfile
 from datetime import datetime, timedelta, timezone
@@ -14,7 +15,7 @@ from fastapi.testclient import TestClient
 from moto import mock_aws
 
 from src.crud.app import app
-from src.sensitive_models import detect_malicious_patterns, make_sensitive_zip
+from src.sensitive_models import detect_malicious_patterns, log_sensitive_action, make_sensitive_zip, track_malicious
 
 client = TestClient(app)
 
@@ -36,7 +37,9 @@ def mock_s3() -> Generator[Any, None, None]:
 # ==================================================
 
 def test_upload_js_program_success(mock_s3: MagicMock) -> None:
-    """Test successfully uploading a JS monitoring program."""
+    """Test successfully uploading a JS monitoring program.
+    Tests @router.post("/sensitive/javascript-program")
+    """
 
     js_content = b"console.log('test');"
 
@@ -60,7 +63,9 @@ def test_upload_js_program_success(mock_s3: MagicMock) -> None:
 # ==================================================
 
 def test_get_js_program_success(mock_s3: MagicMock) -> None:
-    """Test retrieving the JS monitoring program."""
+    """Test retrieving the JS monitoring program.
+    Tests @router.get("/sensitive/javascript-program")
+    """
 
     js_content = b"console.log('monitor');"
 
@@ -89,7 +94,9 @@ def test_get_js_program_not_found(mock_s3: MagicMock) -> None:
 # ==================================================
 
 def test_delete_js_program_success(mock_s3: MagicMock) -> None:
-    """Test deleting the JS monitoring program."""
+    """Test deleting the JS monitoring program.
+    @router.delete("/sensitive/javascript-program")
+    """
     # First upload a program
     js_content = b"console.log('test');"
     mock_s3.put_object(
@@ -215,3 +222,60 @@ def test_detect_malicious_newly_created_no_usage(mock_get):
         "test-model", "https://huggingface.co/new-user/test-model", "test_id", False
     )
     assert is_malicious
+
+
+def test_malicious_model_is_stored_and_returned(mock_s3):
+    """
+    Ensure a malicious model written to S3 is returned by the endpoint.
+    """
+
+    # Store a malicious model log in mock s3
+    track_malicious(
+        model_name="evil-model",
+        model_url="https://huggingface.co/evil/model",
+        artifact_id="artifact-123",
+        reasons=["executes arbitrary code", "network exfiltration"],
+    )
+
+    # Act: call the endpoint
+    response = client.get("/sensitive/malicious_models", headers={"X-Authorization": "test-token"})
+
+    # Assert: endpoint succeeds
+    assert response.status_code == 200
+
+    data = response.json()
+    assert "malicious_models" in data
+    assert len(data["malicious_models"]) == 1
+
+    entry = data["malicious_models"][0]
+
+    assert entry["artifact_id"] == "artifact-123"
+    assert entry["model_name"] == "evil-model"
+    assert entry["model_url"] == "https://huggingface.co/evil/model"
+    assert entry["reasons"] == [
+        "executes arbitrary code",
+        "network exfiltration",
+    ]
+    assert "timestamp" in entry
+
+
+def test_log_sensitive_action_appends(mock_s3):
+    """Test multiple actions append as JSONL."""
+
+    log_sensitive_action("alice", "upload", "artifact-001")
+    log_sensitive_action("bob", "download", "artifact-001")
+
+    obj = mock_s3.get_object(
+        Bucket="phase2-s3-bucket",
+        Key="sensitive/logtrail.jsonl",
+    )
+
+    lines = obj["Body"].read().decode("utf-8").strip().split("\n")
+    assert len(lines) == 2
+
+    first = json.loads(lines[0])
+    second = json.loads(lines[1])
+
+    assert first["username"] == "alice"
+    assert second["username"] == "bob"
+    assert second["action"] == "download"

@@ -222,16 +222,19 @@ def rateOnUpload(model_url: str, artifact_id: str) -> bool:
     Parameters
     ----------
     model_url: str given in upload endpoint by user
+    artifact_id: str unique identifier for the artifact
 
     Returns
     ----------
-    boolean: True if model, ingestible, False if not
+    boolean: True if model ingestible and rating stored successfully, False if not
     """
     # Find dataset and code url for model
     dataset_url, code_url = findDatasetAndCode(model_url)
+
     # calculate metrics
     rating = calculate_all_scores(code_url, dataset_url, model_url, set(), set())
-    # check if ingestible comment out until rate works
+
+    # check if ingestible
     # for key, value in rating.items():
     #     # skip non-score items
     #     if (key == "name") or (key == "category") or key.endswith("latency"):
@@ -244,15 +247,53 @@ def rateOnUpload(model_url: str, artifact_id: str) -> bool:
     #     elif value < 0.5:
     #         return False
 
-    # if ingestible: store metrics
+    # Store metrics in S3 with verification
     s3_client = boto3.client("s3")
-    try:
-        key = f"rating/{artifact_id}.rate.json"
-        s3_client.put_object(Bucket=BUCKET_NAME, Key=key, Body=json.dumps(rating))
-    except Exception as e:
-        raise HTTPException(status_code=424, detail=f"Error rating model: {str(e)}")
+    key = f"rating/{artifact_id}.rate.json"
 
-    return True
+    try:
+        # Put the object
+        response = s3_client.put_object(
+            Bucket=BUCKET_NAME,
+            Key=key,
+            Body=json.dumps(rating),
+            ContentType='application/json'
+        )
+
+        # Verify the put was successful by checking the response
+        if 'ETag' not in response:
+            raise HTTPException(
+                status_code=424,
+                detail="Failed to store rating: S3 put_object did not return ETag"
+            )
+
+        # Verify the object is readable before returning, this ensures read-after-write consistency
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                s3_client.head_object(Bucket=BUCKET_NAME, Key=key)
+                # If head_object succeeds, the object is readable
+                break
+            except s3_client.exceptions.NoSuchKey:
+                if attempt == max_retries - 1:
+                    raise HTTPException(
+                        status_code=424,
+                        detail="Rating stored but not immediately readable - S3 consistency issue"
+                    )
+                # Wait a bit before retrying
+                import time
+                time.sleep(0.05)  # 50ms
+
+        return True
+
+    except HTTPException:
+        # Re-raise HTTPExceptions as-is
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=424,
+            detail=f"Error storing rating: {str(e)}"
+        )
 
 
 if __name__ == "__main__":
