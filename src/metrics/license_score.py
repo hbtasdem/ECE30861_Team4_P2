@@ -13,53 +13,28 @@ COMPATIBLE_LICENSES = {
     "gpl-2.0",
     "gpl-3.0",
     "lgpl-2.1",
-    "lgpl-3.0",
     "artistic-2.0",
     "mit",
     "bsl-1.0",
     "bsd-3-clause",
-    "bsd-2-clause",
-    "bsd",
     "cc0-1.0",
     "cc-by-4.0",
-    "cc-by-3.0",
-    "cc-by-sa-4.0",
     "wtfpl",
     "isc",
     "ncsa",
     "unlicense",
     "zlib",
     "apache-2.0",
-    "apache-1.1",
-    "mpl-2.0",
-    "openrail",
-    "bigscience-openrail-m",
-    "bigscience-bloom-rail-1.0",
-    "llama2",
-    "llama3",
-    "llama3.1",
-    "llama3.2",
-    "gemma",
 }
 
-# Common permissive license indicators
-PERMISSIVE_INDICATORS = [
-    "open source",
-    "permissive",
-    "free to use",
-    "freely available",
-    "no restrictions",
-    "public domain",
-    "open access",
-    "unrestricted",
-]
+
+"""
+Fetch the README.md text from a Hugging Face model repository. Uses the
+model ID (e.g., "baidu/ERNIE-4.5-21B-A3B-Thinking").
+"""
 
 
 def fetch_readme(model_id: str) -> Optional[str]:
-    """
-    Fetch the README.md text from a Hugging Face model repository. Uses the
-    model ID (e.g., "baidu/ERNIE-4.5-21B-A3B-Thinking").
-    """
     # Construct raw README URL from model ID
     raw_url = f"https://huggingface.co/{model_id}/resolve/main/README.md"
     try:
@@ -72,11 +47,13 @@ def fetch_readme(model_id: str) -> Optional[str]:
         return None
 
 
+"""
+Extract license information from a Hugging Face README.md file.
+Handles both YAML front matter and '## License' sections.
+"""
+
+
 def extract_license(readme_text: str) -> Optional[str]:
-    """
-    Extract license information from a Hugging Face README.md file.
-    Handles both YAML front matter and '## License' sections.
-    """
     # Case 1: YAML front matter
     yaml_match = re.search(
         r"^---[\s\S]*?license:\s*([^\n]+)", readme_text, re.IGNORECASE | re.MULTILINE
@@ -88,99 +65,46 @@ def extract_license(readme_text: str) -> Optional[str]:
     lines = readme_text.splitlines()
     for i, line in enumerate(lines):
         if re.match(r"^#+\s*License\s*$", line.strip(), re.IGNORECASE):
-            # Look for license info in next few lines
-            for j in range(i + 1, min(i + 10, len(lines))):
+            for j in range(i + 1, len(lines)):
                 if lines[j].strip():
                     return lines[j].strip().lower()
 
     return None
 
 
-def check_license_mentions(readme_text: str) -> bool:
-    """Check if README has any license-related mentions."""
-    readme_lower = readme_text.lower()
-    license_keywords = [
-        "license",
-        "licence",
-        "licensed under",
-        "terms of use",
-        "usage terms",
-        "copyright",
-        "legal",
-        "permissions",
-    ]
-    return any(keyword in readme_lower for keyword in license_keywords)
+"""
+Calculate license sub-score:
+- 1 if license is present and compatible with LGPL v2.1
+- 0 if not found or incompatible
+Input: model_id (e.g., "baidu/ERNIE-4.5-21B-A3B-Thinking")
+"""
 
 
-def check_permissive_language(readme_text: str) -> bool:
-    """Check if README suggests permissive usage."""
-    readme_lower = readme_text.lower()
-    return any(indicator in readme_lower for indicator in PERMISSIVE_INDICATORS)
-
-
-def license_sub_score(model_id: str) -> tuple[float, float]:
-    """
-    Calculate license sub-score with granular scoring:
-    - 1.0: Compatible license found
-    - 0.7: Unrecognized but specific license mentioned
-    - 0.5: License section exists or permissive language found
-    - 0.3: Any license-related mention
-    - 0.0: No license information
-
-    Input: model_id (e.g., "baidu/ERNIE-4.5-21B-A3B-Thinking")
-    Returns: (score, elapsed_time)
-    """
+def license_sub_score(model_id: str) -> tuple[int, float]:
     start_time = time.time()
     readme = fetch_readme(model_id)
-
     if not readme:
         end_time = time.time()
-        return (0.0, end_time - start_time)
+        return (0, end_time - start_time)
 
-    # Try to extract specific license
     license_str = extract_license(readme)
+    if not license_str:
+        end_time = time.time()
+        return (0, end_time - start_time)
 
-    if license_str:
-        # Normalize the license string
-        normalized = (
-            license_str.lower()
-            .replace(" ", "")
-            .replace("-", "")
-            .replace("_", "")
-            .replace("license", "")
-            .replace("v", "")
-            .replace(".", "")
-        )
+    # Normalize
+    normalized = (
+        license_str.lower().replace(" ", "").replace("-", "").replace("license", "")
+    )
 
-        # Check if it matches a compatible license
-        for comp in COMPATIBLE_LICENSES:
-            comp_normalized = comp.replace("-", "").replace("_", "").replace(".", "")
-            if comp_normalized in normalized or normalized in comp_normalized:
-                end_time = time.time()
-                return (1.0, end_time - start_time)
-
-        # Specific license found but not in our list - still good!
-        # This means they documented it clearly
-        if len(license_str) > 2:  # Not just a letter/number
+    for comp in COMPATIBLE_LICENSES:
+        if comp.replace("-", "").replace(" ", "") in normalized:
             end_time = time.time()
-            return (0.7, end_time - start_time)
-
-    # Check for permissive language (common in AI models)
-    if check_permissive_language(readme):
-        end_time = time.time()
-        return (0.5, end_time - start_time)
-
-    # Check for any license mention at all
-    if check_license_mentions(readme):
-        end_time = time.time()
-        return (0.3, end_time - start_time)
-
-    # No license information found
+            return (1, end_time - start_time)
     end_time = time.time()
-    return (0.0, end_time - start_time)
+    return (0, end_time - start_time)
 
 
 if __name__ == "__main__":
     model_id = "baidu/ERNIE-4.5-21B-A3B-Thinking"
-    score, elapsed = license_sub_score(model_id)
-    print(f"License score: {score} (elapsed: {elapsed:.3f}s)")
+    print(license_sub_score(model_id))  # -> 1 if compatible, 0 otherwise

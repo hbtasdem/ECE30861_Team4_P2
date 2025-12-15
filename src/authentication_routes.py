@@ -23,7 +23,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from src.crud.upload.artifacts import AuthenticationRequest
-from src.crud.upload.auth import create_access_token, hash_password  # , verify_password
+from src.crud.upload.auth import create_access_token, hash_password, verify_password
 from src.database import get_db
 from src.database_models import User as DBUser
 
@@ -151,22 +151,20 @@ async def authenticate_user(
 
     # Find user in database
     user = db.query(DBUser).filter(DBUser.username == request.user.name).first()
-
-    # COMMENTED OUT ANY
-    # if not user:
-    #     logger.warning(f"Login failed: user not found. Username: {request.user.name}")
-    #     raise HTTPException(
-    #         status_code=status.HTTP_401_UNAUTHORIZED,
-    #         detail="The user or password is invalid.",
-    #     )
+    if not user:
+        logger.warning(f"Login failed: user not found. Username: {request.user.name}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="The user or password is invalid.",
+        )
 
     # Verify password
-    # if not verify_password(request.secret.password, user.hashed_password):
-    #     logger.warning(f"Login failed: password mismatch for user {request.user.name}")
-    #     raise HTTPException(
-    #         status_code=status.HTTP_401_UNAUTHORIZED,
-    #         detail="The user or password is invalid.",
-    #     )
+    if not verify_password(request.secret.password, user.hashed_password):
+        logger.warning(f"Login failed: password mismatch for user {request.user.name}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="The user or password is invalid.",
+        )
 
     # Generate JWT token
     token_data = {
@@ -175,4 +173,6 @@ async def authenticate_user(
         "is_admin": user.is_admin,
     }
     access_token = create_access_token(token_data)
-    return JSONResponse(content=f"bearer {access_token}")
+    from fastapi.responses import Response
+    # Per spec: Return token as a JSON string (not wrapped in object)
+    return Response(content=f'"bearer {access_token}"', media_type="application/json")

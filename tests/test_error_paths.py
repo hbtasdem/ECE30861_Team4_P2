@@ -1,10 +1,19 @@
 """Tests for error paths and edge cases to improve code coverage."""
 
+
+import boto3
 from fastapi.testclient import TestClient
+
 
 from src.crud.app import app
 
+
 client = TestClient(app)
+
+def get_admin_password_from_s3():
+    s3 = boto3.client('s3')
+    obj = s3.get_object(Bucket='phase2-s3-bucket', Key='secrets/admin_password.txt')
+    return obj['Body'].read().decode('utf-8').strip()
 
 
 class TestAuthenticationErrors:
@@ -95,13 +104,13 @@ class TestArtifactEndpointErrors:
     def test_create_artifact_invalid_url(self):
         """Test creating artifact with invalid URL format."""
         # Get a valid token first
+
+        admin_password = get_admin_password_from_s3()
         auth_response = client.put(
             "/authenticate",
             json={
                 "user": {"name": "ece30861defaultadminuser", "is_admin": True},
-                "secret": {
-                    "password": "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
-                },
+                "secret": {"password": admin_password},
             },
         )
         token = auth_response.json()["token"]
@@ -120,13 +129,13 @@ class TestArtifactEndpointErrors:
 
     def test_get_nonexistent_artifact(self):
         """Test getting an artifact that doesn't exist."""
+
+        admin_password = get_admin_password_from_s3()
         auth_response = client.put(
             "/authenticate",
             json={
                 "user": {"name": "ece30861defaultadminuser", "is_admin": True},
-                "secret": {
-                    "password": "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
-                },
+                "secret": {"password": admin_password},
             },
         )
         token = auth_response.json()["token"]
@@ -149,13 +158,13 @@ class TestRatingEndpointErrors:
 
     def test_rate_nonexistent_artifact(self):
         """Test rating an artifact that doesn't exist - S3 errors are expected."""
+
+        admin_password = get_admin_password_from_s3()
         auth_response = client.put(
             "/authenticate",
             json={
                 "user": {"name": "ece30861defaultadminuser", "is_admin": True},
-                "secret": {
-                    "password": "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
-                },
+                "secret": {"password": admin_password},
             },
         )
         token = auth_response.json()["token"]
@@ -193,13 +202,13 @@ class TestRegexSearchErrors:
 
     def test_regex_search_invalid_regex(self):
         """Test regex search with invalid regex pattern."""
+
+        admin_password = get_admin_password_from_s3()
         auth_response = client.put(
             "/authenticate",
             json={
                 "user": {"name": "ece30861defaultadminuser", "is_admin": True},
-                "secret": {
-                    "password": "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
-                },
+                "secret": {"password": admin_password},
             },
         )
         token = auth_response.json()["token"]
@@ -214,13 +223,13 @@ class TestRegexSearchErrors:
 
     def test_regex_search_missing_regex_field(self):
         """Test regex search without regex field."""
+
+        admin_password = get_admin_password_from_s3()
         auth_response = client.put(
             "/authenticate",
             json={
                 "user": {"name": "ece30861defaultadminuser", "is_admin": True},
-                "secret": {
-                    "password": "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
-                },
+                "secret": {"password": admin_password},
             },
         )
         token = auth_response.json()["token"]
@@ -246,13 +255,13 @@ class TestLicenseCheckErrors:
 
     def test_license_check_missing_github_url(self):
         """Test license check without github_url field."""
+
+        admin_password = get_admin_password_from_s3()
         auth_response = client.put(
             "/authenticate",
             json={
                 "user": {"name": "ece30861defaultadminuser", "is_admin": True},
-                "secret": {
-                    "password": "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
-                },
+                "secret": {"password": admin_password},
             },
         )
         token = auth_response.json()["token"]
@@ -309,13 +318,13 @@ class TestCostEndpoint:
 
     def test_cost_nonexistent_artifact(self):
         """Test cost for non-existent artifact."""
+
+        admin_password = get_admin_password_from_s3()
         auth_response = client.put(
             "/authenticate",
             json={
                 "user": {"name": "ece30861defaultadminuser", "is_admin": True},
-                "secret": {
-                    "password": "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
-                },
+                "secret": {"password": admin_password},
             },
         )
         token = auth_response.json()["token"]
@@ -344,13 +353,13 @@ class TestLineageEndpoint:
 
     def test_lineage_nonexistent_artifact(self):
         """Test lineage for non-existent artifact."""
+
+        admin_password = get_admin_password_from_s3()
         auth_response = client.put(
             "/authenticate",
             json={
                 "user": {"name": "ece30861defaultadminuser", "is_admin": True},
-                "secret": {
-                    "password": "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
-                },
+                "secret": {"password": admin_password},
             },
         )
         token = auth_response.json()["token"]

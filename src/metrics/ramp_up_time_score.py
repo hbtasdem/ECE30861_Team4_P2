@@ -21,10 +21,10 @@ def normalize_sigmoid(value: int, mid: int, steepness: float) -> float:
 def ramp_up_time_score(model_id: str) -> Tuple[float, float]:
     """
     Scores ramp up time based on:
-    - Downloads (25% weight)
-    - Likes (25% weight)
-    - README exists and quality (30% weight)
-    - Code example in README (20% weight)
+    - Downloads > 0
+    - Likes > 0
+    - README exists
+    - Coding example in README (looks for '```' or 'example' keyword)
     Returns (score, elapsed_time)
     """
     start = time.time()
@@ -35,19 +35,13 @@ def ramp_up_time_score(model_id: str) -> Tuple[float, float]:
     if info is None:
         return 0.0, time.time() - start
 
-    # 1. Downloads (weight: 0.25)
-    downloads_score = normalize_sigmoid(
-        value=info.get("downloads", 0), mid=100, steepness=0.01
-    )
-    score += downloads_score * 0.25
+    # 1. Downloads
+    score += normalize_sigmoid(value=info.get("downloads", 0), mid=50, steepness=0.05)
 
-    # 2. Likes (weight: 0.25)
-    likes_score = normalize_sigmoid(
-        value=info.get("likes", 0), mid=5, steepness=0.2
-    )
-    score += likes_score * 0.25
+    # 2. Likes
+    score += normalize_sigmoid(value=info.get("likes", 0), mid=3, steepness=0.3)
 
-    # 3. README exists and quality (weight: 0.30)
+    # 3. README exists
     readme = fetch_readme(model_id)
     if readme:
         # Base score for having a README

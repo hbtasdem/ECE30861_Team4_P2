@@ -139,13 +139,18 @@ def verify_password(
         True if passwords match, False otherwise
     """
     # Bcrypt has a 72-byte limit on passwords - truncate to match hash
+    import logging
+    logger = logging.getLogger("auth_debug")
     password_bytes = plain_password.encode("utf-8")[:72]
     password_truncated = password_bytes.decode("utf-8", errors="ignore")
     try:
-        return bcrypt.checkpw(
+        result = bcrypt.checkpw(
             password_truncated.encode("utf-8"), hashed_password.encode("utf-8")
         )
-    except Exception:
+        logger.info(f"verify_password: user input='{plain_password}', truncated='{password_truncated}', hash='{hashed_password[:10]}...', result={result}")
+        return result
+    except Exception as e:
+        logger.error(f"verify_password exception: {e}")
         return False
 
 
@@ -168,12 +173,6 @@ def create_access_token(
         expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    # Per OpenAPI spec: Return token with "bearer " prefix
-    # print("auth.py")
-    # print(str(access_token))
-
-#  return Response(content=f"{access_token}", media_type="application/json")
-
     return encoded_jwt
 
 
