@@ -43,7 +43,7 @@ from sqlalchemy.orm import Session
 from ulid import ULID
 
 from src.crud.rate_route import rateOnUpload
-from src.crud.upload.artifacts import Artifact, ArtifactData, ArtifactMetadata, ArtifactQuery
+from src.crud.upload.artifacts import Artifact, ArtifactData, ArtifactMetadata
 from src.crud.upload.auth import get_current_user
 from src.crud.upload.download_artifact import get_download_url
 from src.database import get_db
@@ -51,6 +51,20 @@ from src.database_models import Artifact as ArtifactModel
 from src.database_models import AuditEntry
 from src.license_check import license_check
 from src.sensitive_models import check_sensitive_model, detect_malicious_patterns, log_sensitive_action
+
+router = APIRouter(tags=["artifacts"])
+
+# S3 Configuration
+BUCKET_NAME = "phase2-s3-bucket"
+s3_client = boto3.client("s3")
+
+
+router = APIRouter(tags=["artifacts"])
+
+# S3 Configuration
+BUCKET_NAME = "phase2-s3-bucket"
+s3_client = boto3.client("s3")
+
 
 router = APIRouter(tags=["artifacts"])
 
@@ -74,22 +88,21 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
         for page in pages:
             if "Contents" not in page:
                 continue
+
             for obj in page["Contents"]:
                 key = obj["Key"]
+
                 if key.endswith(".json") and not key.endswith(".rate.json"):
                     try:
                         response = s3_client.get_object(Bucket=BUCKET_NAME, Key=key)
-                        artifact_data = json.loads(
-                            response["Body"].read().decode("utf-8")
-                        )
-                        artifact_data = json.loads(
-                            response["Body"].read().decode("utf-8")
-                        )
+                        body_content = response["Body"].read().decode("utf-8")
+                        artifact_data = json.loads(body_content)
                         artifacts.append(artifact_data)
-                    except Exception:
-                        pass
-    except ClientError:
-        pass
+                    except Exception as e:
+                        print(f"Error loading {key}: {e}")
+
+    except ClientError as e:
+        print(f"S3 error listing {artifact_type}: {e}")
 
     return artifacts
 
@@ -98,12 +111,6 @@ def _get_artifacts_by_type(artifact_type: str) -> List[Dict[str, Any]]:
 # POST /artifact/{artifact_type} - CREATE ARTIFACT (BASELINE)
 # ============================================================================
 
-
-@router.post(
-    "/artifact/{artifact_type}",
-    response_model=Artifact,
-    status_code=status.HTTP_201_CREATED,
-)
 @router.post(
     "/artifact/{artifact_type}",
     response_model=Artifact,
@@ -124,7 +131,7 @@ async def create_artifact(
 
     Args:
         artifact_type: Artifact type (model, dataset, or code)
-        artifact_data: Request body with source URL
+        artifact_data: Request body with source URL and optional name
         x_authorization: Bearer token for authentication
 
     Returns:
@@ -136,7 +143,6 @@ async def create_artifact(
     # ========================================================================
     # AUTHENTICATION
     # ========================================================================
-    # Per OpenAPI spec: All endpoints require X-Authorization header
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -154,7 +160,6 @@ async def create_artifact(
     # ========================================================================
     # VALIDATION
     # ========================================================================
-    # Validate artifact type
     valid_types = {"model", "dataset", "code"}
     if artifact_type not in valid_types:
         raise HTTPException(
@@ -163,7 +168,6 @@ async def create_artifact(
             f"Must be one of: {', '.join(valid_types)}",
         )
 
-    # Validate artifact data
     if not artifact_data.url:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -177,15 +181,17 @@ async def create_artifact(
         # Generate unique ID
         artifact_id = str(ULID())
 
-        # Extract name from URL
-        name = artifact_data.url.split("/")[-1]
-        if not name or name.startswith("http"):
-            name = f"{artifact_type}_{artifact_id[:8]}"
+        # Use provided name or extract from URL
+        if artifact_data.name:
+            name = artifact_data.name
+        else:
+            name = artifact_data.url.split("/")[-1]
+            if not name or name.startswith("http"):
+                name = f"{artifact_type}_{artifact_id[:8]}"
 
         # SENSITIVE MODEL
-        # need to figure out how to get the username from authentication
         is_sensitive = detect_malicious_patterns(name, artifact_data.url, artifact_id, is_sensitive)
-        username = ""
+        username = x_authorization
         if is_sensitive and artifact_type == "model":
             log_sensitive_action(username, "upload", artifact_id)
             check_sensitive_model(name, artifact_data.url, username)
@@ -193,10 +199,6 @@ async def create_artifact(
         # RATE MODEL: if model ingestible will store rating in s3 and return True
         if artifact_type == "model":
             if not rateOnUpload(artifact_data.url, artifact_id):
-                raise HTTPException(
-                    status_code=424,
-                    detail="Artifact is not registered due to the disqualified rating.",
-                )
                 raise HTTPException(
                     status_code=424,
                     detail="Artifact is not registered due to the disqualified rating.",
@@ -213,12 +215,6 @@ async def create_artifact(
 
         # Store in S3
         key = f"{artifact_type}/{artifact_id}.json"
-        s3_client.put_object(
-            Bucket=BUCKET_NAME,
-            Key=key,
-            Body=json.dumps(artifact_envelope, indent=2),
-            ContentType="application/json",
-        )
         s3_client.put_object(
             Bucket=BUCKET_NAME,
             Key=key,
@@ -426,37 +422,17 @@ async def update_artifact(
 # POST /artifacts - QUERY/ENUMERATE ARTIFACTS (BASELINE)
 # ============================================================================
 
-
-@router.post("/artifacts", response_model=List[ArtifactMetadata])
+@router.post("/artifacts")
 async def enumerate_artifacts(
-    queries: List[ArtifactQuery],
+    queries: List[dict],
     offset: Optional[int] = Query(None),
     x_authorization: Optional[str] = Header(None),
-) -> List[ArtifactMetadata]:
-    """Query and enumerate artifacts per spec.
+):
+    """Query and enumerate artifacts per spec."""
 
-    Per OpenAPI v3.4.4 spec:
-    - Request body is array of ArtifactQuery objects
-    - Each query specifies name pattern and optional type filters
-    - Multiple queries are OR'd together
-    - Returns ArtifactMetadata array (just name, id, type)
-    - Supports pagination via offset parameter
-
-    Args:
-        queries: Array of ArtifactQuery objects with filters
-        offset: Pagination offset (default 0)
-        x_authorization: Bearer token for authentication
-
-    Returns:
-        List[ArtifactMetadata]: Array of matching artifacts
-
-    Raises:
-        HTTPException: 400 if invalid query, 403 if auth fails
-    """
     # ========================================================================
     # AUTHENTICATION
     # ========================================================================
-    # Per OpenAPI spec: All endpoints require X-Authorization header
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -480,6 +456,40 @@ async def enumerate_artifacts(
             detail="At least one query is required",
         )
 
+    # Validate each query
+    valid_types = {'model', 'dataset', 'code'}
+    for i, query in enumerate(queries):
+        if not isinstance(query, dict):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Query {i} must be an object",
+            )
+
+        if 'name' not in query:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Query {i} missing required field 'name'",
+            )
+
+        if not isinstance(query['name'], str) or not query['name']:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Query {i} 'name' must be a non-empty string",
+            )
+
+        if 'types' in query:
+            types = query['types']
+            if not isinstance(types, list):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Query {i} 'types' must be an array",
+                )
+            if not all(t in valid_types for t in types):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Query {i} 'types' must be subset of {valid_types}",
+                )
+
     # ========================================================================
     # BUILD QUERY FROM S3
     # ========================================================================
@@ -490,30 +500,19 @@ async def enumerate_artifacts(
         results = []
         seen_ids = set()
 
-        # Check if S3 is empty for all types; if so, return []
-        s3_empty = True
-        for artifact_type in ["model", "dataset", "code"]:
-            if _get_artifacts_by_type(artifact_type):
-                s3_empty = False
-                break
-        if s3_empty:
-            return []
-
         for query in queries:
-            # Determine types to search
-            types_to_search = (
-                query.types if query.types else ["model", "dataset", "code"]
-            )
+            name = query['name']
+            types_to_search = query.get('types', ["model", "dataset", "code"])
 
             for artifact_type in types_to_search:
                 artifacts = _get_artifacts_by_type(artifact_type)
 
                 # Filter by name if not wildcard
-                if query.name != "*":
+                if name != "*":
                     artifacts = [
                         a
                         for a in artifacts
-                        if query.name.lower() in a["metadata"]["name"].lower()
+                        if name.lower() in a["metadata"]["name"].lower()
                     ]
 
                 # Add to results, avoiding duplicates
@@ -523,27 +522,44 @@ async def enumerate_artifacts(
                         seen_ids.add(artifact_id)
                         results.append(artifact)
 
+        # Check if too many results (before pagination)
+        if len(results) > 10000:  # Adjust this threshold as needed
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail="Too many artifacts returned",
+            )
+
         # Apply pagination
-        paginated_results = results[offset_int:offset_int + page_size]  # noqa: E203
+        paginated_results = results[offset_int:offset_int + page_size]
+
+        # Calculate next offset
+        next_offset = offset_int + page_size if offset_int + page_size < len(results) else None
 
         # Convert to metadata
         metadata_list = [
-            ArtifactMetadata(
-                name=artifact["metadata"]["name"],
-                id=artifact["metadata"]["id"],
-                type=artifact["metadata"]["type"],
-            )
+            {
+                "name": artifact["metadata"]["name"],
+                "id": artifact["metadata"]["id"],
+                "type": artifact["metadata"]["type"],
+            }
             for artifact in paginated_results
         ]
 
-        return metadata_list
+        # Return with offset header
+        from fastapi.responses import JSONResponse
+        response = JSONResponse(content=metadata_list)
+        if next_offset is not None:
+            response.headers["offset"] = str(next_offset)
 
+        return response
+
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Query failed: {str(e)}",
         )
-
 
 # ============================================================================
 # DELETE /reset - RESET REGISTRY (BASELINE)
