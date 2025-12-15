@@ -670,9 +670,19 @@ async def reset_registry(
         from src.database_models import User as DBUser
         db.query(DBUser).delete()
 
-        # Recreate default admin user
+
+        # Recreate default admin user, fetching password from S3
         admin_username = "ece30861defaultadminuser"
-        admin_password = "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE artifacts;"
+        admin_password = None
+        try:
+            secret_obj = s3_client.get_object(Bucket=BUCKET_NAME, Key="secrets/admin_password.txt")
+            admin_password = secret_obj["Body"].read().decode("utf-8").strip()
+        except Exception as e:
+            db.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Failed to fetch admin password from S3: {str(e)}",
+            )
         from src.crud.upload.auth import hash_password
         hashed = hash_password(admin_password)
         admin_user = DBUser(

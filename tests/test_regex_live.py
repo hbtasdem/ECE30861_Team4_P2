@@ -17,8 +17,35 @@ from typing import Dict, Any, List
 # CONFIGURATION
 # ===========================================================================
 
+
+import boto3
+
 SERVER_URL = "http://3.22.221.210:8000"
-AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzX2FkbWluIjp0cnVlLCJleHAiOjE3NjU3NzkzNTZ9.o75fVtL8U8bz3xalRbCVT0MhjQ8M1qOpt4GpMZmqaGc"
+
+def get_admin_password_from_s3():
+    s3 = boto3.client('s3')
+    obj = s3.get_object(Bucket='phase2-s3-bucket', Key='secrets/admin_password.txt')
+    return obj['Body'].read().decode('utf-8').strip()
+
+def get_auth_token():
+    admin_password = get_admin_password_from_s3()
+    payload = {
+        "user": {"name": "ece30861defaultadminuser", "is_admin": True},
+        "secret": {"password": admin_password},
+    }
+    url = f"{SERVER_URL}/authenticate"
+    try:
+        response = requests.put(url, json=payload, timeout=10)
+        response.raise_for_status()
+        token = response.json().get("token")
+        if not token:
+            raise Exception("No token returned from authentication endpoint.")
+        return token
+    except Exception as e:
+        print(f"Failed to get auth token: {e}")
+        raise
+
+AUTH_TOKEN = get_auth_token()
 
 # Update this token if expired!
 # Get new token: curl -X POST http://3.22.221.210:8000/authenticate -d '{"username":"ece30861defaultadminuser","password":"correcthorsebatterystaple123(!__+@**(A'\''\"`;DROP TABLE artifacts;"}'
