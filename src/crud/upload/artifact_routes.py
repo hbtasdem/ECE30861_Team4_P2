@@ -422,37 +422,17 @@ async def update_artifact(
 # POST /artifacts - QUERY/ENUMERATE ARTIFACTS (BASELINE)
 # ============================================================================
 
-
 @router.post("/artifacts")
 async def enumerate_artifacts(
     queries: List[dict],
     offset: Optional[int] = Query(None),
     x_authorization: Optional[str] = Header(None),
 ):
-    """Query and enumerate artifacts per spec.
+    """Query and enumerate artifacts per spec."""
 
-    Per OpenAPI v3.4.4 spec:
-    - Request body is array of ArtifactQuery objects
-    - Each query specifies name pattern and optional type filters
-    - Multiple queries are OR'd together
-    - Returns ArtifactMetadata array (just name, id, type)
-    - Supports pagination via offset parameter
-
-    Args:
-        queries: Array of ArtifactQuery objects with filters
-        offset: Pagination offset (default 0)
-        x_authorization: Bearer token for authentication
-
-    Returns:
-        List[ArtifactMetadata]: Array of matching artifacts
-
-    Raises:
-        HTTPException: 400 if invalid query, 403 if auth fails
-    """
     # ========================================================================
     # AUTHENTICATION
     # ========================================================================
-    # Per OpenAPI spec: All endpoints require X-Authorization header
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -476,6 +456,7 @@ async def enumerate_artifacts(
             detail="At least one query is required",
         )
 
+    # Validate each query
     valid_types = {'model', 'dataset', 'code'}
     for i, query in enumerate(queries):
         if not isinstance(query, dict):
@@ -483,6 +464,7 @@ async def enumerate_artifacts(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Query {i} must be an object",
             )
+
         if 'name' not in query:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -507,6 +489,7 @@ async def enumerate_artifacts(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=f"Query {i} 'types' must be subset of {valid_types}",
                 )
+
     # ========================================================================
     # BUILD QUERY FROM S3
     # ========================================================================
@@ -538,20 +521,37 @@ async def enumerate_artifacts(
                     if artifact_id not in seen_ids:
                         seen_ids.add(artifact_id)
                         results.append(artifact)
+
+        # Check if too many results (before pagination)
+        if len(results) > 10000:  # Adjust this threshold as needed
+            raise HTTPException(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                detail="Too many artifacts returned",
+            )
+
         # Apply pagination
         paginated_results = results[offset_int:offset_int + page_size]
 
+        # Calculate next offset
+        next_offset = offset_int + page_size if offset_int + page_size < len(results) else None
+
         # Convert to metadata
         metadata_list = [
-            ArtifactMetadata(
-                name=artifact["metadata"]["name"],
-                id=artifact["metadata"]["id"],
-                type=artifact["metadata"]["type"],
-            )
+            {
+                "name": artifact["metadata"]["name"],
+                "id": artifact["metadata"]["id"],
+                "type": artifact["metadata"]["type"],
+            }
             for artifact in paginated_results
         ]
 
-        return metadata_list
+        # Return with offset header
+        from fastapi.responses import JSONResponse
+        response = JSONResponse(content=metadata_list)
+        if next_offset is not None:
+            response.headers["offset"] = str(next_offset)
+
+        return response
 
     except HTTPException:
         raise
