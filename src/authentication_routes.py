@@ -34,7 +34,7 @@ router = APIRouter(tags=["authentication"])
 async def register_user(
     request: AuthenticationRequest,
     db: Session = Depends(get_db),
-) -> str:
+) -> dict:
     """Register a new user account.
 
     Creates a new user with hashed password and returns JWT authentication token.
@@ -107,7 +107,7 @@ async def register_user(
 async def authenticate_user(
     request: AuthenticationRequest,
     db: Session = Depends(get_db),
-) -> str:
+) -> dict:
     """Authenticate user and return access token (NON-BASELINE per spec).
 
     Per OpenAPI v3.4.7 spec PUT /authenticate endpoint:
@@ -175,4 +175,4 @@ async def authenticate_user(
     access_token = create_access_token(token_data)
     from fastapi.responses import Response
     # Per spec: Return token as a JSON string (not wrapped in object)
-    return Response(content=f'"bearer {access_token}"', media_type="application/json")
+    return {"token": f"bearer {access_token}"}
