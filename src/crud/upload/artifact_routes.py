@@ -532,9 +532,6 @@ async def enumerate_artifacts(
         # Apply pagination
         paginated_results = results[offset_int:offset_int + page_size]
 
-        # Calculate next offset
-        next_offset = offset_int + page_size if offset_int + page_size < len(results) else None
-
         # Convert to metadata
         metadata_list = [
             {
@@ -548,8 +545,9 @@ async def enumerate_artifacts(
         # Return with offset header
         from fastapi.responses import JSONResponse
         response = JSONResponse(content=metadata_list)
-        if next_offset is not None:
-            response.headers["offset"] = str(next_offset)
+        
+        next_offset = min(offset_int + page_size, len(results))
+        response.headers["offset"] = str(next_offset)
 
         return response
 
