@@ -1,0 +1,1706 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Model Registry API",
+    "description": "Registry for managing ML models, datasets, and code from URLs",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/artifact/{artifact_type}": {
+      "post": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Create Artifact",
+        "description": "Create new artifact from source URL per spec.\n\nPer OpenAPI v3.4.4 spec:\n- Registers a new artifact by providing a downloadable source URL\n- Artifacts may share a name; refer to id as unique identifier\n- Returns HTTP 201 Created with full Artifact envelope\n\nArgs:\n    artifact_type: Artifact type (model, dataset, or code)\n    artifact_data: Request body with source URL and optional name\n    x_authorization: Bearer token for authentication\n\nReturns:\n    Artifact: Full artifact with generated id and download_url\n\nRaises:\n    HTTPException: 400 if invalid type, 403 if auth fails, 409 if duplicate",
+        "operationId": "create_artifact_artifact__artifact_type__post",
+        "parameters": [
+          {
+            "name": "artifact_type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Type"
+            }
+          },
+          {
+            "name": "is_sensitive",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Is Sensitive"
+            }
+          },
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArtifactData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Artifact"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/artifacts/{artifact_type}/{artifact_id}": {
+      "get": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Get Artifact",
+        "description": "Retrieve artifact by type and ID per spec.\n\nPer OpenAPI v3.4.4 spec:\n- Returns the artifact with specified type and ID\n- Returns 404 if artifact not found\n\nArgs:\n    artifact_type: Artifact type (model, dataset, or code)\n    artifact_id: Unique artifact identifier\n    x_authorization: Bearer token for authentication\n\nReturns:\n    Artifact: Full artifact envelope with metadata and data\n\nRaises:\n    HTTPException: 403 if auth fails, 404 if not found",
+        "operationId": "get_artifact_artifacts__artifact_type___artifact_id__get",
+        "parameters": [
+          {
+            "name": "artifact_type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Type"
+            }
+          },
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Artifact"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Update Artifact",
+        "description": "Update artifact metadata and source URL per spec.\n\nPer OpenAPI v3.4.4 spec:\n- Updates the artifact source (from artifact_data)\n- Returns 404 if artifact not found\n\nArgs:\n    artifact_type: Artifact type (model, dataset, or code)\n    artifact_id: Unique artifact identifier\n    artifact_data: New artifact data (url and optional download_url)\n    x_authorization: Bearer token for authentication\n\nReturns:\n    Artifact: Updated artifact envelope\n\nRaises:\n    HTTPException: 403 if auth fails, 404 if not found",
+        "operationId": "update_artifact_artifacts__artifact_type___artifact_id__put",
+        "parameters": [
+          {
+            "name": "artifact_type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Type"
+            }
+          },
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArtifactData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Artifact"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Delete Artifact",
+        "operationId": "delete_artifact_artifacts__artifact_type___artifact_id__delete",
+        "parameters": [
+          {
+            "name": "artifact_type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Type"
+            }
+          },
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Delete Artifact Artifacts  Artifact Type   Artifact Id  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/artifacts": {
+      "post": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Enumerate Artifacts",
+        "description": "Query and enumerate artifacts per spec.",
+        "operationId": "enumerate_artifacts_artifacts_post",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "title": "Queries"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reset": {
+      "delete": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Reset Registry",
+        "description": "Reset the registry to system default state (admin only).\n\nPer OpenAPI v3.4.4 spec:\n- Requires admin authorization\n- Deletes all artifacts from S3 and database\n- Returns 200 on success, 401 if not admin\n\nArgs:\n    x_authorization: Bearer token for authentication\n    db: Database session\n\nReturns:\n    Dict with success message\n\nRaises:\n    HTTPException: 401 if not admin, 403 if auth fails",
+        "operationId": "reset_registry_reset_delete",
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Reset Registry Reset Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/artifact/{artifact_type}/{artifact_id}/cost": {
+      "get": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Get Artifact Cost",
+        "description": "Get the cost of an artifact and optionally its dependencies.\n\nPer OpenAPI v3.4.4 spec:\n- Returns cost in MB (download size)\n- Includes dependency costs if dependency=true\n- Returns 404 if artifact not found\n\nArgs:\n    artifact_type: Artifact type (model, dataset, or code)\n    artifact_id: Unique artifact identifier\n    dependency: Include dependency costs (default: False)\n    x_authorization: Bearer token for authentication\n\nReturns:\n    Dict with cost information\n\nRaises:\n    HTTPException: 403 if auth fails, 404 if not found",
+        "operationId": "get_artifact_cost_artifact__artifact_type___artifact_id__cost_get",
+        "parameters": [
+          {
+            "name": "artifact_type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Type"
+            }
+          },
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "dependency",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Dependency"
+            }
+          },
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Artifact Cost Artifact  Artifact Type   Artifact Id  Cost Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/artifact/model/{artifact_id}/license-check": {
+      "post": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Check License Compatibility",
+        "description": "Assess license compatibility for fine-tune and inference usage.\n\nPer OpenAPI v3.4.4 spec:\n- Takes github_url in request body\n- Evaluates GitHub project license\n- Returns JSON with boolean compatibility status\n- Returns 404 if artifact/GitHub project not found\n- Returns 502 if external license info unavailable\n\nArgs:\n    artifact_id: Unique model artifact identifier\n    request_body: Request body with github_url\n    x_authorization: Bearer token for authentication\n\nReturns:\n    Dict with boolean license compatibility result\n\nRaises:\n    HTTPException: 400 if malformed, 403 if auth fails, 404 if not found, 502 if external error",
+        "operationId": "check_license_compatibility_artifact_model__artifact_id__license_check_post",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "title": "Request Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "boolean",
+                  "title": "Response Check License Compatibility Artifact Model  Artifact Id  License Check Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/artifact/byRegEx": {
+      "post": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Get Artifacts By Regex",
+        "description": "Search for artifacts using regular expression over names.\n\nPer OpenAPI v3.4.4 spec:\n- Searches artifact names\n- Similar to search by name but using regex\n- Returns 404 if no artifacts found\n\nArgs:\n    request: Request body with regex pattern\n    x_authorization: Bearer token for authentication\n\nReturns:\n    List[ArtifactMetadata]: Matching artifacts\n\nRaises:\n    HTTPException: 400 if invalid regex, 403 if auth fails, 404 if no matches",
+        "operationId": "get_artifacts_by_regex_artifact_byRegEx_post",
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "title": "Request"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ArtifactMetadata"
+                  },
+                  "title": "Response Get Artifacts By Regex Artifact Byregex Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/artifact/model/{artifact_id}/rate": {
+      "get": {
+        "summary": "Get Model Rating",
+        "description": "Return the stored ModelRating for a given artifact ID.",
+        "operationId": "get_model_rating_artifact_model__artifact_id__rate_get",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "title": "Response Get Model Rating Artifact Model  Artifact Id  Rate Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "tags": [
+          "authentication"
+        ],
+        "summary": "Register User",
+        "description": "Register a new user account.\n\nCreates a new user with hashed password and returns JWT authentication token.\n\nArgs:\n    request: AuthenticationRequest with user info and password\n    db: Database session\n\nReturns:\n    str: JWT bearer token string in format \"bearer \u003Cjwt\u003E\"\n         Per spec: Returned as plain JSON string, not wrapped in object\n\nRaises:\n    HTTPException:\n        400: Missing fields or improperly formed request\n        409: User already exists",
+        "operationId": "register_user_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthenticationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Register User Register Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/authenticate": {
+      "put": {
+        "tags": [
+          "authentication"
+        ],
+        "summary": "Authenticate User",
+        "description": "Authenticate user and return access token (NON-BASELINE per spec).\n\nPer OpenAPI v3.4.7 spec PUT /authenticate endpoint:\n- Takes AuthenticationRequest with user credentials\n- Returns AuthenticationToken as plain JSON string (not wrapped in object)\n- Token should be provided in X-Authorization header for other endpoints\n\nArgs:\n    request: AuthenticationRequest with username and password\n    db: Database session\n\nReturns:\n    str: JWT bearer token string in format \"bearer \u003Cjwt\u003E\"\n         Per spec: Returned as plain JSON string, not wrapped in object\n         Example: \"bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n\nRaises:\n    HTTPException:\n        400: Missing fields or improperly formed request\n        401: Invalid user or password\n        501: Authentication not supported (if not implemented)",
+        "operationId": "authenticate_user_authenticate_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthenticationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Authenticate User Authenticate Put"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensitive/malicious_models": {
+      "get": {
+        "summary": "List Malicious Models",
+        "description": "Return a list of all models suspected to be malicious.\nSimply reads and returns everything from the tracking log.",
+        "operationId": "list_malicious_models_sensitive_malicious_models_get",
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensitive/logtrail": {
+      "get": {
+        "summary": "Print Sensitive Trail",
+        "description": "Return log of interactions with sensitive models.",
+        "operationId": "print_sensitive_trail_sensitive_logtrail_get",
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sensitive/javascript-program": {
+      "post": {
+        "summary": "Upload Js Program",
+        "description": "Upload a JavaScript program that will be run on sensitive model uploads.\nOnly one JS program is active at a time (overwrites previous).\n\nThe program should:\n- Run under Node.js v24\n- Accept args: MODEL_NAME UPLOADER_USERNAME DOWNLOADER_USERNAME ZIP_FILE_PATH\n- Exit with 0 for success, non-zero for rejection",
+        "operationId": "upload_js_program_sensitive_javascript_program_post",
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_js_program_sensitive_javascript_program_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get Js Program",
+        "description": "Get the current JavaScript monitoring program.",
+        "operationId": "get_js_program_sensitive_javascript_program_get",
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Js Program",
+        "description": "Delete the JavaScript monitoring program.",
+        "operationId": "delete_js_program_sensitive_javascript_program_delete",
+        "parameters": [
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/artifact/model/{artifact_id}/lineage": {
+      "get": {
+        "summary": "Get Artifact Lineage",
+        "description": "Retrieve the lineage graph for an artifact.\n\nPer OpenAPI v3.4.4 spec:\n- Returns lineage graph extracted from structured metadata\n- Returns 404 if artifact not found\n\nArgs:\n    artifact_id: Unique artifact identifier\n    x_authorization: Bearer token for authentication\n\nReturns:\n    ArtifactLineageGraph with nodes and edges\n\nRaises:\n    HTTPException: 403 if auth fails, 404 if not found",
+        "operationId": "get_artifact_lineage_artifact_model__artifact_id__lineage_get",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "x-authorization",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Artifact Lineage Artifact Model  Artifact Id  Lineage Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Index",
+        "operationId": "index__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check Ui",
+        "description": "Health check endpoint with CloudWatch logs UI",
+        "operationId": "health_check_ui_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/logs": {
+      "get": {
+        "summary": "Get Health Logs",
+        "description": "API endpoint to fetch logs as JSON",
+        "operationId": "get_health_logs_health_logs_get",
+        "parameters": [
+          {
+            "name": "hours",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1,
+              "title": "Hours"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/components": {
+      "get": {
+        "summary": "Get Health Components",
+        "description": "Get detailed health diagnostics for registry components (NON-BASELINE).\n\nPer OpenAPI v3.4.4 spec /health/components endpoint:\n- Returns per-component health diagnostics\n- Includes status, metrics, issues, and logs from observation window\n- Optional timeline sampling available\n\nArgs:\n    windowMinutes: Observation window in minutes (5-1440, default 60)\n    includeTimeline: Include activity timelines if true (default false)\n\nReturns:\n    HealthComponentCollection with all component details",
+        "operationId": "get_health_components_health_components_get",
+        "parameters": [
+          {
+            "name": "windowMinutes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1440,
+              "minimum": 5,
+              "default": 60,
+              "title": "Windowminutes"
+            }
+          },
+          {
+            "name": "includeTimeline",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Includetimeline"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthComponentCollection"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tracks": {
+      "get": {
+        "summary": "Extended Track",
+        "operationId": "extended_track_tracks_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "items": {
+
+                    },
+                    "type": "array"
+                  },
+                  "type": "object",
+                  "title": "Response Extended Track Tracks Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Artifact": {
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/ArtifactMetadata",
+            "description": "Artifact metadata - identifies what it is (name, id, type) per spec Section 3.2.1"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ArtifactData",
+            "description": "Artifact data - where to find it (url, download_url) per spec Section 3.2.1"
+          }
+        },
+        "type": "object",
+        "required": [
+          "metadata",
+          "data"
+        ],
+        "title": "Artifact",
+        "description": "Complete artifact with metadata and data envelope per spec.\n\nPer OpenAPI spec Section 3.2.1:\nALL responses containing artifact information MUST use this envelope\nstructure with two sections:\n1. metadata: Identification (name, id, type)\n2. data: Content location (url, download_url)\n\nThis two-section envelope pattern is used consistently across ALL\nendpoints that return artifact information.\n\nEndpoints using this schema:\n- POST /artifact/{type}: Create artifact (return Artifact)\n- GET /artifacts/{type}/{id}: Retrieve artifact (return Artifact)\n- PUT /artifacts/{type}/{id}: Update artifact (return Artifact)\n- POST /artifacts: Enumerate artifacts (return List[ArtifactMetadata])\n\nExample response:\nHTTP 200 OK\n{\n    \"metadata\": {\n        \"name\": \"bert-base-uncased\",\n        \"id\": \"550e8400e29b41d4a716446655440000\",\n        \"type\": \"model\"\n    },\n    \"data\": {\n        \"url\": \"https://huggingface.co/bert-base-uncased\",\n        \"download_url\": \"https://our-server.com/download/550e8400e29b41d4a716446655440000\"\n    }\n}\n\nAttributes:\n    metadata (ArtifactMetadata): Identifies the artifact\n    data (ArtifactData): Points to the artifact content"
+      },
+      "ArtifactData": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "Custom name for the artifact - If not provided, will be extracted from URL"
+          },
+          "url": {
+            "type": "string",
+            "maxLength": 2048,
+            "minLength": 1,
+            "title": "Url",
+            "description": "Source URL where artifact originated (e.g., https://huggingface.co/bert-base-uncased) - Per spec: Used to verify provenance"
+          },
+          "download_url": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2048
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Download Url",
+            "description": "Server download URL for artifact retrieval - Per spec: Read-only in responses (set by server), optional in requests"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "ArtifactData",
+        "description": "Artifact data section - points to the artifact content per spec.\n\nPer OpenAPI spec Section 3.2.1:\nThe data section contains URLs that POINT TO the artifact:\n- url: Source URL where artifact originated\n- download_url: Our server's URL for artifact retrieval\n\nThis separation of metadata/data enables:\n1. Tracking artifact provenance (url)\n2. Providing direct download (download_url)\n3. Auditing artifact access\n4. Supporting multiple mirror/CDN locations\n\nUsed in:\n- POST /artifact/{type} response (upload endpoint)\n- GET /artifacts/{type}/{id} response\n- PUT /artifacts/{type}/{id} request/response\n\nExample:\n{\n    \"url\": \"https://huggingface.co/bert-base-uncased\",\n    \"download_url\": \"https://our-server.com/download/550e8400e29b41d4a716446655440000\"\n}\n\nAttributes:\n    url (str): Source URL - where artifact originated\n               Per spec: Used to verify artifact authenticity\n    download_url (str): Our download URL - where users get the artifact\n                        Per spec: Read-only in responses (set by server)\n                        Optional in requests (server provides)"
+      },
+      "ArtifactMetadata": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name",
+            "description": "Artifact name - human readable identifier"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Id",
+            "description": "String UUID artifact ID (NOT integer!) - Per spec must match pattern ^[a-zA-Z0-9\\-]+$"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "model",
+              "dataset",
+              "code"
+            ],
+            "title": "Type",
+            "description": "Artifact type per spec - MUST be one of: 'model', 'dataset', 'code'. No other types allowed."
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "id",
+          "type"
+        ],
+        "title": "ArtifactMetadata",
+        "description": "Artifact metadata section - identifies the artifact per spec.\n\nPer OpenAPI spec Section 3.2.1:\nThe metadata section contains fields that IDENTIFY the artifact:\n- name: Human-readable name (e.g., \"bert-base-uncased\")\n- id: Unique string identifier (MUST be string, not integer!)\n- type: Classification (model, dataset, or code)\n\nThis is used in:\n- POST /artifacts response\n- GET /artifacts/{type}/{id} response\n- Audit trail entries\n- Lineage graph nodes\n\nExample:\n{\n    \"name\": \"bert-base-uncased\",\n    \"id\": \"550e8400e29b41d4a716446655440000\",\n    \"type\": \"model\"\n}\n\nAttributes:\n    name (str): Artifact name - used for search/lookup\n    id (str): CRITICAL - Must be string, not integer!\n              Format: \"^[a-zA-Z0-9\\-]+$\" per spec\n              Examples: \"3847247294\", UUIDs, ULIDs\n    type (str): Must be one of: \"model\", \"dataset\", \"code\"\n                Per spec: No other types are allowed"
+      },
+      "AuthenticationRequest": {
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/User",
+            "description": "User object per spec - Contains name and is_admin flag"
+          },
+          "secret": {
+            "$ref": "#/components/schemas/UserAuthenticationInfo",
+            "description": "Authentication secret per spec - Contains password credential"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user",
+          "secret"
+        ],
+        "title": "AuthenticationRequest",
+        "description": "Authentication request per OpenAPI spec Section 3.2.2.\n\nPer spec AuthenticationRequest object:\nUsed for both login and registration.\nContains user info and authentication secret.\n\nEndpoints:\n- POST /auth/register: Register new user\n- PUT /auth/authenticate: Login with existing user\n\nPer spec response: Returns AuthenticationToken with bearer token\n\nExample request:\n{\n    \"user\": {\n        \"name\": \"alice@example.com\",\n        \"is_admin\": false\n    },\n    \"secret\": {\n        \"password\": \"secure-password\"\n    }\n}\n\nAttributes:\n    user (User): User identification and info\n    secret (UserAuthenticationInfo): Authentication credential (password)"
+      },
+      "Body_upload_js_program_sensitive_javascript_program_post": {
+        "properties": {
+          "program": {
+            "type": "string",
+            "format": "binary",
+            "title": "Program"
+          }
+        },
+        "type": "object",
+        "required": [
+          "program"
+        ],
+        "title": "Body_upload_js_program_sensitive_javascript_program_post"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthComponentCollection": {
+        "properties": {
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/HealthComponentDetail"
+            },
+            "type": "array",
+            "title": "Components"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "window_minutes": {
+            "type": "integer",
+            "title": "Window Minutes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "components",
+          "generated_at",
+          "window_minutes"
+        ],
+        "title": "HealthComponentCollection",
+        "description": "Complete health diagnostics for all components."
+      },
+      "HealthComponentDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Observed At"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "metrics": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metrics"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/HealthIssue"
+            },
+            "type": "array",
+            "title": "Issues",
+            "default": []
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/HealthTimelineEntry"
+            },
+            "type": "array",
+            "title": "Timeline",
+            "default": []
+          },
+          "logs": {
+            "items": {
+              "$ref": "#/components/schemas/HealthLogReference"
+            },
+            "type": "array",
+            "title": "Logs",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "observed_at"
+        ],
+        "title": "HealthComponentDetail",
+        "description": "Detailed health status for single component."
+      },
+      "HealthIssue": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "severity": {
+            "type": "string",
+            "title": "Severity"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "severity",
+          "summary"
+        ],
+        "title": "HealthIssue",
+        "description": "Outstanding issue impacting component."
+      },
+      "HealthLogReference": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "tail_available": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tail Available",
+            "default": false
+          },
+          "last_updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "url"
+        ],
+        "title": "HealthLogReference",
+        "description": "Link to logs relevant to component."
+      },
+      "HealthTimelineEntry": {
+        "properties": {
+          "bucket": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Bucket"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bucket",
+          "value"
+        ],
+        "title": "HealthTimelineEntry",
+        "description": "Time-series datapoint for component metric."
+      },
+      "User": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Name",
+            "description": "Username or email per spec User object"
+          },
+          "is_admin": {
+            "type": "boolean",
+            "title": "Is Admin",
+            "description": "Is this user an admin? Determines access to admin endpoints like DELETE /reset",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "User",
+        "description": "User information per OpenAPI spec Section 3.2.2.\n\nPer spec: User object contains:\n- name: Username or email identifier\n- is_admin: Admin flag for access control\n\nUsed in:\n- AuthenticationRequest (login/register)\n- AuditEntry (tracks which user performed action)\n\nPer spec: User authentication is required for most endpoints\n(except /health and /tracks which are public)\n\nExample:\n{\n    \"name\": \"alice@example.com\",\n    \"is_admin\": false\n}\n\nAttributes:\n    name (str): Username or email for authentication\n    is_admin (bool): Is this user an admin? (default False)"
+      },
+      "UserAuthenticationInfo": {
+        "properties": {
+          "password": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Password",
+            "description": "User password per spec - Per spec: Will be bcrypt hashed before storage"
+          }
+        },
+        "type": "object",
+        "required": [
+          "password"
+        ],
+        "title": "UserAuthenticationInfo",
+        "description": "User authentication secret per OpenAPI spec.\n\nPer spec Section 3.2.2: Contains the authentication credential\n(password) for login/registration.\n\nNever exposed in responses - only used in requests.\nPer spec: Passwords are hashed with bcrypt before storage.\n\nUsed in: AuthenticationRequest during login/registration\n\nExample:\n{\n    \"password\": \"secure-password-here\"\n}\n\nAttributes:\n    password (str): User password for authentication"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
