@@ -55,7 +55,7 @@ pytest-asyncio>=0.21.0
 httpx>=0.23.0
 pydantic>=2.0.0
 moto
-selenium==4.15.2 # frontend
+selenium==4.39.0 # frontend
 markupsafe==3.0.3
 
 # Standard library modules (built-in, listed for reference)
