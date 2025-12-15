@@ -52,7 +52,7 @@ from src.crud.upload.download_artifact import get_download_url
 from src.database import get_db
 from src.database_models import Artifact as ArtifactModel
 from src.database_models import AuditEntry
-from src.metrics.license_check import license_check
+from src.license_check import license_check
 
 router = APIRouter(tags=["artifacts"])
 

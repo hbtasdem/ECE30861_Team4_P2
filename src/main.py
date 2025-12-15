@@ -1,17 +1,3 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-from fastapi.exception_handlers import RequestValidationError
-from fastapi.exceptions import RequestValidationError
-import logging
-
-# Add a handler for 422 errors to log and return details
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    logging.error(f"Validation error: {exc.errors()} | Body: {await request.body()}")
-    return JSONResponse(
-        status_code=422,
-        content={"detail": exc.errors(), "body": (await request.body()).decode()},
-    )
 #!/usr/bin/env python3
 """Batch model scoring tool - processes CSV input and outputs JSON results."""
 
