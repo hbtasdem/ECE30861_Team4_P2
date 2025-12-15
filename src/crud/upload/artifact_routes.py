@@ -429,10 +429,6 @@ async def enumerate_artifacts(
     x_authorization: Optional[str] = Header(None),
 ):
     """Query and enumerate artifacts per spec."""
-
-    # ========================================================================
-    # AUTHENTICATION
-    # ========================================================================
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -447,16 +443,13 @@ async def enumerate_artifacts(
             detail="Authentication failed: Invalid or expired token",
         )
 
-    # ========================================================================
-    # VALIDATION
-    # ========================================================================
     if not queries:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="At least one query is required",
         )
 
-    # Validate each query
+    # Georgia's validation logic
     valid_types = {'model', 'dataset', 'code'}
     for i, query in enumerate(queries):
         if not isinstance(query, dict):
@@ -464,7 +457,6 @@ async def enumerate_artifacts(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Query {i} must be an object",
             )
-
         if 'name' not in query:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -489,10 +481,7 @@ async def enumerate_artifacts(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=f"Query {i} 'types' must be subset of {valid_types}",
                 )
-
-    # ========================================================================
-    # BUILD QUERY FROM S3
-    # ========================================================================
+    
     try:
         offset_int = offset if offset is not None else 0
         page_size = 100
@@ -502,7 +491,10 @@ async def enumerate_artifacts(
 
         for query in queries:
             name = query['name']
+            # If types is missing or empty, default to all types
             types_to_search = query.get('types', ["model", "dataset", "code"])
+            if not types_to_search:
+                types_to_search = ["model", "dataset", "code"]
 
             for artifact_type in types_to_search:
                 artifacts = _get_artifacts_by_type(artifact_type)
@@ -521,9 +513,9 @@ async def enumerate_artifacts(
                     if artifact_id not in seen_ids:
                         seen_ids.add(artifact_id)
                         results.append(artifact)
-
+        
         # Check if too many results (before pagination)
-        if len(results) > 10000:  # Adjust this threshold as needed
+        if len(results) > 10000:
             raise HTTPException(
                 status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
                 detail="Too many artifacts returned",
@@ -532,7 +524,7 @@ async def enumerate_artifacts(
         # Apply pagination
         paginated_results = results[offset_int:offset_int + page_size]
 
-        # Convert to metadata
+        # Convert to metadata - use plain dicts, not Pydantic models
         metadata_list = [
             {
                 "name": artifact["metadata"]["name"],
@@ -542,10 +534,11 @@ async def enumerate_artifacts(
             for artifact in paginated_results
         ]
 
-        # Return with offset header
+        # Build response with offset header
         from fastapi.responses import JSONResponse
         response = JSONResponse(content=metadata_list)
         
+        # Always return offset header indicating where next page would start
         next_offset = min(offset_int + page_size, len(results))
         response.headers["offset"] = str(next_offset)
 
@@ -558,6 +551,143 @@ async def enumerate_artifacts(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Query failed: {str(e)}",
         )
+        
+# @router.post("/artifacts")
+# async def enumerate_artifacts(
+#     queries: List[dict],
+#     offset: Optional[int] = Query(None),
+#     x_authorization: Optional[str] = Header(None),
+# ):
+#     """Query and enumerate artifacts per spec."""
+
+#     # ========================================================================
+#     # AUTHENTICATION
+#     # ========================================================================
+#     if not x_authorization:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Missing X-Authorization header",
+#         )
+
+#     try:
+#         get_current_user(x_authorization, None)
+#     except HTTPException:
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Authentication failed: Invalid or expired token",
+#         )
+
+#     # ========================================================================
+#     # VALIDATION
+#     # ========================================================================
+#     if not queries:
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST,
+#             detail="At least one query is required",
+#         )
+
+#     # Validate each query
+#     valid_types = {'model', 'dataset', 'code'}
+#     for i, query in enumerate(queries):
+#         if not isinstance(query, dict):
+#             raise HTTPException(
+#                 status_code=status.HTTP_400_BAD_REQUEST,
+#                 detail=f"Query {i} must be an object",
+#             )
+
+#         if 'name' not in query:
+#             raise HTTPException(
+#                 status_code=status.HTTP_400_BAD_REQUEST,
+#                 detail=f"Query {i} missing required field 'name'",
+#             )
+
+#         if not isinstance(query['name'], str) or not query['name']:
+#             raise HTTPException(
+#                 status_code=status.HTTP_400_BAD_REQUEST,
+#                 detail=f"Query {i} 'name' must be a non-empty string",
+#             )
+
+#         if 'types' in query:
+#             types = query['types']
+#             if not isinstance(types, list):
+#                 raise HTTPException(
+#                     status_code=status.HTTP_400_BAD_REQUEST,
+#                     detail=f"Query {i} 'types' must be an array",
+#                 )
+#             if not all(t in valid_types for t in types):
+#                 raise HTTPException(
+#                     status_code=status.HTTP_400_BAD_REQUEST,
+#                     detail=f"Query {i} 'types' must be subset of {valid_types}",
+#                 )
+
+#     # ========================================================================
+#     # BUILD QUERY FROM S3
+#     # ========================================================================
+#     try:
+#         offset_int = offset if offset is not None else 0
+#         page_size = 100
+
+#         results = []
+#         seen_ids = set()
+
+#         for query in queries:
+#             name = query['name']
+#             types_to_search = query.get('types', ["model", "dataset", "code"])
+
+#             for artifact_type in types_to_search:
+#                 artifacts = _get_artifacts_by_type(artifact_type)
+
+#                 # Filter by name if not wildcard
+#                 if name != "*":
+#                     artifacts = [
+#                         a
+#                         for a in artifacts
+#                         if name.lower() in a["metadata"]["name"].lower()
+#                     ]
+
+#                 # Add to results, avoiding duplicates
+#                 for artifact in artifacts:
+#                     artifact_id = artifact["metadata"]["id"]
+#                     if artifact_id not in seen_ids:
+#                         seen_ids.add(artifact_id)
+#                         results.append(artifact)
+
+#         # Check if too many results (before pagination)
+#         if len(results) > 10000:  # Adjust this threshold as needed
+#             raise HTTPException(
+#                 status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+#                 detail="Too many artifacts returned",
+#             )
+
+#         # Apply pagination
+#         paginated_results = results[offset_int:offset_int + page_size]
+
+#         # Convert to metadata
+#         metadata_list = [
+#             {
+#                 "name": artifact["metadata"]["name"],
+#                 "id": artifact["metadata"]["id"],
+#                 "type": artifact["metadata"]["type"],
+#             }
+#             for artifact in paginated_results
+#         ]
+
+#         # Return with offset header
+#         from fastapi.responses import JSONResponse
+#         response = JSONResponse(content=metadata_list)
+        
+#         next_offset = min(offset_int + page_size, len(results))
+#         response.headers["offset"] = str(next_offset)
+
+#         return response
+
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST,
+#             detail=f"Query failed: {str(e)}",
+#         )
 
 # ============================================================================
 # DELETE /reset - RESET REGISTRY (BASELINE)
