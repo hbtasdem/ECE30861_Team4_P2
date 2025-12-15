@@ -52,7 +52,7 @@ from src.crud.upload.download_artifact import get_download_url
 from src.database import get_db
 from src.database_models import Artifact as ArtifactModel
 from src.database_models import AuditEntry
-from src.metrics.license_check import license_check
+from src.license_check import license_check
 
 router = APIRouter(tags=["artifacts"])
 
@@ -435,10 +435,7 @@ async def update_artifact(
 # ============================================================================
 # POST /artifacts - QUERY/ENUMERATE ARTIFACTS (BASELINE)
 # ============================================================================
-<<<<<<< HEAD
-=======
 # Georgia's enhanced version with better validation
->>>>>>> 7caa5000c1b74254b381fa99186d096fe99d7ed8
 
 @router.post("/artifacts")
 async def enumerate_artifacts(
@@ -447,13 +444,6 @@ async def enumerate_artifacts(
     x_authorization: Optional[str] = Header(None),
 ):
     """Query and enumerate artifacts per spec."""
-<<<<<<< HEAD
-
-    # ========================================================================
-    # AUTHENTICATION
-    # ========================================================================
-=======
->>>>>>> 7caa5000c1b74254b381fa99186d096fe99d7ed8
     if not x_authorization:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -474,11 +464,7 @@ async def enumerate_artifacts(
             detail="At least one query is required",
         )
 
-<<<<<<< HEAD
-    # Validate each query
-=======
     # Georgia's validation logic
->>>>>>> 7caa5000c1b74254b381fa99186d096fe99d7ed8
     valid_types = {'model', 'dataset', 'code'}
     for i, query in enumerate(queries):
         if not isinstance(query, dict):
@@ -486,7 +472,6 @@ async def enumerate_artifacts(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Query {i} must be an object",
             )
-
         if 'name' not in query:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -511,14 +496,7 @@ async def enumerate_artifacts(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail=f"Query {i} 'types' must be subset of {valid_types}",
                 )
-<<<<<<< HEAD
-
-    # ========================================================================
-    # BUILD QUERY FROM S3
-    # ========================================================================
-=======
     
->>>>>>> 7caa5000c1b74254b381fa99186d096fe99d7ed8
     try:
         offset_int = offset if offset is not None else 0
         page_size = 100
@@ -556,39 +534,21 @@ async def enumerate_artifacts(
                     if artifact_id not in seen_ids:
                         seen_ids.add(artifact_id)
                         results.append(artifact)
-<<<<<<< HEAD
-
-        # Check if too many results (before pagination)
-        if len(results) > 10000:  # Adjust this threshold as needed
-            raise HTTPException(
-                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                detail="Too many artifacts returned",
-            )
-
-=======
         
->>>>>>> 7caa5000c1b74254b381fa99186d096fe99d7ed8
         # Apply pagination
         paginated_results = results[offset_int:offset_int + page_size]
 
         # Convert to metadata
         metadata_list = [
-            {
-                "name": artifact["metadata"]["name"],
-                "id": artifact["metadata"]["id"],
-                "type": artifact["metadata"]["type"],
-            }
+            ArtifactMetadata(
+                name=artifact["metadata"]["name"],
+                id=artifact["metadata"]["id"],
+                type=artifact["metadata"]["type"],
+            )
             for artifact in paginated_results
         ]
 
-        # Return with offset header
-        from fastapi.responses import JSONResponse
-        response = JSONResponse(content=metadata_list)
-        
-        next_offset = min(offset_int + page_size, len(results))
-        response.headers["offset"] = str(next_offset)
-
-        return response
+        return metadata_list
 
     except HTTPException:
         raise
